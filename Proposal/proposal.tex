@@ -1,0 +1,38 @@
+\input{preamble.tex}
+
+\input{commands.tex}
+
+\title{PhD proposal document}
+\author{Ioannis Paraskevakos}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\section{Introduction}
+As scientific simulations achieve new scaling milestones in terms of simulation time and granularity,
+they start to produce order of Gigabytes to Terabytes data that need to be analyzed. Based on that
+analysis new simulations can be setup and executed. This data-analysis driven simulations can lead to
+better more accurate results. Providing this style of execution requires first the ability to co-locate
+MPI style simulations with data analytics.
+
+The PST model proposed [cite here from Vivek] provides a unified way to express any type of workflow. 
+Until now it is used mainly for abstracting scientific simulation pipelines and it successfully used
+to drive this type of applications. On top of PST's implementation, Ensemble Toolkit, several abstractions
+are defined that describe complex scientific workflows. Despite this fact, there are no abstractions
+that allow to argue over data and define complex data analytics workflows. 
+
+I propose a set of abstractions on the middleware layer, as well as, the application layer that allow
+to define data analytics on HPC system and extend the PST model to be able to support data analysis
+driven simulations.
+
+
+\section{Related Work}
+\section{Definitions}
+
+\section{RMSD MPI4Py Implementation}
+\section{Comparing the execution time with different frameworks}
+
+\bibliographystyle{alpha}
+\bibliography{sample}
+\end{document}
