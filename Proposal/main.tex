@@ -1,99 +1,124 @@
 \input{preamble.tex}
 
 \title{Middleware for Autonomous Scientific Applications}
-\author{Ioannis Paraskevakos}
+\author{Ioannis Paraskevakos \\	Electrical and Computer Engineering \\Rutgers, The State University of New Jersey}
 
 \begin{document}
 \maketitle
 
+\abstract{}
+
+
 \section{Introduction}
-Many scientific applications, which use High Performance Computing (HPC) resources, 
-use complex workflows to execute experiments to produce data or acquire them through 
-sensors. These workflows usually involve ensemble of simulation, which then are analyzed. 
-or example, Molecular Dynamics simulations use cases are producing O(100) GBs~\cite{cheatham2015impact} 
-of data that would benefit from an online analysis to drive the simulations. Satellite 
-imagery use cases acquire high resolution satellite imagery that needs to be analyzed 
-in a bounded amount of time. Use cases with sensors acquire data in production lines 
-and require fast data analysis to maintain quality of service. Based on the volume of 
-data, as well as the goals of the application, the computational resources and quality 
-of service requirements vary significantly. 
+Many scientific applications, which use High Performance Computing (HPC) 
+resources, use complex workflows to execute experiments to produce data or 
+acquire them through sensors. These workflows usually involve ensemble of 
+simulation, which then are analyzed. or example, Molecular Dynamics simulations 
+use cases are producing O(100) GBs~\cite{cheatham2015impact} of data that would 
+benefit from an online analysis to drive the simulations. Satellite imagery use 
+cases acquire high resolution satellite imagery that needs to be analyzed in a 
+bounded amount of time. Use cases with sensors acquire data in production lines 
+and require fast data analysis to maintain quality of service. Based on the 
+volume of data, as well as the goals of the application, the computational 
+resources and quality of service requirements vary significantly. 
 
-\mtnote{Relationship among: use cases, HPC, parallelism, data partitioning, load balancing, data homogeneity/heterogeneity. These are at least two paragraphs where you set the problem space. The following paragraph looks at available solutions, pointing out (interesting?) cases where a specific solution is suboptimal.}
+\mtnote{Relationship among: use cases, HPC, parallelism, data partitioning, load 
+	balancing, data homogeneity/heterogeneity. These are at least two paragraphs 
+	where you set the problem space. The following paragraph looks at available 
+	solutions, pointing out (interesting?) cases where a specific solution is 
+	suboptimal.}
 
-Simulations mainly facilitate MPI to parallelize their execution and reduce the necessary
-time to produce the data. The parallel algorithms used are executing the same simulation with
-different initial parameters, making the parallelization relatively straight forward in terms
-of algorithms. Data analysis requires specific data partitioning, load balancing, different
-methods and levels of parallelization, and heterogeneous resources --- CPUs, and GPUs.
-Furthermore, resource acquisition and configuration on HPC is not straightforward. Depending
-on the requirement of the workflow different type of resources, in matters of type and size
-may be required. This creates a complex decision space which the user has to tackle so that
-she is able to finish her experiment.
+Simulations mainly facilitate MPI to parallelize their execution and reduce the 
+necessary time to produce the data. The parallel algorithms used are executing 
+the same simulation with different initial parameters, making the 
+parallelization relatively straight forward in terms of algorithms. Data 
+analysis requires specific data partitioning, load balancing, different methods 
+and levels of parallelization, and heterogeneous resources --- CPUs, and GPUs. 
+Furthermore, resource acquisition and configuration on HPC is not 
+straightforward. Depending on the requirement of the workflow different type of 
+resources, in matters of type and size may be required. This creates a complex 
+decision space which the user has to tackle so that she is able to finish her 
+experiment.
 
-Data analytics frameworks, such as Spark~\cite{zaharia2010spark} or Dask~\cite{rocklin2015dask}, 
-offer automatic as well as user-defined data partitioning to enable compute parallelism. Both 
-frameworks offer automatic data partitioning. Although, automatic partitioning offers load 
-balancing when the data set is homogeneous, such as a time series, it does not guarantee load 
-balanced execution for datasets where each datum is of different size. These can be datasets 
-of MD trajectories produced by similar simulations, sets of satellite or airborne images, or 
-data acquired by different type of sensors. As a result, time to completion automatic data 
-partitioning may not offer the best approach to minimize time to completion. Furthermore, 
-executing the analysis offline or separately from simulations to tune for every possible 
-dataset and algorithm requires compute time that may be valuable to the solution of a scientific 
-problem. 
+Data analytics frameworks, such as Spark~\cite{zaharia2010spark} or 
+Dask~\cite{rocklin2015dask},  offer automatic as well as user-defined data 
+partitioning to enable compute parallelism. Both  frameworks offer automatic 
+data partitioning. Although, automatic partitioning offers load balancing when 
+the data set is homogeneous, such as a time series, it does not guarantee load 
+balanced execution for datasets where each datum is of different size. These 
+can be datasets of MD trajectories produced by similar simulations, sets of 
+satellite or airborne images, or data acquired by different type of sensors. As 
+a result, time to completion automatic data partitioning may not offer the best 
+approach to minimize time to completion. Furthermore, executing the analysis 
+offline or separately from simulations to tune for every possible dataset and 
+algorithm requires compute time that may be valuable to the solution of a 
+scientific problem. 
 
-This work will be executed under the following assumptions. First, the supported workflows have 
-a simulation/data acquisition phase and an analysis phase. The simulation/data acquisition phase 
-are producing data. The analysis phase is analyzing these data to make a scientific derivation 
-which can be used to start a new phase of simulation/data acquisition. These two phases are 
-executed interchangeably to achieve a well defined scientific goal. Second, there is no a priori 
-knowledge about the data volume that is produced. Third, the workflows are executing in High 
-Performance Computing resources, such as those offered by XSEDE. Fourth, there is a constant 
-requirement is to reduce the time to execution of the analysis such that the time used by 
-simulations is maximized.
+This work will be executed under the following assumptions. First, the 
+supported workflows have a simulation/data acquisition phase and an analysis 
+phase. The simulation/data acquisition phase are producing data. The analysis 
+phase is analyzing these data to make a scientific derivation which can be used 
+to start a new phase of simulation/data acquisition. These two phases are 
+executed interchangeably to achieve a well defined scientific goal. Second, 
+there is no a priori knowledge about the data volume that is produced. Third, 
+the workflows are executing in High Performance Computing resources, such as 
+those offered by XSEDE. Fourth, there is a constant requirement is to reduce 
+the time to execution of the analysis such that the time used by simulations is 
+maximized.
 
-\mtnote{Explain: the reason behind these assumptions; why they are consistent with these reasons; why the resulting class of problems is (still) interesting.}
+\mtnote{Explain: the reason behind these assumptions; why they are consistent 
+	with these reasons; why the resulting class of problems is (still) interesting.}
 
-Thus the question is not so much how to offer software capabilities that will allow coupled 
-simulation and analysis, but how to configure, monitor, and adjust the execution of  the two
-phases of the workflow based on the applications requirements and data volumes such that the 
-time to execution of the analysis is minimized, while the user intervention is minimized?
+Thus the question is not so much how to offer software capabilities that will 
+allow coupled simulation and analysis, but how to configure, monitor, and 
+adjust the execution of  the two phases of the workflow based on the 
+applications requirements and data volumes such that the time to execution of 
+the analysis is minimized, while the user intervention is minimized?
 
-\mtnote{Elaborate the problem just introduced creating a link to autonomic computing. The flow/story is: given this problem, given the properties of this problem (paragraph), autonomic computing can offer a solution (another paragraph).}
+\mtnote{Elaborate the problem just introduced creating a link to autonomic 
+	computing. The flow/story is: given this problem, given the properties 
+	of this problem (paragraph), autonomic computing can offer a solution 
+	(another paragraph).}
 
-Autonomic computing software provides properties of self-configuration, self-optimization, 
-and self-regulation. Self-configuration refers to the ability of the system to automatically 
-configure its own execution environment and process. Self-optimization refers to the ability of 
-the system to function near optimally by monitoring and controlling its resources. Self-regulation 
-refers to the ability of the system to maintain a defined goal without any external input from a 
-user. Thus, a middleware that offers these properties to support data analytics can provide a solution 
-for this problem.
+Autonomic computing software provides properties of self-configuration, 
+self-optimization, and self-regulation. Self-configuration refers to the 
+ability of the system to automatically configure its own execution environment 
+and process. Self-optimization refers to the ability of the system to function 
+near optimally by monitoring and controlling its resources. Self-regulation 
+refers to the ability of the system to maintain a defined goal without any 
+external input from a user. Thus, a middleware that offers these properties to 
+support data analytics can provide a solution for this problem.
 
-In this proposal, we present research done to achieve scalable analysis solutions on HPC resources 
-and to understand the performance requirements and behaviors. We propose a middleware for autonomic 
-data-intensive analytics on HPC that captures the requirements and assumptions mentioned. In addition, 
-we discuss the challenges of this work and provide a timeline of execution.
+In this proposal, we present research done to achieve scalable analysis 
+solutions on HPC resources and to understand the performance requirements and 
+behaviors. We propose a middleware for autonomic data-intensive analytics on 
+HPC that captures the requirements and assumptions mentioned. In addition, we 
+discuss the challenges of this work and provide a timeline of execution.
 
 \section{Current Research}
 
 \subsection{Related Work}
 
-The SelfLet framework~\cite{bindelli2008building} is an autonomic software system. This system provides a set of 
-autonomic components, called SelfLets, that operate in order to achieve a goal. Each SelfLet provides a 
-set of services, behaviors and policies. A SelfLet can be part of a network which allows it to utilize 
-services from other SelfLets to achieve its goal. A SelfLet system has been used in a distributed sense 
-to achieve load balanced service requests~\cite{calcavecchia2010emergence}.
+The SelfLet framework~\cite{bindelli2008building} is an autonomic software 
+system. This system provides a set of autonomic components, called SelfLets, 
+that operate in order to achieve a goal. Each SelfLet provides a set of 
+services, behaviors and policies. A SelfLet can be part of a network which 
+allows it to utilize services from other SelfLets to achieve its goal. A 
+SelfLet system has been used in a distributed sense to achieve load balanced 
+service requests~\cite{calcavecchia2010emergence}.
 
-A general architecture, as well as a prototypic implementation, is provided by Jha et al. 
-in~\cite{jha2009self}. This system consists of a resource manager, an autonomic tuner and an 
-application. It defines an Application objective, similarly to SelfLets goals, which is then translated 
-to a set of measurable requirements, using well defined metrics, that the application should meet. 
-These objectives are achieved through user defined mechanisms. Based on the objective and a set of 
-mechanisms, the system can then define necessary strategies.
+A general architecture, as well as a prototypic implementation, is provided by 
+Jha et al. in~\cite{jha2009self}. This system consists of a resource manager, 
+an autonomic tuner and an application. It defines an Application objective, 
+similarly to SelfLets goals, which is then translated to a set of measurable 
+requirements, using well defined metrics, that the application should meet. 
+These objectives are achieved through user defined mechanisms. Based on the 
+objective and a set of mechanisms, the system can then define necessary 
+strategies.
 
 \subsection{Conceptual Model for Data Analysis framework selections}
 
-Publication Nmber 1 ~\cite{paraskevakos2018task}
+Publication Number 1 ~\cite{paraskevakos2018task}
 
 \subsection{Data Analysis Design Selection}
 
@@ -101,9 +126,86 @@ Write about publication number 2
 
 \section{Proposed Research}
 
+In our research so far, we discussed the understanding of data analytics for 
+various use cases on HPC systems. In addition, we identified the need for 
+execution of scientific workflows with minimum user intervention independent 
+from domain. In this section, we motivate and propose an autonomic middleware 
+for configuring, monitor and adapting the execution of scientific experiments 
+on HPCs.
+
 \subsection{Proposed Topic}
 
+
+
 \subsection{Proposed Timelime}
+\begin{table*}
+	\centering
+	\begin{tabular}{ |p{1.25cm}|p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm}|}
+		%
+		\hline
+		Phases  & Month 1 & Month 2 & Month 3 & Month 4 & Month 5 & Month 6 & Month 7 & Month 8 & Month 9 \\\hline\hline
+		Phase 1 &         &         &         &         &         &         &         &         &         \\\hline
+		Phase 2 &         &         &         &         &         &         &         &         &         \\\hline
+		Phase 3 &         &         &         &         &         &         &         &         &         \\\hline
+		Phase 4 &         &         &         &         &         &         &         &         &         \\\hline
+	\end{tabular}
+\caption{Planned time-line of proposed research}\label{tab:work_plan}
+\end{table*}
+
+\subsubsection{Phase 1: Design and implementation of prototype}
+
+Month 1 would include design discussions for a prototype of the
+execution system. Design will be finalized and implementation will be
+completed by Month 3. Capability to self-configure in terms of resources
+based on the desired workflow will mark the success of Phase 1.
+
+
+\subsubsection{Phase 2: Validation of the execution system}
+
+Implement the rest of the \textit{self-*} properties
+
+\subsubsection{Phase 3: Integration of with scientific workflows}
+
+
+\subsubsection{Phase 4: Investigation for an emperical model}
+
+Experiments with synethic and real applications with the prototype as well as 
+scientific workflows will be used to investigate and derive emperical models. 
+These models may be used to further generalize the behavior of the autonomic 
+middleware based on application requirements. Phase 4 will overlap with Phase 2 
+and 3 to utilize experiments done during those phases.
+
+% ---------------------------------------------------------------------------
+% Why
+\subsection{Significance and impact of work}
+
+
+% ---------------------------------------------------------------------------
+% Challenges
+\subsection{Challenges/Risks}
+
+% \mtnote{does the committee know what RP is?}\vbnote{yes, fixed}
+% \mtnote{whom needs to be made aware of what?}\vbnote{fixed}.
+
+We estimate the proposed work, divided into four major phases, to take 9 months 
+and we allocate 3 months to account for unforeseen circumstances. We would like 
+to keep the committee aware of the following challenges that we see:
+
+\begin{itemize}
+	\item Design and Implementation (phase 2) is iterative and special 
+	attention needs to be given to the number of iterations against specific 
+	objectives, given the time-line.
+	\item All experiments performed on HPC systems are subject to variable 
+	queue times and may limit the number of experiments performed in phase 2 
+	and 4.
+	\item Although the middleware will be well tested (80--90\% of the code 
+	base will be covered by unit tests) and less susceptible to major 	
+	changes, RADICAL-Pilot is known to be less stable and is susceptible to 
+	changes as it serves multiple projects. Stability of RADICAL-Pilot is 
+	considered in the estimates, but needs to be made aware to the committee.
+	\item Lastly, the HPC systems themselves may often become inaccessible due 
+	to unplanned outages.
+\end{itemize}
 
 \bibliographystyle{plain}
 \bibliography{sample}
