@@ -50,7 +50,7 @@ Cloud4IoT~\cite{pizzolli2016cloud4iot} is an autonomic system which allows autom
 
 CometCloud~\cite{diazmontes2015cometcloud} is an autonomic software system that enables scientific applications on a federation of resources. It has been used to enable simulation and data-intensive applications on heterogeneous resources, HPC and Cloud, that consumed million of core hours.
 
-Pandey et al.~\cite{pandey2012autonomic} are proposing ...
+Pandey et al.~\cite{pandey2012autonomic} are proposing an autonomic cloud environment for executing multi user Electrocardiogram (ECG) data analysis workflows. The authors propose a three layer architecture. The ECG analysis software is the top layer of the architecture. The second layer contains the a scaling manager, a workflow engine, and a workload distribution engine. The cloud infrastructure and a authentication mechanism create the third layer of the architecture. All three layers are provided as a Service.  
 
 \subsection{Conceptual Model for Task-Parallel framework selections}
 Tasks-parallel applications involve partitioning a workload into a set of self-contained units of work. Based on the application, these tasks can be independent or coupled with varying degrees of data dependencies. Scientific workflows exploit task parallelism for simulations as well as data analysis.
@@ -65,45 +65,49 @@ Data analysis during scientific campaigns may vary depending on the stage of the
 
 \subsection{Data Analysis Design Selection}
 
-Write about publication number 2
+\gpnote{Write about publication number 2}
 
 \section{Proposed Research}
 
-In our research so far, we discussed the understanding of data analytics for various use cases on HPC systems. In addition, we identified the need for execution of scientific workflows with minimum user intervention, independent from users' scientific domain. In this section, we motivate and propose an autonomic middleware for configuring, monitor and adapting the execution of scientific experiments on HPCs.
+In our research so far, we discussed a conceptual model for data analytics for various use cases on HPC system, and a design comparison and execution time model for scientific workflows. In addition, we identified a need for execution of scientific workflows with minimum user intervention, independent from users' scientific domain. In this section, we motivate and propose an autonomic middleware for configuring, monitor and adapting the execution of scientific workflows on HPCs.
 
 \subsection{Proposed Topic}
 
-Monitoring, regulating, and configuring large scale scientific workflows require dedicated human resources that may not be available at any given point in time. Autonomic systems offer self-monitoring, self-configuring, and self-regulating capabilities. As a result, autonomic systems can be used to support scientific workflow execution.
+Monitoring, regulating, and configuring large scale scientific workflows require dedicated human resources that may not be available at any given point in time. Autonomic systems offer self-monitoring, self-configuring, and self-regulating capabilities.  These capabilities can be used to submit and execute a scientific workflow on HPC resources. Incoorporated in a workflow management system they allow the user to define a workflow, desired resources and expeted time to completion. The autonomic aspect of the workflow system will then be responsible to select the desired level of concurrency, the exact type of resources, .As a result, autonomic systems can be used to support scientific workflow execution.
 
 We propose creating an autonomic middleware that will be able to offer these self-* properties to scientific workflows. This middleware will be responsible in monitoring, configuring and regulating the execution based on policies and rules defined by the users. 
 
-Self-monitoring, in this use case, defines the ability of the middleware to evaluate the current state of the workflow. A state full workflow execution engine, such as EnTK~\cite{balasubramanian2018harnessing}, Dask~\cite{rocklin2015dask}, is necessary. By sampling the state of the individual components of the workflow, the proposed system can realize the overall state of the execution. Self-configuration can be achieved in multiple levels. One is deciding which resources (CPU, GPU, or memory based) will be used for the execution of the workflow. For example, HPCs offer nodes with different memory sizes, type and count of GPUs, number of nodes per job. These decisions can be made from the proposed middlewale. Another mode of self-configuration is deciding how to execute the workflow when different possible implementations and designs exist.  Self-regulation can be achieved by defining a set of rules and actions that can be executed. The user will be able to define a set of possible outcomes of different states of hers workflow. Based on these outcomes changes in the workflow can be made during runtime. This will allow the system to change what the workflow executes based on the scientific goal.
+Self-configuration is achieved by the software deciding the number of resources an execution will use to achieve a specific deadline. The middleware will take as input models for execution time, and memory utilization of kernels used in the workflow. The distribution of the dataset can also be provided. Based on this knowledge and user defined goal. The user provides a model or distribution of their kernels execution time, memory utilization and dataset size. Based on models and a user's deadline it will make a decision how to configure the requested resources. That decision includes, but not limited to, number of cores, GPUs, type of memory size, and walltime.
+
+Self-monitoring is achieved via the middleware being able to monitor and sample the execution of the workflow. A state full workflow execution engine, such as EnTK~\cite{balasubramanian2018harnessing}, Dask~\cite{rocklin2015dask}, is necessary. Such an engine allows the middleware to know the state of the execution workflow at any given point in time. This information can then be used to provide information about the configuration decision the middleware made.
+
+Self-regulation is achieved by changing the decision making process to reflect knowledge obtained via monitoring. Based on the sampled state of execution, and achieving the probability of achieving the defined goal, the system will adjust the execution of the workflow. If the initial decision was an underestimation, more resources can be added. When the decision was an overestimation, the heuristic can be updated such that less resources are used in a subsequent execution.
 
 \subsection{Proposed Timelime}
-\begin{table*}
+\begin{table*}[ht]
 	\centering
-	\begin{tabular}{ |p{1.25cm}|p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm} p{1.25cm}|}
+	\begin{tabular}{|p{1.1cm}|p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}p{0.75cm}|}
 		%
 		\hline
-		Phases  & Month 1 & Month 2 & Month 3 & Month 4 & Month 5 & Month 6 & Month 7 & Month 8 & Month 9 \\\hline\hline
-		Phase 1 &         &         &         &         &         &         &         &         &         \\\hline
-		Phase 2 &         &         &         &         &         &         &         &         &         \\\hline
-		Phase 3 &         &         &         &         &         &         &         &         &         \\\hline
-		Phase 4 &         &         &         &         &         &         &         &         &         \\\hline
+		\multirow{2}{*}{Phases} & \multicolumn{12}{|c|}{Month}\\
+		   & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12\\\hline\hline
+		 1 & \multicolumn{3}{p{2.25cm}}{Design and implementation self-configuring property}&   &   &   &   &   &   &    &    &   \\\hline
+		 2 &   &   &   & \multicolumn{3}{p{2.25cm}}{Implementation self-monitoring and self-regulating properties} &   &   &   &    &    &   \\\hline
+		 3 &   &   &   &   &   &   &\multicolumn{3}{p{2.25cm}}{Integrate with Scientific workflows}&    &    &   \\\hline
+		 4 &   &   &   &   &   &   &\multicolumn{6}{p{4.5cm}|}{Investigation for an empirical model} \\\hline
 	\end{tabular}
-\caption{Planned time-line of proposed research}\label{tab:work_plan}
+\caption{Planned timeline of proposed research}\label{tab:work_plan}
 \end{table*}
 
 \subsubsection{Phase 1: Design and implementation of prototype}
 
-Month 1 would include design discussions for a prototype of the execution system. Design will be finalized and implementation will be completed by Month 3. Capability to self-configure in terms of resources based on the desired workflow will mark the success of Phase 1.
+Month 1 would include design discussions for a prototype of the execution system. Result of these discussions will be the requirements of the middleware and its API. Design will be finalized and a prototypical implementation will be completed by Month 3. Capability to self-configure in terms of resources based on the desired workflow will mark the success of Phase 1.
 
 \subsubsection{Phase 2: Validation of the execution system}
-
-Implement the rest of the \textit{self-*} properties
+Phase 2 includes definging the requirements for self-monitoring, and self-regulating properties and implement them in the middleware. End of phase 2 will include the \textit(self-*) properties as well as a Continuous integrated testing protocol to always verify the functionality of the middleware. Phase 2 spans from months 3 up to 6
 
 \subsubsection{Phase 3: Integration of with scientific workflows}
-
+Phase 3 of the plan includes the integration of the proposed autonomic system with RADICAL-EnTK~\cite{balasubramanian2018harnessing} and start utilize the system for scientifc workflows in Satelite Imagery analysis and Molecular Dynamics simulation workflows. This spans between months 6 and 9.
 
 \subsubsection{Phase 4: Investigation for an empirical model}
 
@@ -112,13 +116,13 @@ Experiments with synthetic and real applications with the prototype as well as s
 % ---------------------------------------------------------------------------
 % Why
 \subsection{Significance and impact of work}
-
+Several scientific applications are required to be executed several times with different input data or initial conditions. The required concurrency to minimize the execution time of each run is not necessarily constant and may change based on the initial conditions. The autonomic management system suggested in this proposal will be the first to make resource configuration decisions for the users. This will lead to less time invested by users to make execution decisions about their workflows. These decisions will lead to better resource utilization and, as a result, better domain science. The empirical models derived by this work can be used to derive formal mathematical models.
 
 % ---------------------------------------------------------------------------
 % Challenges
 \subsection{Challenges/Risks}
 
-We estimate the proposed work, divided into four major phases, to take 9 months and we allocate 3 months to account for unforeseen circumstances. We would like to keep the committee aware of the following challenges that we see:
+We estimate the proposed work, divided into four major phases, to take 12 months and we allocate 3 months to account for unforeseen circumstances. We would like to keep the committee aware of the following challenges that we see:
 
 \begin{itemize}
 	\item Design and Implementation (phase 2) is iterative and special attention needs to be given to the number of iterations against specific objectives, given the time-line.
