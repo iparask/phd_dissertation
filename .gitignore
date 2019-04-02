@@ -1,5 +1,5 @@
 *.gz
-*.pdf
+main.pdf
 *.blg
 *.bbl
 *.aux
