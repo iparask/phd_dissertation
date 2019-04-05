@@ -134,14 +134,6 @@ and actuator which allow runtime monitoring and control, a distributed network t
 connect and manage the sensor/actuators and a distributed engine to execute parts 
 of the application based on user defined rules.
 
-A general architecture, as well as a prototypical implementation, is provided by 
-Jha et al. in~\cite{jha2009self}. This system consists of a resource manager, an 
-autonomic tuner and an application. It defines an Application objective, similarly 
-to SelfLets goals, which is then translated to a set of measurable requirements, 
-using well defined metrics, that the application should meet. These objectives 
-are achieved through user defined mechanisms. Based on the objective and a set 
-of mechanisms, the system can then define necessary strategies.
-
 Cloud4IoT~\cite{pizzolli2016cloud4iot} is an autonomic system which allows automatic 
 deployment and configuration of data-intensive workloads on cloud and edge devices, 
 and Internet-of-Things (IoT) application support. Cloud4IoT proposes an architecture 
@@ -267,33 +259,61 @@ the execution of the workflow. If the initial decision was an underestimation,
 more resources can be added. When the decision was an overestimation, the heuristic 
 can be updated such that less resources are used in a subsequent execution.
 
+A conceptual architecture is provided by Jha et al. in Ref.~\cite{jha2009self}. 
+This system consists of a resource manager, an autonomic tuner and an application. 
+It defines an Application objective, which is then translated to a set of 
+measurable requirements, using well defined metrics, that the application 
+should meet. These objectives are achieved through user defined mechanisms. 
+Based on the objective and a set of mechanisms, the system can then define 
+necessary strategies and actions to achieve the objective.
+
+RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) defines an application
+manager (AM), and a resource manager (RM). EnTK defines an application as a sequence of 
+workflows that are executed. The workflows may either reuse resources or request new ones, 
+based on how the user has programmed the application. In addition, the time requested for 
+each resource is also decided by the user. The AM currently submits a workflow to 
+the resources managed by RM and checks their overall execution state. In addition, the 
+resource manager requests computing resource from an HPC and monitors their state. None of
+these components have any decision capabilities.
+
+We propose to extend these two components of EnTK and introduce an autonomic tuner, as defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take as input information
+of the desired resources to execute the workflow, and a desired deadline for completion. The resource
+manage based on the desired resources can provide information about them, such maximum allowed node
+requests, maximum queue times, and more. The autonomic tuner, we propose to add, can use this 
+information along with execution models for the workflow tasks to decide the resource, the concurrency
+and timeline of the execution of the application. This achieves the self-configuration property of an
+autonomic system. The AM already monitors the execution state and it can report it to the tuner in
+prespecified intervals, achieving this way the self-monitoring property. The tuner then can decide
+whether more resources are required for achieving the deadline and update the decision rule, thus achieving the slef-regulating aspect of an autonomic system.
+
 \gpnote{Talk about EnTK's AppManager. See how an autonomic system controller can
 be added to extend it. It makes sense that each app manager will be able to 
 decide it self about the execution of a workflow. }
 
 \subsection{Proposed Timelime}
-\begin{figure}[t]
+\begin{figure*}[t]
 	\centering
-	\includegraphics[width=.95\textwidth]{Proposal/phd_plan.pdf}
+	\includegraphics[width=.95\textwidth]{./phd_plan.pdf}
 	\caption{Planned timeline of proposed research}\label{tab:work_plan}
-\end{figure}
+\end{figure*}
 
 \subsubsection{Phase 1: Design and implementation self-configuring property}
 
 Month 1 would include design discussions for a prototype of the execution system. 
 Result of these discussions will be the requirements of the middleware and its 
 API. Design will be finalized and a prototypical implementation will be completed 
-by Month 3. Capability to self-configure in terms of resources based on the desired 
+by Month 4. Capability to self-configure in terms of resources based on the desired 
 workflow will mark the success of Phase 1.
 
-\subsubsection{Phase 2: Validation of the execution system}
-Phase 2 includes definging the requirements for self-monitoring, and self-regulating 
+\subsubsection{Phase 2: Implementation self-monitoring, self-regulating properties
+and Continuous Integrated Testing}
+Phase 2 includes defining the requirements for self-monitoring, and self-regulating 
 properties and implement them in the middleware. End of phase 2 will include the 
 \textit(self-*) properties as well as a Continuous integrated testing protocol to 
 always verify the functionality of the middleware. Phase 2 spans from months 3 up 
 to 6
 
-\subsubsection{Phase 3: Integration of with scientific workflows}
+\subsubsection{Phase 3: Integration with scientific workflows}
 Phase 3 of the plan includes the integration of the proposed autonomic system with 
 RADICAL-EnTK~\cite{balasubramanian2018harnessing} and start utilize the system for 
 scientifc workflows in Satelite Imagery analysis and Molecular Dynamics simulation 
@@ -329,7 +349,7 @@ and we allocate 3 months to account for unforeseen circumstances. We would like
 to keep the committee aware of the following challenges that we see:
 
 \begin{itemize}
-	\item Design and Implementation (phase 2) is iterative and special attention 
+	\item Design and Implementation (phases 1 \& 2) is iterative and special attention 
 	needs to be given to the number of iterations against specific objectives, 
 	given the timeline.
   \item All experiments performed on HPC systems are subject to variable queue 
