@@ -276,15 +276,18 @@ the resources managed by RM and checks their overall execution state. In additio
 resource manager requests computing resource from an HPC and monitors their state. None of
 these components have any decision capabilities.
 
-We propose to extend these two components of EnTK and introduce an autonomic tuner, as defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take as input information
-of the desired resources to execute the workflow, and a desired deadline for completion. The resource
-manage based on the desired resources can provide information about them, such maximum allowed node
-requests, maximum queue times, and more. The autonomic tuner, we propose to add, can use this 
-information along with execution models for the workflow tasks to decide the resource, the concurrency
-and timeline of the execution of the application. This achieves the self-configuration property of an
-autonomic system. The AM already monitors the execution state and it can report it to the tuner in
-prespecified intervals, achieving this way the self-monitoring property. The tuner then can decide
-whether more resources are required for achieving the deadline and update the decision rule, thus achieving the slef-regulating aspect of an autonomic system.
+We propose to extend these two components of EnTK and introduce an autonomic tuner, as 
+defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take 
+as input information of the desired resources to execute the workflow, and a desired deadline 
+for completion. The resource manage based on the desired resources can provide information 
+about them, such maximum allowed node requests, maximum queue times, and more. The autonomic 
+tuner, we propose to add, can use this information along with execution models for the 
+workflow tasks to decide the resource, the concurrency and timeline of the execution of 
+the application. This achieves the self-configuration property of an autonomic system. 
+The AM already monitors the execution state and it can report it to the tuner in specified 
+intervals, achieving this way the self-monitoring property. The tuner then can decide 
+whether more resources are required for achieving the deadline and update the decision 
+rule, thus achieving the self-regulating aspect of an autonomic system.
 
 \gpnote{Talk about EnTK's AppManager. See how an autonomic system controller can
 be added to extend it. It makes sense that each app manager will be able to 
