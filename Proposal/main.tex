@@ -289,9 +289,17 @@ intervals, achieving this way the self-monitoring property. The tuner then can d
 whether more resources are required for achieving the deadline and update the decision 
 rule, thus achieving the self-regulating aspect of an autonomic system.
 
+\begin{figure*}[t]
+	\centering
+	\includegraphics[width=.95\textwidth]{./AutonomicSubsystem.pdf}
+	\caption{Simple Architectural Diagram. The Application Manager through EnTK's API receives a workflow, a resource request, and a deadline and communicates to the Autonomic Tuner. Autonomic Tuner, based on information in Knowledge Base makes a decision and passes it to the Resource Manager}\label{fig:architecture}
+\end{figure*}
+
+
 \gpnote{Talk about EnTK's AppManager. See how an autonomic system controller can
 be added to extend it. It makes sense that each app manager will be able to 
 decide it self about the execution of a workflow. }
+
 
 \subsection{Proposed Timelime}
 \begin{figure*}[t]
