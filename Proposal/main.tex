@@ -261,40 +261,49 @@ can be updated such that less resources are used in a subsequent execution.
 
 A conceptual architecture is provided by Jha et al. in Ref.~\cite{jha2009self}. 
 This system consists of a resource manager, an autonomic tuner and an application. 
-It defines an Application objective, which is then translated to a set of 
-measurable requirements, using well defined metrics, that the application 
-should meet. These objectives are achieved through user defined mechanisms. 
-Based on the objective and a set of mechanisms, the system can then define 
-necessary strategies and actions to achieve the objective.
+It defines an Application objective, which is then translated to a set of measurable 
+requirements, using well defined metrics, that the application should meet. These 
+objectives are achieved through user defined mechanisms. Based on the objective and 
+a set of mechanisms, the system can then define necessary strategies and actions to 
+achieve the objective.
 
-RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) defines an application
-manager (AM), and a resource manager (RM). EnTK defines an application as a sequence of 
-workflows that are executed. The workflows may either reuse resources or request new ones, 
-based on how the user has programmed the application. In addition, the time requested for 
-each resource is also decided by the user. The AM currently submits a workflow to 
-the resources managed by RM and checks their overall execution state. In addition, the 
-resource manager requests computing resource from an HPC and monitors their state. None of
-these components have any decision capabilities.
-
-We propose to extend these two components of EnTK and introduce an autonomic tuner, as 
-defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take 
-as input information of the desired resources to execute the workflow, and a desired deadline 
-for completion. The resource manage based on the desired resources can provide information 
-about them, such maximum allowed node requests, maximum queue times, and more. The autonomic 
-tuner, we propose to add, can use this information along with execution models for the 
-workflow tasks to decide the resource, the concurrency and timeline of the execution of 
-the application. This achieves the self-configuration property of an autonomic system. 
-The AM already monitors the execution state and it can report it to the tuner in specified 
-intervals, achieving this way the self-monitoring property. The tuner then can decide 
-whether more resources are required for achieving the deadline and update the decision 
-rule, thus achieving the self-regulating aspect of an autonomic system.
+RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) defines 
+an application manager (AM), and a resource manager (RM). EnTK defines an 
+application as a sequence of workflows that are executed. The workflows may 
+either reuse resources or request new ones, based on how the user has programmed 
+the application. In addition, the time requested for each resource is also 
+decided by the user. The AM currently submits a workflow to the resources 
+managed by RM and checks their overall execution state. In addition, the resource 
+manager requests computing resource from an HPC and monitors their state. None 
+of these components have any decision capabilities.
 
 \begin{figure*}[t]
-	\centering
-	\includegraphics[width=.95\textwidth]{./AutonomicSubsystem.pdf}
-	\caption{Simple Architectural Diagram. The Application Manager through EnTK's API receives a workflow, a resource request, and a deadline and communicates to the Autonomic Tuner. Autonomic Tuner, based on information in Knowledge Base makes a decision and passes it to the Resource Manager}\label{fig:architecture}
+    \centering
+    \includegraphics[width=.95\textwidth]{./AutonomicSubsystem.pdf}
+    \caption{Simple Architectural Diagram. The Application Manager through 
+        EnTK's API receives a workflow, a resource request, and a deadline and 
+        communicates to the Autonomic Tuner. Autonomic Tuner, based on information 
+        in Knowledge Base makes a decision and passes it to the Resource Manager.
+        Based on information of the execution state of the workflow the Autonomic
+        Tuner updates the knowledge base and its decision}\label{fig:architecture}
 \end{figure*}
 
+We propose to extend these two components of EnTK and introduce an autonomic 
+tuner, as defined in Ref~\cite{jha2009self}. The AM, apart from the workflow 
+definitions, can take as input information of the desired resources to execute 
+the workflow, and a desired deadline for completion. The resource manage based 
+on the desired resources can provide information about them, such maximum allowed 
+node requests, maximum queue times, and more. The autonomic tuner, we propose 
+to add, can use this information along with execution models for the workflow 
+tasks to decide the resource, the concurrency and timeline of the execution of 
+the application. This achieves the self-configuration property of an autonomic 
+system. The AM already monitors the execution state and it can report it to the 
+tuner in specified intervals, achieving this way the self-monitoring property. 
+The tuner then can decide whether more resources are required for achieving the 
+deadline and update the decision rule, thus achieving the self-regulating aspect 
+of an autonomic system. Figure~\ref{fig:architecture} shows a simple diagram of the 
+architecture of the proposed extension. The Knowledge Base holds information such as 
+execution models of the workflow, and historic data from previous executions
 
 \gpnote{Talk about EnTK's AppManager. See how an autonomic system controller can
 be added to extend it. It makes sense that each app manager will be able to 
