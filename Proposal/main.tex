@@ -301,10 +301,21 @@ The tuner then can decide whether more resources are required for achieving the
 deadline and update the decision rule, thus achieving the self-regulating aspect 
 of an autonomic system. The resource manager acquires and monitors resource 
 availability as they are needed by the tuner's decisions. In addition, the resource manager
-will provide information about the resources a workflow is executing. Figure~\ref{fig:architecture} shows a simple diagram of the 
+will provide information about which resources a workflow is executing.
+Figure~\ref{fig:architecture} shows a simple diagram of the 
 architecture of the proposed extension. The Knowledge Base holds information such as 
-execution models of the workflow, and historic data from previous executions
+execution models of the workflow, and historic data from previous executions.
 
+Changing the number of resources used executing a workflow in HPC resources is not
+trivial. When more resources are required to a achieve a deadline, the workflow system
+through its autonomic capabilities can request as many computational nodes as needed. 
+On the other hand, when resources are underutilized, the autonomic system should either
+release part of them or update the decision for subsequent runs. Nodes on HPCs can be
+requested either as single or multiple nodes. Since many resources have policies at place
+to regulate the total number of concurrent jobs a user has, it is preferable to request
+nodes in numbers larger than one. That requires, whenever resources are released, to
+release them also as multiple nodes. Initially, we will assume that our workflows do not
+underutilize the resources.
 \gpnote{Talk about EnTK's AppManager. See how an autonomic system controller can
 be added to extend it. It makes sense that each app manager will be able to 
 decide it self about the execution of a workflow. }
