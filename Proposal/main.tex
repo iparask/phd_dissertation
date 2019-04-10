@@ -47,7 +47,7 @@ algorithm requires compute time that may be valuable to the solution of a
 scientific problem.
 
 As scientific applications grow in size, their workflows are becoming an ensemble 
-of simulations with hundreds or thousands of members~\cite{malawski2015algorithms,rietmann2012forward}. 
+of simulations with hundreds or thousands of members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. 
 Based on the scientific experiment, some ensemble members should continue executing, 
 others finalize all together or restart with different initial conditions. Furthermore, 
 these ensemble may need to be executed multiple times with different conditions, 
@@ -152,7 +152,9 @@ workflows. The authors propose a three layer architecture. The ECG analysis
 software is the top layer of the architecture. The second layer contains the a 
 scaling manager, a workflow engine, and a workload distribution engine. The cloud 
 infrastructure and a authentication mechanism create the third layer of the 
-architecture. All three layers are provided as a Service.  
+architecture. All three layers are provided as a Service.
+
+\gpnote{Include Dask-Kubernetes and Airflow}
 
 \subsection{Conceptual Model for Task-Parallel framework selections}
 Tasks-parallel applications involve partitioning a workload into a set of 
