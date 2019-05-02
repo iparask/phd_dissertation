@@ -1,102 +1,129 @@
-Many scientific applications, which use High Performance Computing (HPC) 
-resources, have complex workflows to execute experiments. These workflows 
-usually involve ensembles of simulations, which are then analyzed. Molecular 
-Dynamics simulations use cases are producing O(100) GBs~\cite{cheatham2015impact} 
-of data that would benefit from an online analysis to drive additional simulations. 
-Satellite imagery use cases acquire high resolution satellite imagery that needs 
-to be analyzed in a bounded amount of time. Based on the volume of data, as well 
-as the goals of the application, the computational resources and quality of service 
-requirements vary significantly. 
+Scientific applications are benefiting from defining ensembles of computational tasks whose collective impact provide insight to the studied problem. These tasks are organized in pipelines with well defined temporal and data dependencies, and create complex workflows with hundreds or thousands ensemble members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. Furthermore, based in intermediate results, and global or local analysis, these workflows may change in time, by defining new ensemble members, extend or terminate existing. Biomolecular computational scientists want to be able to steer a scientific computational experiment by changing the properties of the workflow based on intermediate results. Ecological sciences have well defined workflows with thousands to tens of thousand of ensemble members. Dynamicity, in these applications, is introduced by the input distribution.\gpnote{Can we say that these workflows can be modeled as queueing systems?}
 
-\mtnote{Relationship among: use cases, HPC, parallelism, data partitioning, load 
-balancing, data homogeneity/heterogeneity. These are at least two paragraphs where 
-you set the problem space. The following paragraph looks at available solutions, 
-pointing out (interesting?) cases where a specific solution is suboptimal.}
+High Performance Computing (HPC) resources, used by domain scientists, offer a heterogeneous set computational nodes administered by a heterogeneous set of usage policies. These policies define maximum resource requests, in terms of number of computational nodes, and time, acceptable resource utilization and other metrics. Executing workflows that either are dynamic or larger than the maximum available resources requires careful resource request planning. Determining such a plan should take into account information such as execution time distribution of computational tasks, state of the resource, and changes in the application's workflow.
 
-Simulations mainly facilitate MPI to parallelize their execution and reduce time 
-to completion. Parallel algorithms used execute the same simulation with different 
-initial parameters, making the parallelization relatively straight forward. Data 
-analysis requires specific data partitioning, load balancing, different methods 
-and levels of parallelization, and probably heterogeneous resources --- CPUs, 
-and GPUs.
+\gpnote{Should I include information about allocation policies and charging?}  
 
-Data analytics frameworks, such as Spark~\cite{zaharia2010spark} or Dask~\cite{rocklin2015dask}, 
-offer automatic as well as user-defined data partitioning to enable compute 
-parallelism. Although, automatic partitioning offers load balancing when the 
-data set is homogeneous, such as a time series, it does not guarantee load 
-balanced execution for datasets where each datum is of different size. These 
-can be datasets of MD trajectories produced by similar simulations, sets of 
-satellite or airborne images, or data acquired by different type of sensors. As 
-a result, time to completion automatic data partitioning may not offer the best 
-approach to minimize time to completion. Furthermore, executing the analysis 
-offline or separately from simulations to tune for every possible dataset and 
-algorithm requires compute time that may be valuable to the solution of a 
-scientific problem.
+WorkFlow Management Systems (WFMS), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, Kepler~\cite{ludascher2006concurrency}, offer runtime capabilities, such as task execution, data dependency resolution, and pipeline definitions. Given a set of resources and a walltime, WMS try to maximize resource utilization and minimize time to completion. WMS assume that the user selects sufficient resources and walltime to execute the workflow. Some WMS framework, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, by scaling up or down, based on the current state of execution.
 
-As scientific applications grow in size, their workflows are becoming an ensemble 
-of simulations with hundreds or thousands of members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. 
-Based on the scientific experiment, some ensemble members should continue executing, 
-others finalize all together or restart with different initial conditions. Furthermore, 
-these ensemble may need to be executed multiple times with different conditions, 
-creating a  scientific computational campaign. The computational lifespan such a 
-campaign can be from several weeks to months and may span a number of resources. 
-The execution requires the user to have knowledge of available resources, the type 
-of resources as well as the required level of parallelization.
+The planning required to execute workflows, that are either adapting during runtime or larger than maximum jobs on HPC resources is not trivial. There is a need for WFMS to be able to manage such executions with no user intervention. WorkLoad Management Systems (WLMS), such as ...., used on Cloud resources, offer capabilities to maintain a user specified quality of service (QoS). Mainly developed for database queries and web-services, these systems are able to monitor, configure and elastically changes the resources used to constantly maintain a predefined throughput or utilization. These capabilities are offered through autonomic frameworks, that are constantly adjusting the execution.
 
-Resource acquisition, configuration and management is not straightforward on HPC. 
-Depending on the requirement of the workflow different type of resources may be 
-required. In addition, the number of resources as well as the time requested needs 
-to be decided. Most HPC resources ask users to provide as accurate as possible 
-estimation. If users underestimate or overestimate, they get penalized and as a 
-result their queue times increase. Computational resources increase in size and 
-heterogeneity. High Performance Computing resources start offering compute nodes 
-that include from tens to hundreds of CPU cores, local filesystem, several GPUs, 
-arithmetic accelerator, field programmable gate arrays, different levels of memory 
-hierarchy with burst buffers. Summit, for example, at Oak Ridge National Lab, 
-offers 4600 compute nodes with more that 100 CPU cores per node and 6 GPUs. As a 
-results, this creates a complex decision space which the user has to tackle to 
-efficiently execute their workflow.
+In this proposal, we present research done to achieve scalable data analysis solutions on HPC resources and to understand the performance requirements and behaviors. We present our current research to model scientific workflows based on their workflow characteristics. We propose a workload management software component to enable WFMS to execute workflows whose computational requirements change or are larger than what is offered by the selected HPC resources.
 
-Workflow execution systems on HPC, so far, allow the execution and monitoring of 
-scientific workflow applications. The user remains responsible to decide the type, 
-and number of resources as well as request the execution time. Some workflow 
-systems provide dynamic resource allocation, but still requires the user to make 
-the initial decisions. On the other hand, users prefer to be able to define a 
-workflow, desired resources, when they would like to have the results, and just 
-execute. The workflow execution system will be responsible in making decisions 
-such as what type of resource to use, how many and for how long. In the best of 
-my knowledge such a system does not exist for scientific workflow executed on HPC 
-resources. Thus, the question becomes how can a middleware software layer provide 
-capabilities to users to define a workflow, computational requirements, and 
-desired time to completion, such that they are all respected and achieved?
 
-\mtnote{Explain: the reason behind these assumptions; why they are consistent 
-with these reasons; why the resulting class of problems is (still) interesting.}
+%Scientific application workflows are benefiting from executing an ensemble of pipelines whose collective outcome provide insight to the problem studies. These workflows increase in size by having hundreds or thousand of members. In biomolecular domain, application
 
-This work will be executed under the following assumptions. First, the supported 
-workflows have a simulation/data acquisition phase and an analysis phase. The 
-simulation/data acquisition phase are producing data. The analysis phase is analyzing 
-these data to make a scientific derivation which can be used to start a new phase 
-of simulation/data acquisition. These two phases are executed interchangeably to 
-achieve a well defined scientific goal. Second, there is no a priori knowledge 
-about the data volume that is produced. Third, the workflows are executing in 
-High Performance Computing resources, such as those offered by NSF XSEDE.
 
-\mtnote{Elaborate the problem just introduced creating a link to autonomic computing. 
-The flow/story is: given this problem, given the properties of this problem 
-(paragraph), autonomic computing can offer a solution (another paragraph).}
 
-Autonomic computing software provides properties of self-configuration, self-optimization, 
-and self-regulation. Self-configuration refers to the ability of the system to 
-automatically configure its own execution environment and process. Self-optimization 
-refers to the ability of the system to function near optimally by monitoring and 
-controlling its resources. Self-regulation refers to the ability of the system to 
-maintain a defined goal without any external input from a user. Thus, a middleware 
-that offers these properties to support data analytics can provide a solution for 
-this problem.
+%This is particular true for biomolecular domain. These workflows increase in size by having hundreds or thousands of members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}.Based on collective or individual analysis of the data produce 
 
-In this proposal, we present research done to achieve scalable analysis solutions 
-on HPC resources and to understand the performance requirements and behaviors. We 
-propose a middleware for autonomic data-intensive analytics on HPC that captures 
-the requirements and assumptions mentioned. In addition, we discuss the challenges 
-of this work and provide a timeline of execution.
+
+
+
+
+
+
+
+
+
+
+%Based on the sc, some ensemble members should continue executing, others finalize all together or restart with different initial conditions. Furthermore, these ensemble may need to be executed multiple times with different conditions, creating a  scientific computational campaign. The computational lifespan such a campaign can be from several weeks to months and may span a number of resources. The execution requires the user to have knowledge of available resources, the type of resources as well as the required level of parallelization.
+
+
+%Many scientific applications, which use High Performance Computing (HPC) 
+%resources, have complex workflows to execute experiments. These workflows 
+%usually involve ensembles of simulations, which are then analyzed. Molecular 
+%Dynamics simulations use cases are producing O(100) GBs~\cite{cheatham2015impact} 
+%of data that would benefit from an online analysis to drive additional simulations. 
+%Satellite imagery use cases acquire high resolution satellite imagery that needs 
+%to be analyzed in a bounded amount of time. Based on the volume of data, as well 
+%as the goals of the application, the computational resources and quality of service 
+%requirements vary significantly. 
+
+%\mtnote{Relationship among: use cases, HPC, parallelism, data partitioning, load 
+%balancing, data homogeneity/heterogeneity. These are at least two paragraphs where 
+%you set the problem space. The following paragraph looks at available solutions, 
+%pointing out (interesting?) cases where a specific solution is suboptimal.}
+%
+%Simulations mainly facilitate MPI to parallelize their execution and reduce time 
+%to completion. Parallel algorithms used execute the same simulation with different 
+%initial parameters, making the parallelization relatively straight forward. Data 
+%analysis requires specific data partitioning, load balancing, different methods 
+%and levels of parallelization, and probably heterogeneous resources --- CPUs, 
+%and GPUs.
+%
+%Data analytics frameworks, such as Spark~\cite{zaharia2010spark} or Dask~\cite{rocklin2015dask}, 
+%offer automatic as well as user-defined data partitioning to enable compute 
+%parallelism. Although, automatic partitioning offers load balancing when the 
+%data set is homogeneous, such as a time series, it does not guarantee load 
+%balanced execution for datasets where each datum is of different size. These 
+%can be datasets of MD trajectories produced by similar simulations, sets of 
+%satellite or airborne images, or data acquired by different type of sensors. As 
+%a result, time to completion automatic data partitioning may not offer the best 
+%approach to minimize time to completion. Furthermore, executing the analysis 
+%offline or separately from simulations to tune for every possible dataset and 
+%algorithm requires compute time that may be valuable to the solution of a 
+%scientific problem.
+%
+%As scientific applications grow in size, their workflows are becoming an ensemble 
+%of simulations with hundreds or thousands of members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. 
+%Based on the scientific experiment, some ensemble members should continue executing, 
+%others finalize all together or restart with different initial conditions. Furthermore, 
+%these ensemble may need to be executed multiple times with different conditions, 
+%creating a  scientific computational campaign. The computational lifespan such a 
+%campaign can be from several weeks to months and may span a number of resources. 
+%The execution requires the user to have knowledge of available resources, the type 
+%of resources as well as the required level of parallelization.
+%
+%Resource acquisition, configuration and management is not straightforward on HPC. 
+%Depending on the requirement of the workflow different type of resources may be 
+%required. In addition, the number of resources as well as the time requested needs 
+%to be decided. Most HPC resources ask users to provide as accurate as possible 
+%estimation. If users underestimate or overestimate, they get penalized and as a 
+%result their queue times increase. Computational resources increase in size and 
+%heterogeneity. High Performance Computing resources start offering compute nodes 
+%that include from tens to hundreds of CPU cores, local filesystem, several GPUs, 
+%arithmetic accelerator, field programmable gate arrays, different levels of memory 
+%hierarchy with burst buffers. Summit, for example, at Oak Ridge National Lab, 
+%offers 4600 compute nodes with more that 100 CPU cores per node and 6 GPUs. As a 
+%results, this creates a complex decision space which the user has to tackle to 
+%efficiently execute their workflow.
+%
+%Workflow execution systems on HPC, so far, allow the execution and monitoring of 
+%scientific workflow applications. The user remains responsible to decide the type, 
+%and number of resources as well as request the execution time. Some workflow 
+%systems provide dynamic resource allocation, but still requires the user to make 
+%the initial decisions. On the other hand, users prefer to be able to define a 
+%workflow, desired resources, when they would like to have the results, and just 
+%execute. The workflow execution system will be responsible in making decisions 
+%such as what type of resource to use, how many and for how long. In the best of 
+%my knowledge such a system does not exist for scientific workflow executed on HPC 
+%resources. Thus, the question becomes how can a middleware software layer provide 
+%capabilities to users to define a workflow, computational requirements, and 
+%desired time to completion, such that they are all respected and achieved?
+%
+%\mtnote{Explain: the reason behind these assumptions; why they are consistent 
+%with these reasons; why the resulting class of problems is (still) interesting.}
+%
+%This work will be executed under the following assumptions. First, the supported 
+%workflows have a simulation/data acquisition phase and an analysis phase. The 
+%simulation/data acquisition phase are producing data. The analysis phase is analyzing 
+%these data to make a scientific derivation which can be used to start a new phase 
+%of simulation/data acquisition. These two phases are executed interchangeably to 
+%achieve a well defined scientific goal. Second, there is no a priori knowledge 
+%about the data volume that is produced. Third, the workflows are executing in 
+%High Performance Computing resources, such as those offered by NSF XSEDE.
+%
+%\mtnote{Elaborate the problem just introduced creating a link to autonomic computing. 
+%The flow/story is: given this problem, given the properties of this problem 
+%(paragraph), autonomic computing can offer a solution (another paragraph).}
+%
+%Autonomic computing software provides properties of self-configuration, self-optimization, 
+%and self-regulation. Self-configuration refers to the ability of the system to 
+%automatically configure its own execution environment and process. Self-optimization 
+%refers to the ability of the system to function near optimally by monitoring and 
+%controlling its resources. Self-regulation refers to the ability of the system to 
+%maintain a defined goal without any external input from a user. Thus, a middleware 
+%that offers these properties to support data analytics can provide a solution for 
+%this problem.
+%

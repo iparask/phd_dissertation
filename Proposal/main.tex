@@ -1,6 +1,6 @@
 \input{preamble.tex}
 
-\title{A design for an autonomic workload manager to execute scientific workflows on High Performance Computing resources}
+\title{Autonomic workload manager for executing scientific workflows on High Performance Computing resources}
 \author{Ioannis Paraskevakos \\	Electrical and Computer Engineering \\
         Rutgers, The State University of New Jersey}
 
@@ -12,17 +12,27 @@
         \item scientific application time to completion characterization,
         \item scalability behavior of scientific workflows based on programming models.
        \end{inparaenum}
-We summarize preliminary results from our research for modeling scientific workflows in terms of time to completion, and propose an autonomic workload manager to manage workflow execution on High Performance resources. We include a work plan to investigate, formulate and implement the proposed workload manager and evaluate foreseen challenges and risks.
+We summarize preliminary results from our research for modeling scientific workflows in terms of time to completion, and propose an autonomic workload manager to manage workflow execution on High Performance resources. We include a work plan to investigate, formulate and implement the proposed workload manager and evaluate foreseen challenges and risks.}
 
 
 \section{Introduction}
 \input{intro.tex}
+
+\section{Working Definitions}
+Terms such as ``workflow'', ``workload'', ``autonomic computing'' are usually overloaded in literature  and defined differently across domains. As a result, we define the terminology used in this proposal:
+\begin{itemize}
+    \item \textbf{Autonomic Computing}: Based on the definition by IBM~\cite{ibm2005autonomic}, it is a computing environment with the ability to manage itself and dynamically adapt to change in accordance with business policies and objectives.
+    \item \textbf{Application} specifies a single or multiple tasks, and the interaction and relationship (or lack thereof) among multiple tasks. The task(s), along with their interactions and relationships represent an algorithmic solution to a science problem.
+    \item \textbf{Workflow} represents the computational instance implementing an, or part of an, application with specific parameter values, number of tasks, task interdependencies, and other computational aspects.
+    \item \textbf{Workload} refers to a set of tasks whose dependencies have been satisfied and are ready to be concurrently executed. As such, workloads can be subsets of the tasks of a workflow. The “load” in workload is a reference to a measure of the computational requirements of each individual task. This is relevant when scheduling a workload heterogeneous tasks.
+\end{itemize}
 
 \section{Current Research}
 
 TBD.
 
 \subsection{Related Work}
+\label{relatedwork}
 
 The SelfLet framework~\cite{bindelli2008building} is an autonomic software system. 
 This system provides a set of autonomic components, called SelfLets, that operate 
@@ -58,8 +68,8 @@ scaling manager, a workflow engine, and a workload distribution engine. The clou
 infrastructure and a authentication mechanism create the third layer of the 
 architecture. All three layers are provided as a Service.
 
+\gpnote{Workload management systems..........}
 
-\gpnote{Include Dask-Kubernetes and Airflow}
 
 \subsection{Conceptual Model for Task-Parallel framework selections}
 Tasks-parallel applications involve partitioning a workload into a set of 
@@ -95,11 +105,18 @@ The MD analysis algorithms investigated were selected from MDAnalysis~\cite{gowe
  no dependencies between tasks, while the second algorithm is a MapReduce 
  algorithm.
 
-The analysis of the performance of these algorithms implemented in all three 
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/All4approachesWith4MSpeedup.pdf}
+    \caption{Selected molecular dynamics analysis MapReduce algorithm speedup for different frameworks and implementation candidates}\label{fig:leafletfinder}
+\end{figure*}
+
+The performance analysis of these algorithms implemented in all three 
 frameworks provided us with information to create a conceptual model for selecting 
-the better suitable framework based on algorithmic characteristics. Implementation 
-aspects, such as computational complexity, and shuffled data size influence the 
-performance greatly. For embarrassingly parallel applications with coarse grained 
+the better suitable framework based on algorithmic characteristics. As shown in Figure~\ref{fig:leafletfinder}, there are cases where the performance of a parallel implementation is far from ideal, while under different circumstances is as expected. Furthermore, non-ideal performance indicates that resource utilization is low. For example in Figure~\ref{fig:leafletfinder}, we see that, based on data sizem Dask provides better speedup than Spark. In these cases Dask better utilized the resources compared to Dask, while on others Spark was better.
+
+Implementation  aspects, such as computational complexity, and shuffled data size influence 
+the performance greatly. For embarrassingly parallel applications with coarse grained 
 tasks the choice of the framework does not significantly influence performance. 
 For fine-grained data parallelism, a data-parallel framework is more suited compared 
 to a workload execution framework. In addition, the data shuffling size significantly 
@@ -125,6 +142,10 @@ for configuring, monitor and adapting the execution of scientific workflows on
 HPCs.
 
 \subsection{Proposed Topic}
+
+Scientific application workflows properties, such as size, and requirements, such as type and number of resources, change in time. In scientific campaignThese properties of the workflow are not necessarily captured during the specification of the workload. 
+
+bla bla workload manager autonomic IBM~\cite{ibm2005autonomic}
 
 Monitoring, regulating, and configuring large scale scientific workflows require 
 dedicated human resources that may not be available at any given point in time. 
@@ -232,7 +253,7 @@ decide it self about the execution of a workflow. }
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=.95\textwidth]{figures/phd_plan.pdf}
-	\caption{Planned timeline of proposed research}\label{tab:work_plan}
+	\caption{Planned timeline of proposed research}\label{fig:work_plan}
 \end{figure*}
 
 \subsubsection{Phase 1: Design and implementation self-configuring property}
