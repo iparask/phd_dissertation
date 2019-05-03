@@ -1,46 +1,46 @@
 Scientific applications are benefiting from defining ensembles of computational 
-tasks whose collective impact provide insight to the studied problem. These tasks 
-are organized in pipelines with well defined temporal and data dependencies, and 
-create complex workflows with hundreds or thousands ensemble 
-members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. Furthermore, 
-based in intermediate results, and global or local analysis, these workflows 
-may change in time, by defining new ensemble members, extend or terminate existing. 
-Biomolecular computational scientists want to be able to steer a scientific 
-computational experiment by changing the properties of the workflow based on 
-intermediate results. Ecological sciences have well defined workflows with 
-thousands to tens of thousand of ensemble members. Dynamicity, in these 
-applications, is introduced by the input distribution.\gpnote{Can we say 
-that these workflows can be modeled as queueing systems?}
+tasks whose collective impact provide insight to the studied problem. These 
+tasks are organized in pipelines with well defined temporal and data 
+dependencies, and create complex workflows with hundreds or thousands ensemble 
+members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. 
+Furthermore, based in intermediate results, and global or local analysis, these 
+workflows may change in time, by defining new ensemble members, extend or 
+terminate existing. Biomolecular computational scientists want to be able to 
+steer a scientific computational experiment by changing the properties of the 
+workflow based on intermediate results. Ecological sciences have well defined 
+workflows with thousands to tens of thousand of ensemble members. Dynamicity, 
+in these applications, is introduced by the input distribution.\gpnote{Can we 
+say that these workflows can be modeled as queueing systems?}
 
 High Performance Computing (HPC) resources, used by domain scientists, offer a 
-heterogeneous set computational nodes administered by a heterogeneous set of usage 
-policies. These policies define maximum resource requests, in terms of number of 
-computational nodes, and time, acceptable resource utilization and other metrics. 
-Executing workflows that either are dynamic or larger than the maximum available 
-resources requires careful resource request planning. Determining such a plan 
-should take into account information such as execution time distribution of 
-computational tasks, state of the resource, and changes in the application's 
-workflow.
+heterogeneous set computational nodes administered by a heterogeneous set of 
+usage policies. These policies define maximum resource requests, in terms of 
+number of computational nodes, and time, acceptable resource utilization and 
+other metrics. Executing workflows that either are dynamic or larger than the 
+maximum available resources requires careful resource request planning. 
+Determining such a plan should take into account information such as execution 
+time distribution of computational tasks, state of the resource, and changes in 
+the application's workflow.
 
 \gpnote{Should I include information about allocation policies and charging?}  
 
-WorkFlow Management Systems (WFMS), such as RADICAL-Ensemble 
-Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, 
-Kepler~\cite{ludascher2006concurrency}, offer runtime capabilities, such as task 
-execution, data dependency resolution, and pipeline definitions. Given a set of 
-resources and a walltime, WMS try to maximize resource utilization and minimize 
-time to completion. WMS assume that the user selects sufficient resources and 
-walltime to execute the workflow. Some WMS framework, such as Dask~\cite{rocklin2015dask} 
-and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, 
-by scaling up or down, based on the current state of execution.
+WorkFlow Management Systems (WFMS), such as RADICAL-Ensemble Toolkit~\cite
+{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, Kepler~\cite
+{ludascher2006concurrency}, offer runtime capabilities, such as task execution, 
+data dependency resolution, and pipeline definitions. Given a set of resources 
+and a walltime, WMS try to maximize resource utilization and minimize time to 
+completion. WMS assume that the user selects sufficient resources and walltime 
+to execute the workflow. Some WMS framework, such as Dask~\cite{rocklin2015dask}
+and Airflow~\cite{airflow}, provide capabilities to elastically adapt 
+resources, by scaling up or down, based on the current state of execution.
 
 The planning required to execute workflows, that are either adapting during 
 runtime or larger than maximum jobs on HPC resources is not trivial. There is a 
 need for WFMS to be able to manage such executions with no user intervention. 
-WorkLoad Management Systems (WLMS), such as ...., used on Cloud resources, offer 
-capabilities to maintain a user specified quality of service (QoS). Mainly 
-developed for database queries and web-services, these systems are able to 
-monitor, configure and elastically changes the resources used to constantly 
+WorkLoad Management Systems (WLMS), such as ...., used on Cloud resources, 
+offer capabilities to maintain a user specified quality of service (QoS). 
+Mainly developed for database queries and web-services, these systems are able 
+to monitor, configure and elastically changes the resources used to constantly 
 maintain a predefined throughput or utilization. These capabilities are offered 
 through autonomic frameworks, that are constantly adjusting the execution.
 
@@ -50,7 +50,6 @@ behaviors. We present our current research to model scientific workflows based
 on their workflow characteristics. We propose a workload management software 
 component to enable WFMS to execute workflows whose computational requirements 
 change or are larger than what is offered by the selected HPC resources.
-
 
 %Many scientific applications, which use High Performance Computing (HPC) 
 %resources, have complex workflows to execute experiments. These workflows 
