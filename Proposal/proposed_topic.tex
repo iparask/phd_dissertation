@@ -40,12 +40,35 @@ of model from an experimental model to a formal queuing theory model
  \end{enumerate}}
 
 Predicting the execution time of the whole or part of the workflow at any stage 
-of the campaing's execution is necessary for correct planning. As a result, 
+of the campaign's execution is necessary for correct planning. As a result, 
 having performance modeling is necessary. Workflows have been modeled by using 
 queueing theory~\cite{bao2019performance,yao2019throughput}, machine 
 learning~\cite{witt2019predictive,pumma2017runtime}, domain specific 
 languages~\cite{deelman2017performance,mandal2016toward}, markov decision 
-processes~\cite{jia2005cost}.
+processes~\cite{jia2005cost}. 
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{figures/SealsDesign2.pdf}
+        \caption{Earth Sciences example workflow}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{b}
+        \caption{Biomolecular Sciences example workflow}
+    \end{subfigure}
+    \caption{Simple Architectural Diagram. The Application Manager through 
+    EnTK's API receives a workflow, a resource request, and a deadline and 
+    communicates to the Autonomic Tuner. Autonomic Tuner, based on information 
+    in Knowledge Base makes a decision and passes it to the Resource Manager. 
+    Based on information of the execution state of the workflow the Autonomic 
+    Tuner updates the knowledge base and its decision}\label{fig:bio_earth_workflows}
+\end{figure*}
+
+Biomolecular and earth science workflow can be modeled as queueing systems. Figure~\ref{fig:bio_earth_workflows} shows two basic workflows from biomolecular and earth sciences.
 
 % ------------------------------------------------------------------------------
 % Workflow management system
