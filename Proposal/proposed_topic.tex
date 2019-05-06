@@ -39,35 +39,44 @@ assumption, and assume that the pipelines are adaptive.
 of model from an experimental model to a formal queuing theory model
  \end{enumerate}}
 
-Predicting the execution time of the whole or part of the workflow at any stage 
+Predicting the execution time a workflow, or part of a workflowm at any stage 
 of the campaign's execution is necessary for correct planning. As a result, 
-having performance modeling is necessary. Workflows have been modeled by using 
-queueing theory~\cite{bao2019performance,yao2019throughput}, machine 
-learning~\cite{witt2019predictive,pumma2017runtime}, domain specific 
-languages~\cite{deelman2017performance,mandal2016toward}, markov decision 
-processes~\cite{jia2005cost}. 
+performance models are necessary. Workflows have been modeled by using queueing 
+theory~\cite{bao2019performance,yao2019throughput}, machine learning~\cite
+{witt2019predictive,pumma2017runtime}, domain specific languages~\cite
+{deelman2017performance,mandal2016toward}, markov decision processes~\cite
+{jia2005cost}.
 
 \begin{figure*}[ht!]
     \centering
-    \begin{subfigure}[b]{0.25\textwidth}
-        \includegraphics[width=\linewidth]{figures/SealsDesign2.pdf}
-        \caption{Earth Sciences example workflow}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.25\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\linewidth]{figures/SealsDesign2.pdf}
         \caption{Biomolecular Sciences example workflow}
+        \label{fig:bio_workflow}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{figures/SealsDesign2.pdf}
+        \caption{Earth Sciences example workflow}
+        \label{fig:earth_workflow}
     \end{subfigure}
-    \caption{Simple Architectural Diagram. The Application Manager through 
-    EnTK's API receives a workflow, a resource request, and a deadline and 
-    communicates to the Autonomic Tuner. Autonomic Tuner, based on information 
-    in Knowledge Base makes a decision and passes it to the Resource Manager. 
-    Based on information of the execution state of the workflow the Autonomic 
-    Tuner updates the knowledge base and its decision}\label{fig:bio_earth_workflows}
+    \caption{Biomolecular and Earth Science example workflows. Workflows are represented as queuing systems.}\label{fig:bio_earth_workflows}
 \end{figure*}
 
-Biomolecular and earth science workflow can be modeled as queuing systems. Figure~\ref{fig:bio_earth_workflows} shows two basic workflows from biomolecular and earth sciences.
-
+Biomolecular and earth science workflow can be modeled as queuing systems. 
+Figure~\ref{fig:bio_earth_workflows} shows two basic workflows from 
+biomolecular (Figure~\ref{fig:bio_workflow}) and earth sciences (Figure~\ref
+{fig:earth_workflow}). Following the notion from queuing theory, we can model 
+each stage of a pipelline follows a $G/G/s$ queue. A queue in a pipeline stage 
+$S_{i}$ has arrival time $\alpha$, the distribution of the execution times from 
+stage $S_{i-1}$, service time $\beta$, the distribution of the execution times 
+of its tasks, and $r$ servicing resources. Initially, we will assume constant 
+task size, static pipeline and known poisson distributions $\alpha$ and $\beta$ 
+with event rate $\lambda$ experimentally calculated. This will allow us to 
+create a model for the whole pipeline and predict the total time to execution. 
+Next, we will relax the assumption and work task execution time distributions 
+that are found experimentally. In addition, we will try to further relax our 
+assumptions and introduce dynamic pipelines, and as a result dynamic workflows. 
 % ------------------------------------------------------------------------------
 % Workflow management system
 
