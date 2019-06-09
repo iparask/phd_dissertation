@@ -6,27 +6,7 @@
 
 \begin{document}
 \maketitle
-
-\abstract{Many scientific application workflows are becoming larger and need to 
-be executed multiple times with different parameters, generating a scientific 
-computational campaign. Domains such as molecular dynamics, biological, and 
-environmental sciences, define workflows and pipelines that are executed 
-$O(1k)$ to $O(10k)$ times. In addition, based on results obtained during 
-runtime the application computational requirements may change. Managing 
-computational resources to reduce time to completion, maximize utilization, and 
-maximize scientific insight, is becoming necessary. In this proposal, we 
-present research done to understand:
-    \begin{inparaenum}[(i)]
-        \item scientific application time to completion characterization,
-        \item scalability behavior of scientific workflows based on programming 
-        models.
-       \end{inparaenum}
-We summarize preliminary results from our research for modeling scientific 
-workflows in terms of time to completion, and propose an autonomic workload 
-manager to manage workflow execution on High Performance resources. We include 
-a work plan to investigate, formulate and implement the proposed workload 
-manager and evaluate foreseen challenges and risks}
-
+\input{abstract.tex}
 
 \section{Introduction}
 \input{intro.tex}
@@ -34,39 +14,18 @@ manager and evaluate foreseen challenges and risks}
 \section{Working Definitions}
 \input{definitions.tex}
 
+\section{Prior Research\gpnote{Is this even a good title?}}
+\input{prior_research.tex}
+
 \section{Current Research}
-
-TBD.
-
-\subsection{Related Work}
-\label{relatedwork}
-\input{related_work.tex}
-
-\gpnote{Workload management systems..........}
-
-
-\subsection{Conceptual Model for Task-Parallel framework selections}
-\input{conceptual_model.tex}
-\subsection{Data Analysis Design Selection}
-\input{models.tex}
+\input{current_research.tex}
 
 \section{Proposed Research}
-
-In our research so far, we discussed a conceptual model for data analytics for 
-various use cases on HPC system, and a design comparison and execution time 
-model for scientific workflows. In addition, we identified a need for execution 
-of  scientific workflows with minimum user intervention, independent from 
-users' scientific domain. In this section, we motivate and propose an 
-autonomic middleware for configuring, monitor and adapting the execution of 
-scientific workflows on HPCs.
-
-\subsection{Proposed Topic}
-
 \input{proposed_topic.tex}
 
 \subsection{Proposed Timelime}
 \input{timeline.tex}
 
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
 \bibliography{proposal}
 \end{document}

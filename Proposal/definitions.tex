@@ -1,20 +1,24 @@
-Terms such as ``workflow'', ``workload'', ``autonomic computing'' are usually 
-overloaded in literature and defined differently across domains. We define the 
-terminology used in this proposal:
+Terms such as ``workflow'', ``workload'', ``computational campaign'', and 
+``autonomic computing'' are usually overloaded in literature and defined 
+differently across domains. We define the terminology used in this proposal:
 \begin{itemize}
-    \item \textbf{Autonomic Computing}: Based on the definition by IBM~\cite{ibm2005autonomic}, 
-    it is a computing environment with the ability to manage itself and dynamically 
-    adapt to change in accordance with business policies and objectives.
+    \item \textbf{Autonomic Computing}: Based on the definition by 
+    IBM~\cite{ibm2005autonomic}, it is a computing environment with the ability 
+    to manage itself and dynamically adapt to change in accordance with 
+    business policies and objectives.
     \item \textbf{Application} specifies a single or multiple tasks, and the 
-    interaction and relationship (or lack thereof) among multiple tasks. The task(s), 
-    along with their interactions and relationships represent an algorithmic solution 
-    to a science problem.
-    \item \textbf{Workflow} represents the computational instance implementing an, or 
-    part of an, application with specific parameter values, number of tasks, task 
-    interdependencies, and other computational aspects.
-    \item \textbf{Workload} refers to a set of tasks whose dependencies have been satisfied 
-    and are ready to be concurrently executed. As such, workloads can be subsets of the 
-    tasks of a workflow. The “load” in workload is a reference to a measure of the computational 
-    requirements of each individual task. This is relevant when scheduling a workload 
-    heterogeneous tasks.
+    interaction and relationship (or lack thereof) among multiple tasks. The 
+    task(s), along with their interactions and relationships represent an 
+    algorithmic solution to a science problem.
+    \item \textbf{Workflow} represents the computational instance implementing 
+    an, or part of, application with specific parameter values, number of tasks, 
+    task interdependencies, and other computational aspects.
+    \item \textbf{Workload} refers to a set of tasks whose dependencies have 
+    been satisfied and are ready to be concurrently executed. As such, 
+    workloads can be subsets of the tasks of a workflow. The “load” in workload 
+    is a reference to a measure of the computational requirements of each 
+    individual task. This is relevant when scheduling a workload heterogeneous 
+    tasks.
+    \item \textbf{Computational Campaign} refers to a set of distinct workflows executed over a heterogeneous set resources multiple times.
+    \item \textbf{Task} is a stand-alone process that has well defined input, output, termination criteria, and resources requirements.
 \end{itemize}
