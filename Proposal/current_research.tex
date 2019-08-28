@@ -26,20 +26,33 @@ In Ref.~\cite{paraskevakos2019workflow}, we model the execution time of a
 data-intensive workflow as a function of their input data. Our proposed 
 methodology uses a linear function to model the execution time. We fitted the 
 function to the data by employing a non-linear least squares algorithm and used 
-$R^{2}$ and the error of the estimation as the metrics to validate our fit.
-Figure~\ref{fig:sealfitting} shows an example from 
+$R^{2}$ and the error of the estimation as the metrics to validate our fit. 
+Specifically, the workflow under investigation requires the execution of two 
+tasks consecutively over a set of inputs. The tasks, $T_{1}$ and $T_{2}$, are 
+heterogeneous, and have different computational requirements. 
+Figure~\ref{fig:sealfitting} shows results of the fitting. In addition, based 
+on the $R^{2}$ and standard error values we were able to conclude that our 
+fitting produced models that explained the execution time of the tasks.
 
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\linewidth]{figures/stage_0_tx_box.pdf}
-        \caption{Box-plots of T1 execution time, mean and STD for 125 MB image size bins. Red line shows fitted linear function.}
+        \caption{Box-plots of T1 execution time, mean and STD for 125 MB image 
+        size bins. Red line shows fitted linear function.}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\linewidth]{figures/stage_1_tx_box.pdf}
-        \caption{Box-plots of T2 execution time, mean and STD for 125 MB image size bins. Green line shows fitted linear function.}
+        \caption{Box-plots of T2 execution time, mean and STD for 125 MB image 
+        size bins. Green line shows fitted linear function.}
     \end{subfigure}
-    \caption{Biomolecular and Earth Science example workflows. Workflows are represented as queuing systems.}
+    \caption{Task execution time of the tasks of a simple workflow supporting an 
+    earth science use case.}
     \label{fig:sealfitting}
 \end{figure*}
+
+This works allows us to conclude that modeling the execution time of a task 
+based on the initial input, with no knowledge of the specifics, provides an 
+accurate estimate. This, in turn can be used to build models for the execution 
+of the workflow partitions that comprise the campaign.
