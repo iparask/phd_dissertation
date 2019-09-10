@@ -1,11 +1,11 @@
 \input{preamble.tex}
 
 \title{Campaign manager for executing scientific campaigns on High Performance 
-Computing resources}\author{Ioannis Paraskevakos}
+Computing resources}
+\subtitle{Extended Abstract}
 \author{Ioannis Paraskevakos}
 \vspace{-8ex}
 \date{}
-
 \begin{document}
 \maketitle
 
@@ -27,10 +27,10 @@ when they have to either perform different types of work and/or have different
 resource requirements. We identify three types of dependencies between workflows 
 in a campaign:
 \begin{inparaenum}[1)]
-\item data dependencies, 
-\item temporal dependencies, and 
-\item resource sharing dependencies
-\end{inparaenum}. 
+\item data, 
+\item temporal, and 
+\item resource sharing.
+\end{inparaenum} 
 Temporal dependencies refer either to a temporal order between workflows or to 
 a moment in time where the workflow can be executed. Resource sharing 
 dependencies between workflows refer to workflows executing in the same resource 
@@ -38,7 +38,7 @@ concurrently given sufficient capacity or interchangeably. For a set of
 workflows to be categorized as a campaign it should have at least ten workflows.
 
 Workflows are mainly executed by utilizing dedicated workflow management 
-frameworks~\cite{balasubramanian2018harnessing,deelman2015pegasus,ludascher2006scientific,rocklin2015dask,airflow}. 
+frameworks~\cite{balasubramanian2018harnessing,deelman2015pegasus,ludascher2006scientific,rocklin2015dask,airflow}.
 Currently, workflow management frameworks offer a vast array of capabilities 
 but, tend to lack campaign planning and execution capabilities. Campaign planning 
 and execution requires scheduling workflows to resources, resolving dependencies 
@@ -65,18 +65,17 @@ function. Requirements describe the minimum amount and type of resources needed
 to execute each workflow of the campaign, while constraints are the conditions 
 that bound the execution of the campaign, including but not limited to, resource 
 availability, capacity, and costs. A plan describes a sequence of actions such 
-as selecting, acquiring and configuring resources, that solve the objective 
-function, as well as dependency resolution.
+as selecting, acquiring and configuring resources, and workflows' execution order, 
+that solve the objective function, as well as dependency resolution.
 
 Planning the execution and executing a computational campaign poses three main 
 challenges: 
 \begin{inparaenum}[(i)]
 \item evaluate the time needed to execute all the workflows, i.e. makespan, of 
 a campaign on heterogeneous and dynamic resources;
-\item determining a campaign execution plan (workflows’ execution order, 
-workflows’ resource mapping) on available resources that satisfies the objective 
-function while being subject to the requirements and constraints of a campaign; 
-and
+\item determining a campaign execution plan on available resources that 
+satisfies the objective function while being subject to the requirements 
+and constraints of a campaign; and
 \item adapting the plan in case of deviating from the objective achievement.
 \end{inparaenum}
 
@@ -107,7 +106,7 @@ extend the Heterogeneous Earliest Finish Time (HEFT)~\cite{topcuoglu2002performa
 algorithm to calculate the makespan and schedule of a computational campaign. 
 Among the alternatives to HETF, queuing networks is likely to be of limited use 
 because they require the user to provide an equivalent queuing network of the 
-workflow; domain specific languages approaches would require too much engineering 
+campaign; domain specific languages approaches would require too much engineering 
 effort to convert a workflow representation based on domain specific assumptions, 
 e.g. MPI style workflow, or specific languages representation, e.g Swift.
 
