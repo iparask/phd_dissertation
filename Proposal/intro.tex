@@ -1,0 +1,123 @@
+Scientific applications are benefiting from defining ensembles of computational 
+tasks whose collective impact provide insight to the studied problem. These 
+tasks are organized in pipelines with well defined temporal and data 
+dependencies, and create complex workflows with hundreds or thousands ensemble 
+members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}. These 
+workflows are either well known prior to execution, and as a result static, or
+change by adapting tasks to ensemble member and/or ensemble members of the 
+workflow, thus dynamic. Static~\cite{paraskevakos2019workflow} and 
+dynamic~\cite{dakka2018high} workflows are used and applied in many scientific
+domains, e.g. ecological and biomolecular sciences. 
+
+There is a set of workflows, either static or dynamic, which have a sufficient 
+number of tasks and dependencies that cannot be executed in a single machine as 
+a unit. The execution of such workflows is partitioned in multiple, independent 
+or dependent, executions. In addition, these executions may need to be repeated 
+multiple times based on intermediate result analysis. Biomolecular science 
+workflows, for example, analyze data locally in ensemble members or globally and 
+adapt by adding tasks, adding/removing ensemble members, or execute the whole 
+workflow with different initial conditions. This departs from the approach where 
+a user submits a workflow and waits for the final results. The user monitors 
+the execution and submits partitions of the workflow for execution, while 
+coordinating data analysis and workflow adaptation. This way of executing a 
+workflow is called computational campaign execution.
+
+The execution of a computational scientific campaign requires from users to 
+derive and realize an execution plan. Several factors influence this plan, 
+including resource availability, and capabilities, as well as workflow partition 
+requirements. Resource availability refers to the resources the user has 
+currently access and can use for execution. Resource capabilities include: 
+\begin{inparaenum}[1)]
+\item offered computing capacity in terms of number of CPU cores, and possible 
+      accelerators, such as GPUs,
+\item offered main memory size, and
+\item offered filesystem in terms of size, and whether it is shared or not.
+\end{inparaenum} The user requires to evaluate such factors and partition the 
+workflow such that each partition's requirements are satisfied by the 
+capabilities of available resources. In addition, users may update the plan 
+during execution based on changes on resource availability, and capabilities.
+
+High Performance Computing (HPC) resources have a broad spectrum of usage 
+policies affecting resource availability, and execution on such resources. These 
+policies determine:
+\begin{inparaenum}[1)]
+\item the maximum number of compute nodes and walltime a user can request for a 
+single job, i.e. execution,
+\item the maximum number of concurrently submitted jobs (either executing or 
+waiting in the scheduler's queue), and
+\item one or more usage charging models 
+\end{inparaenum}. Execution on such resources requires an allocation which is, 
+for example, measured in core-hours, defining the computing capacity available 
+to the user. The user has, based on resource policies, available capacity, and 
+workflow performance metrics to evaluate how such capacity satisfies the 
+campaign execution over the allocation period. These are complex and time 
+consuming evaluations that depend on many variables, including resource usage 
+policies, amount of resources consumed by the campaign’s workflow, and 
+performance metrics for the workflow execution.
+ 
+Campaign workflow partitioning requires a model that can provide estimations 
+of the total execution time of each partition, based on single task execution 
+time, achievable degree of task execution concurrency, and execution 
+coordination overheads. A model can be used to estimate the execution time of 
+each partition, given single task execution distributions, and desirable 
+degree of concurrency. The overheads of the execution depend on the middleware 
+used to execute the campaign. Analyzing and modeling of the overheads of 
+different architectural approaches can provide an estimation, and the type of 
+approach that is preferable for each partition. Combining the two models can 
+provide an estimation of the time to completion of each workflow partition. 
+ 
+Determining the times workflow partitions can be executed, based on an 
+allocation, requires a cost estimation function. Provided a time to completion 
+model, and a usage charging policy, the user can derive such a cost function 
+for the execution of the workflow partitions. Based on this cost function and a 
+set of resource, the user can evaluate how the allocation will be utilized for 
+every selected resource. Using the utilization evaluation, the user can then 
+optimize a selected metric, such as, maximizing number of executions, 
+maximizing concurrency, minimizing execution cost, and defining an execution 
+plan for their computational campaign.
+ 
+Scientific workflows are mainly executed by utilizing dedicated workflow 
+management frameworks (WMF), such as RADICAL-Ensemble 
+Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, 
+Kepler~\cite{ludascher2006concurrency}, and others. These frameworks offer 
+runtime capabilities, such as task execution, data dependency resolution, and 
+workflow definition and monitoring. Given a set of resources and a walltime, 
+WMF try to maximize resource utilization and minimize time to completion. WMF 
+assume that the user selects sufficient resources and walltime to execute the 
+workflow. Some workflow management frameworks, such as 
+Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to 
+elastically adapt resources, by scaling up or down, based on the current state 
+of execution. They do not offer capabilities that allow execution planning and 
+workflow partitioning. Deriving, validating and adapting an execution plan 
+requires from the user expertise outside of their scientific domain. Providing 
+a workflow management system with capabilities to plan, monitor, and adapt the 
+execution becomes therefore desirable. Such a system can utilize models of 
+workflow time to completion, alongside workflow execution capabilities, to 
+automate campaign workflow partitioning and execution.
+
+In this proposal, I propose an autonomic workflow manager for executing 
+scientific computational campaigns on high performance computing resources. 
+Autonomic systems, as defined by IBM~\cite{ibm2005autonomic}, provide 
+capabilities of self-monitoring, self-configuring, and self-regulating. An 
+autonomic workflow manager will be able to define an initial execution plan 
+(self-configuring), monitor its effectiveness (self-monitoring), and adjust 
+during runtime (self-regulating). During the execution of this proposal, we 
+will:
+\begin{inparaenum}[1)]
+\item evaluate and derive time to completion models for a set of workflows 
+provided by ecological and biomolecular sciences use cases,
+\item offering execution planning capabilities, and 
+\item exploring the requirements to support execution plan adaptivity
+\end{inparaenum}.
+
+The proposal is organized as follows. Section 2 provides definitions for the 
+used terminology. Section 3 introduces research done providing a unified 
+runtime system that supports data analytics frameworks on HPC resources, and 
+creating a conceptual model for the performance of different workflow management 
+systems for a set of data analysis workflows. Section 4 presents initial research 
+done towards modeling the time to execution of a scientific workflow. Section 5 
+presents the research required to design and implement the proposed workflow 
+manager. It includes the methodology that will be used to model scientific 
+workflows, and architectural details of the manager. Section 6 concludes the 
+proposal by describing the proposal's timeline, significance and impact of the 
+work, and the challenges of this work.
