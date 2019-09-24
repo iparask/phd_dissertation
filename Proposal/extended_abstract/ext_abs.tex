@@ -21,7 +21,7 @@ efficient execution of computational campaigns requires resource management
 and coordination at runtime.
 
 A computational campaign is a set of heterogeneous workflows, with or without 
-dependencies amongst them, that need to be executed. Workflows are heterogeneous 
+dependencies amongst them, that need to be executed to achieve a computational objective. Workflows are heterogeneous 
 when they perform different types of work and/or have different resource 
 requirements. We identify three types of dependencies between workflows in a 
 campaign:
@@ -38,7 +38,7 @@ either concurrently given sufficient capacity or interchangeably.
 
 Workflows are mainly executed by utilizing dedicated workflow management 
 frameworks (WMF)~\cite{balasubramanian2018harnessing,deelman2015pegasus,ludascher2006scientific,rocklin2015dask,airflow}.
-Currently, WMFs offer a vast array of capabilities 
+Currently, WMFs offer a vast array of capabilities, 
 but tend to lack campaign planning and execution capabilities. Campaign planning 
 and execution requires scheduling workflows to resources, resolving dependencies 
 between workflows, and managing the execution of the campaign. As a result, 
