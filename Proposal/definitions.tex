@@ -1,26 +1,15 @@
-Terms such as ``workflow'', ``workload'', ``computational campaign'', and 
-``autonomic computing'' are usually overloaded in literature and defined 
-differently across domains. We define the terminology used in this proposal:
+\label{definitions}
+Terms such as ``workflow'', ``workload'', are ``computational campaign'' are usually overloaded in literature and defined differently across domains. We define the terminology used in this proposal:
 \begin{itemize}
-    \item \textbf{Autonomic Computing}: Based on the definition by 
-    IBM~\cite{ibm2005autonomic}, it is a computing environment with the ability 
-    to manage itself and dynamically adapt to change in accordance with 
-    business policies and objectives.
-    \item \textbf{Application} specifies a single or multiple tasks, and the 
-    interaction and relationship (or lack thereof) among multiple tasks. The 
-    task(s), along with their interactions and relationships represent an 
-    algorithmic solution to a science problem.
-    \item \textbf{Workflow} represents the computational instance implementing 
-    an, or part of, application with specific parameter values, number of tasks, 
-    task interdependencies, and other computational aspects.
-    \item \textbf{Workload} refers to a set of tasks whose dependencies have 
-    been satisfied and are ready to be concurrently executed. As such, 
-    workloads can be subsets of the tasks of a workflow. The “load” in workload 
-    is a reference to a measure of the computational requirements of each 
-    individual task. This is relevant when scheduling a workload heterogeneous 
-    tasks.
-    \item \textbf{Computational Campaign} refers to a set of distinct workflows 
-    executed over a heterogeneous set resources multiple times.
-    \item \textbf{Task} is a stand-alone process that has well defined input, 
-    output, termination criteria, and resources requirements.
+    \item \textbf{Application} specifies a single or multiple tasks, and the interaction and relationship (or lack thereof) among multiple tasks. The task(s), along with their interactions and relationships represent and algorithmic solution to a science problem.
+    \item \textbf{Computational Campaign} is a set of heterogeneous workflows with or without dependencies amongst them, that need to be executed.
+    \item \textbf{Workflow} represents the computational instance implementing an, or part of, application with specific parameter values, number of tasks, task interdependencies, and other computational aspects.
+    \item \textbf{Workload} refers to a set of tasks whose dependencies have been satisfied and are ready to be concurrently executed. As such, workloads can be subsets of the tasks of a workflow. The “load” in workload is a reference to a measure of the computational requirements of each individual task. This is relevant when scheduling a workload heterogeneous tasks.
+    \item \textbf{Task} is a stand-alone process that has well defined input, output, termination criteria, and resources requirements.
+    \item \textbf{Makespan} of a campaign is the time needed to execute all the workflows of the campaign, or alternatively, the maximum execution time among all paths throughout the campaign~\cite{chirkin2017execution}
+    \item \textbf{Computational Objective} is a set of values selected by the user for a set of metrics which can be represented as an objective function.
+    \item \textbf{Requirements} describe the minimum amount and type of resources needed to execute each workflow of the campaign.
+    \item \textbf{Constraints} are the conditions that bound the execution, including but not limited to, resource availability, capacity or costs.
+    \item \textbf{Execution plan} is a sequence of actions that solves the objective function as, for example, selecting, acquiring and configuring resources, and establishing the execution order of workflows.
+
 \end{itemize}
