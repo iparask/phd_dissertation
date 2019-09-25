@@ -1,24 +1,9 @@
 \label{research}
-In our research so far, we discussed a conceptual model for data analytics for 
-various use cases on HPC system, and a design comparison and execution time 
-model for scientific workflows. In addition, we identified a need for execution 
-of  scientific workflows with minimum user intervention, independent from 
-users' scientific domain. In this section, we motivate and propose an 
-autonomic middleware for configuring, monitor and adapting the execution of 
-scientific workflows on HPCs.
+In my research so far, I discussed an extension of the pilot abstraction to support data analytics and data intensive applications on HPC resources, a conceptual model that provides the methodology to select a data-oriented framework based on the characteristics of the application, and a design comparison and execution time model for scientific workflows.
+In addition, I identified a need for the execution of scientific computational campaigns with minimum user intervention, independent from users' scientific domain.
+In this section, I motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan.
 
-\subsection{Proposed Topic}
-%Scientific application workflows properties, such as size, and requirements, such 
-%as type and number of resources, change in time. In scientific campaign
-%
-%These properties of the workflow are not necessarily captured during the 
-%specification of the workload. 
-%
-%bla bla workload manager autonomic IBM~\cite{ibm2005autonomic}
-
-% ------------------------------------------------------------------------------
-% Scientific campaings
-\gpnote{Campaings and workflow characteristics. Refer to the workflows from ICEBERG and Oliver and constraint the problem there.}
+\subsection{Motivation}
 Ensemble based scientific campaigns execute ensembles of pipelines with 
 heterogeneous characteristics and requirements. These pipelines can be single 
 branched~\cite{paraskevakos2019workflow,dakka2018high,ramakrishnan_survey,
@@ -37,6 +22,21 @@ work, we will initially assume that the workflow, and its pipelines are
 static. In addition, we will assume that the workflow has enough ensemble 
 members, such that it cannot be run in a single job on HPC. Next, we are 
 going to relax this assumption, and assume that the pipelines are adaptive.
+
+
+\subsection{Proposed Topic}
+%Scientific application workflows properties, such as size, and requirements, such 
+%as type and number of resources, change in time. In scientific campaign
+%
+%These properties of the workflow are not necessarily captured during the 
+%specification of the workload. 
+%
+%bla bla workload manager autonomic IBM~\cite{ibm2005autonomic}
+
+% ------------------------------------------------------------------------------
+% Scientific campaings
+\gpnote{Campaings and workflow characteristics. Refer to the workflows from ICEBERG and Oliver and constraint the problem there.}
+
 
 % ----------------------------------------------------------------------------
 % Workflow modeling
