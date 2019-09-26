@@ -4,24 +4,25 @@ In addition, I identified a need for the execution of scientific computational c
 In this section, I motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan.
 
 \subsection{Motivation}
-Ensemble based scientific campaigns execute ensembles of pipelines with 
-heterogeneous characteristics and requirements. These pipelines can be single 
-branched~\cite{paraskevakos2019workflow,dakka2018high,ramakrishnan_survey,
-balasubramanian2018harnessing} to pipelines with complex data and control 
-dependencies~\cite{ramakrishnan_survey,deelman2018future}. Furthermore, they 
-can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{dakka2018high,
-balasubramanian2018harnessing}. Dynamicity in pipelines is realized via 
-control loops, where new stages are added, while in campaigns by adding 
-ensemble members during runtime.
+Campaigns from the biomolecular and earth sciences are diverse in terms of composition, number and size of workflow members, and dynamicity.
+Biomolecular science campaigns may be comprised from a small number of workflows with millions of tasks, or thousands of workflows with tens to hundreds tasks. 
+Earth sciences campaigns, especially those which use VHR satellite imagery, comprise of workflows with thousands of tasks.
+The number of workflows depends on the number of images the user has access to as well as the time they are able to obtain imagery.
+These workflows can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{dakka2018high}.
 
-Pipelines from Biomolecular and Earth sciences are mainly single branched. 
-Biomolecular pipelines may present adaptivity by adding additional stages 
-after some analysis step. Earth science pipelines are mostly static, but they 
-may have $\mathcal{O}(10k)$ to $\mathcal{O}(100k)$ ensemble members. In this 
-work, we will initially assume that the workflow, and its pipelines are 
-static. In addition, we will assume that the workflow has enough ensemble 
-members, such that it cannot be run in a single job on HPC. Next, we are 
-going to relax this assumption, and assume that the pipelines are adaptive.
+Resource requirements of these campaigns are heterogeneous, in terms of number of resources required and type. 
+Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either simulations or analysis. In addition, some biomolecular analysis tool require data oriented frameworks, such as PMDA~\cite{fan2019pmda}.
+Earth sciences applications, based on imagery, are creating workflows that are executing a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}.
+As a result, the user needs to manage different types of resources as well as resource requirements for each workflow.
+
+Scientific computational campaign workflows can be executed on a number of HPC resources as long as they meet the workflows' computational requirements.
+Despite the fact, users tend to execute all their workflows on one or two systems, under-utilizing their allocations and increasing the makespan of the campaign.
+Being able to distribute workflows on different resources will increase the utilization of the campaign, but also provide opportunity for optimizing the execution time of the campaign.
+
+Based on the above, there is a need for a system that supports the execution of campaign with heterogeneous resource requirements.
+This campaign manager should allow users to describe a set of workflows with their computing requirements, the campaign's objective, a set of resources along with the allocations on those resources, and any other information the user deems important, for example workflow importance.
+Based on this information, the campaign manager should be able to derive and enact an execution plan without any further user intervention.
+As a result, users will be able to compile computational campaigns that allow them to execute scientific experiments to sizes prior unfeasible, at least in terms of number of workflows.
 
 
 \subsection{Proposed Topic}
