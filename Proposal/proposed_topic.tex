@@ -26,13 +26,6 @@ As a result, users will be able to compile computational campaigns that allow th
 
 
 \subsection{Proposed Topic}
-%Scientific application workflows properties, such as size, and requirements, such 
-%as type and number of resources, change in time. In scientific campaign
-%
-%These properties of the workflow are not necessarily captured during the 
-%specification of the workload. 
-%
-%bla bla workload manager autonomic IBM~\cite{ibm2005autonomic}
 
 % ------------------------------------------------------------------------------
 % Scientific campaings
@@ -72,30 +65,30 @@ Furthermore, there has been some initial research to extend HEFT to resources th
 
 There are several alternative methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent of the campaign.
-A campaign is a set of workflows, and as a result a queuing network add an additional layer of complexity.
+A campaign is a set of workflows, and as a result having the user provide a queuing network representation of the campaign adds an additional layer of complexity.
 Domain specific languages would require too much engineering effort to convert a workflow representation based on domain specific assumptions, e.g. MPI style workflow, or specific languages representation, e.g Swift, to a PST model representation.
 Machine Learning approaches would require model training, validation and testing to produce a model.
-In additon, since the execution is done on dynamic resources, the model should be retrained after every workflow execution.
+In addition, since the execution is done on dynamic resources, the model should be retrained after every workflow execution.
 
-
-Biomolecular and earth science workflow can be modeled as queuing systems. 
-Figure~\ref{fig:bio_earth_workflows} shows two basic workflows from 
-biomolecular (Figure~\ref{fig:bio_workflow}) and earth sciences (Figure~\ref
-{fig:earth_workflow}). Following the notion from queuing theory, we can model 
-each stage of a pipeline follows a $G/G/s$ queue. A queue in a pipeline stage 
-$S_{i}$ has arrival time $\alpha$, the distribution of the execution times 
-from stage $S_{i-1}$, service time $\beta$, the distribution of the execution 
-times of its tasks, and $r$ servicing resources. Initially, we will assume 
-constant task size, static pipeline and known poisson distributions $\alpha$ 
-and $\beta$ with event rate $\lambda$ experimentally calculated. This will 
-allow us to create a model for the whole pipeline and predict the total time 
-to execution. Next, we will relax the assumption and work task execution time 
-distributions that are found experimentally. In addition, we will try to 
-further relax our assumptions and introduce dynamic pipelines, and as a 
-result dynamic workflows.
+Initially, we will assume a static campaign with static workflows, executing on static resources. 
+This will allow us to understand the selected algorithm, and find its performance compared to a random plan.
+Next, we will relax the assumption of static resources and work with dynamic resources.
+We will introduce workflow execution time as a normal distribution.
+HEFT assumes static resources.
+Introducing resource dynamicity requires to further extend HEFT to take into account execution time distributions to decide on which resources it will schedule workflows.
+In addition, we will try to further relax our assumptions and introduce dynamic campaigns, and dynamic workflows.
 
 % ----------------------------------------------------------------------------
 % Campaign management system
+There are software systems that are supporting computational campaigns in one way or another.
+PanDA WMS~\cite{maeno2008panda,maeno2014evolution} is possibly the most widely used workload and workflow management system, supporting thousands of users and millions of core-hours and tasks worldwide.
+PanDA is built based on the grid computing paradigm, and undergoes an effort to support HPC resources~\cite{de2016accelerating}.
+PanDA WMS was initially built to support the ATLAS project~\cite{atlas} at LHC, and has been extended to support other domain specific scientific workflows.
+Similarly, DIRAC~\cite{casajus2010dirac} is built to support domain workflows and specifically workflows from the LHCb experiment at CERN.
+These are domain science specific and make specific assumptions about the environment ands type of workflows they support.
+
+
+
 \gpnote{write about Panda, Blasam, Pegasus, ASKALON, DIRAC, QCFractal(?)}
 
 % ----------------------------------------------------------------------------
