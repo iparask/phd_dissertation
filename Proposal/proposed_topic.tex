@@ -109,13 +109,6 @@ If necessary, CM will adapt the execution plan by updating the workflows to reso
 These updates will be based on workflows execution metrics provided by the selected WMF such as tasks execution time, overheads calculation and time to completion.
 These metrics will be aggregated across workflows resulting in campaign-wide execution metrics.
 
-The Makespan Calculator will be responsible for calculating and optimizing the makespan of a campaign based on a set of workflows, a set of resources, and the objective.
-Calculating the makespan requires the calculator to have knowledge or derive of the execution time of the workflows that comprise the campaign on the available resources, as well as their availability.
-HPC resources are dynamic, in the sense that their performance~\cite{pouchard2019computational} and availability fluctuates.
-As a result, the Makespan Calculator requires to take into account performance fluctuations as workflows are being executed.
-In addition, the Campaign Manager should be able to verify whether a resource is available and update the plan accordingly.
-
-
 \begin{figure*}[t]
     \centering
     \includegraphics[width=.95\textwidth]{figures/CEM_RefArch.pdf}
@@ -125,12 +118,17 @@ In addition, the Campaign Manager should be able to verify whether a resource is
     execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
-RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workflow management framework.
-We selected to utilize EnTK because it fits the requirements of the target use case as they are described in \S~\ref{subsec:motivation}
-EnTK defines workflows as a set of pipelines, each pipeline is a sequence of stages, and in turn each stage a set of tasks.
-EnTK support the execution of a sequence of workflows may either reuse resources or request new ones, based on how the user has programmed the application.
-In addition, EnTK workflow execution is stateful, provides execution metrics, such as task execution time, and supports workflow execution on multiple HPC resources.
-The proposed campaign will interface with EnTK to execute workflows based on derived execution plan.
+The Makespan Calculator will be responsible for calculating and optimizing the makespan of a campaign based on a set of workflows, a set of resources, and the objective.
+Calculating the makespan requires the calculator to have knowledge or derive of the execution time of the workflows that comprise the campaign on the available resources, as well as their availability.
+HPC resources are dynamic, in the sense that their performance~\cite{pouchard2019computational} and availability fluctuates.
+As a result, the Makespan Calculator requires to take into account performance fluctuations as workflows are being executed.
+In addition, the Campaign Manager should be able to verify whether a resource is available and update the plan accordingly.
+
+The Executor sub-component is responsible to execute, and monitor the plan by interfacing with a WMF.
+Based on the plan the Makespan calculator decided, the Executor submits workflows to a WMF to execute on the selected resource.
+This requires the Executor to work upon multiple workflows concurrently.
+In addition, it should monitor workflow execution and resource availability.
+An important requirement for the executor is to identify the reason of a failing workflow and report to the Makespan Calculator.
 
 \gpnote{
 \begin{enumerate}
@@ -138,12 +136,16 @@ The proposed campaign will interface with EnTK to execute workflows based on der
 \item Since we are discussing about pilot jobs refer to RP and EnTK.
 \end{enumerate}}
 
+
+RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workflow management framework.
+We selected to utilize EnTK because it fits the requirements of the target use case as they are described in \S~\ref{subsec:motivation}
+EnTK defines workflows as a set of pipelines, each pipeline is a sequence of stages, and in turn each stage a set of tasks.
+EnTK support the execution of a sequence of workflows may either reuse resources or request new ones, based on how the user has programmed the application.
+EnTK workflow execution is stateful, provides execution metrics, such as task execution time, and supports workflow execution on multiple HPC resources.
+Furthermore, it support a pilot runtime system, RADICAL-Piliot~\cite{merzky2019using}, to execute workflows on HPC resources.
+Pilot systems submit job placeholders on resources, and are able to execute tasks on the acquired resources.
+The proposed campaign will interface with EnTK to execute workflows based on derived execution plan.
+
 %We propose to extend these two components of EnTK and introduce an autonomic tuner, as defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take as input information of the desired resources to execute the workflow, and an Application objective. Initially, the application objective could be as simple as an execution deadline, but it should be easily extensible to other metrics. The resource manager based on the desired resources can provide information about them, such maximum allowed node requests, maximum queue times, and more. The autonomic tuner, we propose to add, can use this information along with execution models for the workflow tasks to decide concurrency and timeline of the execution of the application. This achieves the self-configuration property of an autonomic system. The AM already monitors the execution state and it can report it to the tuner in specified intervals, achieving this way the self-monitoring property. The tuner then can decide whether more resources are required for achieving the deadline and update the decision rule, thus achieving the self-regulating aspect of an autonomic system. The resource manager acquires and monitors resource availability as they are needed by the tuner's decisions. In addition, the resource manager will provide information about which resources a workflow is executing. Figure~\ref{refarch} shows a simple diagram of the architecture of the proposed extension.
 
 %Changing the number of resources used executing a workflow in HPC resources is not trivial. When more resources are required to a achieve a deadline, the workflow system through its autonomic capabilities can request as many computational nodes as needed. On the other hand, when resources are underutilized, the autonomic system should either release part of them or update the decision for subsequent runs. Nodes on HPCs can be requested either as single or multiple nodes. Since many resources have policies at place to regulate the total number of concurrent jobs a user has, it is preferable to request nodes in numbers larger than one. That requires, whenever resources are released, to release them also as multiple nodes. Initially, we will assume that our workflows do not underutilize the resources.
-
-
-\gpnote{Talk about EnTK's AppManager. See how an autonomic system controller 
-can be added to extend it. It makes sense that each app manager will be able 
-to decide it self about the execution of a workflow. }
-
