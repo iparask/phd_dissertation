@@ -110,11 +110,10 @@ These updates will be based on workflows execution metrics provided by the selec
 These metrics will be aggregated across workflows resulting in campaign-wide execution metrics.
 
 The Makespan Calculator will be responsible for calculating and optimizing the makespan of a campaign based on a set of workflows, a set of resources, and the objective.
-Calculating the makespan requires the calculator to have knowledge or derive of the execution time of the workflows that comprise the campaign on the available resources, as well as .
+Calculating the makespan requires the calculator to have knowledge or derive of the execution time of the workflows that comprise the campaign on the available resources, as well as their availability.
 HPC resources are dynamic, in the sense that their performance~\cite{pouchard2019computational} and availability fluctuates.
-
-
-
+As a result, the Makespan Calculator requires to take into account performance fluctuations as workflows are being executed.
+In addition, the Campaign Manager should be able to verify whether a resource is available and update the plan accordingly.
 
 
 \begin{figure*}[t]
@@ -132,10 +131,6 @@ EnTK defines workflows as a set of pipelines, each pipeline is a sequence of sta
 EnTK support the execution of a sequence of workflows may either reuse resources or request new ones, based on how the user has programmed the application.
 In addition, EnTK workflow execution is stateful, provides execution metrics, such as task execution time, and supports workflow execution on multiple HPC resources.
 The proposed campaign will interface with EnTK to execute workflows based on derived execution plan.
-
-
-
-
 
 \gpnote{
 \begin{enumerate}
