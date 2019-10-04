@@ -1,72 +1,62 @@
 \label{timeline}
+Given the size of the problem space and that the proposed work will be performed in no more than nine month, we propose to focus on three main contributions:
+\begin{inparaenum}[(1)]
+\item evaluating and deriving the makespan for a campaign as a set of independent static O(10) workflows with heterogeneous resource requirements provided by ecological and biomolecular sciences use cases on dynamic resources; 
+\item offering execution planning capabilities to minimize the makespan of a campaign; and 
+\item validating our planning capability by executing the workflows of our use cases and measuring the accuracy of the estimated campaign runtime and planned execution compared to a random plan.
+\end{inparaenum}.
+In addition, we will explore the requirements to support campaigns with dynamic workflows.
+
+To this end, we propose to achieve the following objectives with an estimation of the time needed:
+\begin{enumerate}
+    \item Develop a campaign manager prototype, which will derive and execute a plan. Duration 3 months
+    \item Implement proposed makespan algorithm for executing a campaign from the ecological sciences. Duration 3 months.
+    \item Experimentally measure the performance of the selected makespan algorithm for a scientific campaign. Duration 5.5 months. It overlaps with objective 2 
+\end{enumerate}
+Figure~\ref{fig:work_plan} shows the Gantt chart of the proposed work.
+
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=.95\textwidth]{figures/phd_plan.pdf}
 	\caption{Planned timeline of proposed research}\label{fig:work_plan}
 \end{figure*}
 
-\subsubsection{Phase 1: Design and implementation self-configuring property}
+\subsubsection{Phase 1: Design and implementation of a campaign manager}
+Month 1 would include design discussions for a prototype of the campaign manager. 
+Result of these discussions will be the requirements of the middleware and its API. 
+Design will be finalized and a prototypical implementation will be completed by Month 3. 
+The prototype will interface with RADICAL-EnTK providing campaign execution capabilities.
 
-Month 1 would include design discussions for a prototype of the execution system. 
-Result of these discussions will be the requirements of the middleware and its 
-API. Design will be finalized and a prototypical implementation will be completed 
-by Month 4. Capability to self-configure in terms of resources based on the desired 
-workflow will mark the success of Phase 1.
+\subsubsection{Phase 2: Implementation and performance analysis of makespan algorithm}
+Phase 2 includes implementing the proposed algorithm in the prototype, supporting dynamic resources and understand its performance.
+In case the selected algorithm under performs, a study will be conducted with additional makespan algorithms.
+Phase 2 spans from months 3 up to 6.
 
-\subsubsection{Phase 2: Implementation self-monitoring, self-regulating properties
-and Continuous Integrated Testing}
-Phase 2 includes defining the requirements for self-monitoring, and self-regulating 
-properties and implement them in the middleware. End of phase 2 will include the 
-\textit(self-*) properties as well as a Continuous integrated testing protocol to 
-always verify the functionality of the middleware. Phase 2 spans from months 3 up 
-to 6
-
-\subsubsection{Phase 3: Integration with scientific workflows}
-Phase 3 of the plan includes the integration of the proposed autonomic system with 
-RADICAL-EnTK~\cite{balasubramanian2018harnessing} and start utilize the system for 
-scientifc workflows in Satelite Imagery analysis and Molecular Dynamics simulation 
-workflows. This phase spans between months 6 and 9.
-
-\subsubsection{Phase 4: Investigation for an empirical model}
-
-Experiments with synthetic and real applications with the prototype as well as 
-scientific workflows will be used to investigate and derive empirical models. 
-These models may be used to further generalize the behavior of the autonomic 
-middleware based on application requirements. Phase 4 will overlap with Phase 2 
-and 3 to utilize experiments done during those phases.
+\subsubsection{Phase 3: Experimental performance analysis}
+Phase 3 of the plan includes an experimental performance analysis of the campaign manager for a set of selected use cases.
+This performance analysis will compare the execution a computational campaign with the prototypical campaign manager and without.
+This phase span between months 3 and 9.
 
 % ---------------------------------------------------------------------------
 % Why
 \subsection{Significance and impact of work}
-Several scientific applications are required to be executed several times with 
-different input data or initial conditions. The required concurrency to minimize 
-the execution time of each run is not necessarily constant and may change based 
-on the initial conditions. The autonomic management system suggested in this 
-proposal will be the first to make resource configuration decisions for the users. 
-This will lead to less time invested by users to make execution decisions about 
-their workflows. These decisions will lead to better resource utilization and, 
-as a result, better domain science. The empirical models derived by this work can 
-be used to derive formal mathematical models.
+Several scientific campaigns require to execute a large number of workflows several times with different input data or initial conditions. 
+The required concurrency to minimize the execution time of the campaign is not necessarily constant and may change based on resource availability. 
+The campaign manager suggested in this proposal will be the first to make resource selection decisions for the users. 
+This will lead to less time invested by users to make execution decisions about their workflows. 
+These decisions will lead to better resource utilization and, as a result, better domain science. 
+The empirical performance analysis derived by this work can be used to derive empirical models initial and eventually formal mathematical models.
 
 % ---------------------------------------------------------------------------
 % Challenges
 \subsection{Challenges/Risks}
 
-We estimate the proposed work, divided into four major phases, to take 12 months 
+We estimate the proposed work, divided into three major phases, to take 9 months 
 and we allocate 3 months to account for unforeseen circumstances. We would like 
 to keep the committee aware of the following challenges that we see:
 
 \begin{itemize}
-	\item Design and Implementation (phases 1 \& 2) is iterative and special attention 
-	needs to be given to the number of iterations against specific objectives, 
-	given the timeline.
-  \item All experiments performed on HPC systems are subject to variable queue 
-	times and may limit the number of experiments performed in phase 2 and 4.
-	\item Although the middleware will be well tested (80--90\% of the code base 
-	will be covered by unit tests) and less susceptible to major changes, RADICAL-Pilot 
-	is known to be less stable and is susceptible to changes as it serves multiple 
-	projects. Stability of RADICAL-Pilot is considered in the estimates, but needs 
-	to be made aware to the committee.
-	\item Lastly, the HPC systems themselves may often become inaccessible due to 
-	unplanned outages.
+	\item Design and Implementation (phase 1) is iterative and special attention needs to be given to the number of iterations against specific objectives, given the timeline.
+    \item All experiments performed on HPC systems are subject to variable queue times and may limit the number of experiments performed in phase 2 and 3.
+	\item Although the middleware will be well tested (80--90\% of the code base will be covered by unit tests) and less susceptible to major changes, RADICAL-Pilot is known to be less stable and is susceptible to changes as it serves multiple projects. Stability of RADICAL-Pilot is considered in the estimates, but needs to be made aware to the committee.
 \end{itemize}
