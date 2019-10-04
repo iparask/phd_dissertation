@@ -1,23 +1,13 @@
 \label{prior_work}
-Scientific applications and workflows use a diverse set of tools to execute 
-tasks on HPC resources with diverse requirements and performance. Simulations 
-are mainly parallelized through MPI. On the other hand, several parallel 
-frameworks and techniques, such as MPI, Spark~\cite{zaharia2010spark}, 
-Hadoop~\cite{hadoop}, and Dask~\cite{rocklin2015dask}, are being used to 
-execute data analytics in addition to machine and deep learning techniques. 
-Executing complex workflows that produce and analyze data requires to support 
-MPI style execution along with data-parallel techniques. As a result, extended 
-a task parallel workload execution framework on HPC to support, in addition to 
-MPI, data parallel frameworks. Furthermore, we investigated the suitability of 
-different data and task parallel frameworks for different types of analysis.
+Scientific applications and workflows use a diverse set of tools to execute tasks on HPC resources with diverse requirements and performance.
+Simulations are mainly parallelized through MPI.
+On the other hand, several parallel frameworks and techniques, such as MPI, Spark~\cite{zaharia2010spark}, Hadoop~\cite{hadoop}, and Dask~\cite{rocklin2015dask}, are being used to execute data analytics in addition to machine and deep learning techniques.
+Executing complex workflows that produce and analyze data requires to support MPI style execution along with data-parallel techniques.
+As a result, extended a task parallel workload execution framework on HPC to support, in addition to MPI, data parallel frameworks.
+Furthermore, we investigated the suitability of different data and task parallel frameworks for different types of analysis.
 
 \subsection{Providing Data-Parallel capabilities on HPC}
-Managing high performance and data intensive application stages on HPC resources 
-is necessary. The pilot abstraction~\cite{turilli2018comprehensive}, via its 
-implementation RADICAL-Pilot~\cite{merzky2019using}, has successfully used to 
-parallelize task level execution of scientific simulations on HPC resources. 
-Thus, we extended RADICAL-Pilot to support data intensive applications on HPC 
-resources. 
+Scientific data analysis applications, such as MDAnalysis,
 
 
 \subsection{Conceptual Model for Task-Parallel framework selections}
