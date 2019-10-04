@@ -54,20 +54,6 @@ Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomol
     \caption{Biomolecular and Earth Science example workflows. \ref{fig:bio_workflow} Biomolecular workflow based on PST model example~\cite{dakka2018concurrent}; \ref{fig:earth_workflow} Earth science workflow based on PST model example~\cite{paraskevakos2019workflow}}\label{fig:bio_earth_workflows}
 \end{figure*}
 
-% ----------------------------------------------------------------------------
-% Campaign management system
-\gpnote{write about Panda, Blasam, Pegasus, ASKALON, DIRAC, QCFractal(?), GlideInWMS}
-
-There are software systems that are supporting computational campaigns in one way or another. 
-PanDA WMS~\cite{maeno2008panda,maeno2014evolution}, possibly the most widely used workload and workflow management system, and DIRAC~\cite{casajus2010dirac}, and glideinWMS~\cite{sfiligoi2008glidein} support domain specific workflows.
-These systems assume a specific software stack environment that support their use case.
-Our approach is domain agnostic and it makes zero assumptions of a specific pre-existing software stack. 
-Furthermore, PanDA, DIRAC, and glideIN are grid oriented campaign managers, without or minimal support of HPC resources.
-For example, PanDA undergoes an effort to support HPC~\cite{de2016accelerating}, but it is limited to ORNL Titan~\cite{titan}.
-Workflow management systems on HPCs, like Pegasus~\cite{deelman2015pegasus}, and Balsam~\cite{salim2019balsam} support the execution of multiple workflows on HPC resources from multiple users as independent entities.
-A common denominator between all the above campaign, workflow or workload managers, is that they provide a capability to define a set of workflows with a common computational objective.
-We want to extend this notion and allow users to define a single computational objective for a campaign.
-As a result, the above execution model becomes a special case, where a campaign is a single workflow.
 
 % ----------------------------------------------------------------------------
 % campaign makespan modeling
