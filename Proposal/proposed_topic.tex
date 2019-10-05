@@ -1,24 +1,25 @@
 \label{research}
-In my research so far, I discussed an extension of the pilot abstraction to support data analytics and data intensive applications on HPC resources, a conceptual model that provides the methodology to select a data-oriented framework based on the characteristics of the application, and a design comparison and execution time model for scientific workflows.
-In addition, I identified a need for the execution of scientific computational campaigns with minimum user intervention, independent from users' scientific domain.
-In this section, I motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan.
+So far, we discussed an extension of the pilot abstraction to support data analytics and task based data intensive applications on HPC resources, a comparison between different task-based data oriented frameworks, and a design comparison for scientific workflows.
+In addition, we identified a need for the execution of scientific computational campaigns with minimum user intervention, independent from users' scientific domain.
+In this section, we motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan.
 
 \subsection{Motivation}
 \label{subsec:motivation}
 Campaigns from the biomolecular and earth sciences are diverse in terms of composition, number and size of workflow members, and dynamicity.
-Biomolecular science campaigns may be comprised from a small number of workflows with millions of tasks, or thousands of workflows with tens to hundreds tasks. 
+Biomolecular science campaigns may be comprised from a small number of workflows with millions of tasks, or thousands of workflows with tens to hundreds tasks~\cite{dakka2018high}. 
 Earth sciences campaigns, especially those which use VHR satellite imagery, comprise of workflows with thousands of tasks.
 The number of workflows depends on the number of images the user has access to as well as the time they are able to obtain imagery.
 These workflows can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{dakka2018high}.
 
 Resource requirements of these campaigns are heterogeneous, in terms of number of resources required and type. 
-Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either simulations or analysis. In addition, some biomolecular analysis tool require data oriented frameworks, such as PMDA~\cite{fan2019pmda}.
+Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either simulations or analysis.
+In addition, some biomolecular analysis tool require data oriented frameworks, such as PMDA~\cite{fan2019pmda}.
 Earth sciences applications, based on imagery, are creating workflows that are executing a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}.
 As a result, the user needs to manage different types of resources as well as resource requirements for each workflow.
 
 Scientific computational campaign workflows can be executed on a number of HPC resources as long as they meet the workflows' computational requirements.
 Despite the fact, users tend to execute all their workflows on one or two systems, under-utilizing their allocations and increasing the makespan of the campaign.
-Being able to distribute workflows on different resources will increase the utilization of the campaign, but also provide opportunity for optimizing the execution time of the campaign.
+Being able to distribute workflows on different resources will increase the resource utilization of the campaign, but also provide opportunity for optimizing the execution time of the campaign.
 
 Based on the above, there is a need for a system that supports the execution of campaign with heterogeneous resource requirements.
 This system should allow users to describe a set of workflows with their computing requirements, the campaign's objective, a set of resources along with the allocations on those resources, and any other information the user deems important, for example workflow importance.
@@ -35,7 +36,7 @@ A subset of this general description of workflows are those which can be represe
 The PST model describes workflows as a set of pipelines, where each pipeline is a sequence of stages.
 Each stage then is a set of tasks that need to be executed.
 Concurrency is achieved in the level of pipelines and the level of tasks. 
-We particularly interested in scientific campaigns comprised by workflows that can be described via the PST model.
+Based on our use cases, we particularly interested in scientific campaigns comprised by workflows that can be described via the PST model.
 Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomolecular sciences (Fig.~\ref{fig:bio_workflow}) and the earth sciences (Fig.~\ref{fig:earth_workflow}). 
 
 \begin{figure*}[ht!]
@@ -76,9 +77,9 @@ In addition, since the execution is done on dynamic resources, the model should 
 Initially, we will assume a static campaign with static workflows, executing on static resources. 
 This will allow us to understand the selected algorithm, and find its performance compared to a random plan.
 Next, we will relax the assumption of static resources and work with dynamic resources.
-We will introduce workflow execution time as a normal distribution.
+We will introduce resource dynamicity as the availability of resources will be drawn from a binomial distribution.\gpnote{Binomial distribution is provides a yes or no outcome with p and q probabilities respectively. We need to find out how to select p and q, i.e. how often a resource is available compared to not.}
 HEFT assumes static resources.
-Introducing resource dynamicity requires to further extend HEFT to take into account execution time distributions to decide on which resources it will schedule workflows.
+Introducing resource dynamicity requires to further extend HEFT to take into account resource availability to decide on which resources it will schedule workflows, as well as update the schedule as resource become unavailable.
 In addition, we will try to further relax our assumptions and introduce dynamic campaigns, and dynamic workflows.
 % ----------------------------------------------------------------------------
 % Campaign Manager definition, requirements, features and capabilities
@@ -114,14 +115,8 @@ The Executor sub-component is responsible to execute, and monitor the plan by in
 Based on the plan the Makespan calculator decided, the Executor submits workflows to a WMF to execute on the selected resource.
 This requires the Executor to work upon multiple workflows concurrently.
 In addition, it should monitor workflow execution and resource availability.
-An important requirement for the executor is to identify the reason of a failing workflow and report to the Makespan Calculator.
-
-\gpnote{
-\begin{enumerate}
-\item After the architecture start discussing implementation. 
-\item Since we are discussing about pilot jobs refer to RP and EnTK.
-\end{enumerate}}
-
+An important requirement for the executor is to identify the reason of a failing workflow.
+When the failure is because the resource is not available the specific workflow may need to be rescheduled and the plan to be updated.
 
 RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workflow management framework.
 We selected to utilize EnTK because it fits the requirements of the target use case as they are described in \S~\ref{subsec:motivation}
@@ -131,7 +126,3 @@ EnTK workflow execution is stateful, provides execution metrics, such as task ex
 Furthermore, it support a pilot runtime system, RADICAL-Piliot~\cite{merzky2019using}, to execute workflows on HPC resources.
 Pilot systems submit job placeholders on resources, and are able to execute tasks on the acquired resources.
 The proposed campaign will interface with EnTK to execute workflows based on derived execution plan.
-
-%We propose to extend these two components of EnTK and introduce an autonomic tuner, as defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take as input information of the desired resources to execute the workflow, and an Application objective. Initially, the application objective could be as simple as an execution deadline, but it should be easily extensible to other metrics. The resource manager based on the desired resources can provide information about them, such maximum allowed node requests, maximum queue times, and more. The autonomic tuner, we propose to add, can use this information along with execution models for the workflow tasks to decide concurrency and timeline of the execution of the application. This achieves the self-configuration property of an autonomic system. The AM already monitors the execution state and it can report it to the tuner in specified intervals, achieving this way the self-monitoring property. The tuner then can decide whether more resources are required for achieving the deadline and update the decision rule, thus achieving the self-regulating aspect of an autonomic system. The resource manager acquires and monitors resource availability as they are needed by the tuner's decisions. In addition, the resource manager will provide information about which resources a workflow is executing. Figure~\ref{refarch} shows a simple diagram of the architecture of the proposed extension.
-
-%Changing the number of resources used executing a workflow in HPC resources is not trivial. When more resources are required to a achieve a deadline, the workflow system through its autonomic capabilities can request as many computational nodes as needed. On the other hand, when resources are underutilized, the autonomic system should either release part of them or update the decision for subsequent runs. Nodes on HPCs can be requested either as single or multiple nodes. Since many resources have policies at place to regulate the total number of concurrent jobs a user has, it is preferable to request nodes in numbers larger than one. That requires, whenever resources are released, to release them also as multiple nodes. Initially, we will assume that our workflows do not underutilize the resources.
