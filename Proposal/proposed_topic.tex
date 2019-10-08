@@ -77,7 +77,9 @@ In addition, since the execution is done on dynamic resources, the model should 
 Initially, we will assume a static campaign with static workflows, executing on static resources. 
 This will allow us to understand the selected algorithm, and find its performance compared to a random plan.
 Next, we will relax the assumption of static resources and work with dynamic resources.
-We will introduce resource dynamicity as the availability of resources will be drawn from a binomial distribution.\gpnote{Binomial distribution is provides a yes or no outcome with p and q probabilities respectively. We need to find out how to select p and q, i.e. how often a resource is available compared to not.}
+We will introduce resource dynamicity as resource availability.
+Resources are not available for multiple reasons, including failures and scheduled downtime for maintenance.
+
 HEFT assumes static resources.
 Introducing resource dynamicity requires to further extend HEFT to take into account resource availability to decide on which resources it will schedule workflows, as well as update the schedule as resource become unavailable.
 In addition, we will try to further relax our assumptions and introduce dynamic campaigns, and dynamic workflows.
