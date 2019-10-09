@@ -21,14 +21,6 @@ Resource capabilities refer to the type and amount of computational resources, i
 \item offered computing capacity in terms of number of CPU cores, and possible accelerators, such as GPUs,
 \item offered main memory size, and
 \item offered filesystem in terms of size, and whether it is shared or not.
-\end{inparaenum} 
-Resource dynamicity refers to the resource availability over time.
-HPC resources have a broad spectrum of policies affecting their availability. 
-These policies determine:
-\begin{inparaenum}[1)]
-\item the maximum number of compute nodes and walltime a user can request for a single job, i.e. execution,
-\item the maximum number of concurrently submitted jobs (either executing or waiting in the scheduler queue), and
-\item one or more usage charging models.
 \end{inparaenum}
 A resource is considered static when its availability remains constant over time, and dynamic when its availability changes.
 The user has, based on resource capacity, and resource dynamicity to evaluate how such capacity satisfies the campaign execution over the allocation period.
@@ -72,6 +64,6 @@ During the execution of this proposal, we will:
 
 The proposal is organized as follows.
 Section~\ref{definitions} provides definitions for the used terminology.
-Section~\ref{current_research} provides an overview of the research done to support scientific campaigns on HPC resources, as well as the research done by me this far to support data-intensive scientific campaigns on HPC resources.
+Section~\ref{current_research} provides an overview of the research done to support scientific campaigns on HPC resources, as well as the research done to support data-intensive scientific campaigns on HPC resources.
 Section~\ref{research} presents the research required to design and implement the proposed campaign manager.
 Section~\ref{timeline} concludes the proposal by describing the proposal's timeline, significance and impact of the work, and the challenges of this work.
