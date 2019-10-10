@@ -1,31 +1,15 @@
 \label{research}
-In my research so far, I discussed an extension of the pilot abstraction to support data analytics and data intensive applications on HPC resources, a conceptual model that provides the methodology to select a data-oriented framework based on the characteristics of the application, and a design comparison and execution time model for scientific workflows.
-In addition, I identified a need for the execution of scientific computational campaigns with minimum user intervention, independent from users' scientific domain.
-In this section, I motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan.
-
-\subsection{Motivation}
-Campaigns from the biomolecular and earth sciences are diverse in terms of composition, number and size of workflow members, and dynamicity.
-Biomolecular science campaigns may be comprised from a small number of workflows with millions of tasks, or thousands of workflows with tens to hundreds tasks. 
-Earth sciences campaigns, especially those which use VHR satellite imagery, comprise of workflows with thousands of tasks.
-The number of workflows depends on the number of images the user has access to as well as the time they are able to obtain imagery.
-These workflows can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{dakka2018high}.
-
-Resource requirements of these campaigns are heterogeneous, in terms of number of resources required and type. 
-Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either simulations or analysis. In addition, some biomolecular analysis tool require data oriented frameworks, such as PMDA~\cite{fan2019pmda}.
-Earth sciences applications, based on imagery, are creating workflows that are executing a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}.
-As a result, the user needs to manage different types of resources as well as resource requirements for each workflow.
-
-Scientific computational campaign workflows can be executed on a number of HPC resources as long as they meet the workflows' computational requirements.
-Despite the fact, users tend to execute all their workflows on one or two systems, under-utilizing their allocations and increasing the makespan of the campaign.
-Being able to distribute workflows on different resources will increase the utilization of the campaign, but also provide opportunity for optimizing the execution time of the campaign.
-
-Based on the above, there is a need for a system that supports the execution of campaign with heterogeneous resource requirements.
-This campaign manager should allow users to describe a set of workflows with their computing requirements, the campaign's objective, a set of resources along with the allocations on those resources, and any other information the user deems important, for example workflow importance.
-Based on this information, the campaign manager should be able to derive and enact an execution plan without any further user intervention.
-As a result, users will be able to compile computational campaigns that allow them to execute scientific experiments to sizes prior unfeasible, at least in terms of number of workflows.
+So far, we discussed an extension of the pilot abstraction to support data analytics and task based data intensive applications on HPC resources, a comparison between different task-based data oriented frameworks, and a design comparison for scientific workflows.
+In addition, we identified a need for the execution of scientific computational campaigns with minimum user intervention, independent from users' scientific domain.
+In this section, we motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan.
 
 
 \subsection{Proposed Topic}
+Campaigns from the biomolecular and earth sciences are diverse in terms of composition, number and size of workflow members, and dynamicity.
+Biomolecular science campaigns may be comprised from a small number of workflows with millions of tasks, or thousands of workflows with tens to hundreds tasks~\cite{dakka2018high}. 
+Earth sciences campaigns, especially those which use VHR satellite imagery, comprise of workflows with thousands of tasks.
+The number of workflows depends on the number of images the user has access to as well as the time they are able to obtain imagery.
+These workflows can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{dakka2018high}.
 
 % ------------------------------------------------------------------------------
 % Scientific campaings
@@ -34,7 +18,7 @@ A subset of this general description of workflows are those which can be represe
 The PST model describes workflows as a set of pipelines, where each pipeline is a sequence of stages.
 Each stage then is a set of tasks that need to be executed.
 Concurrency is achieved in the level of pipelines and the level of tasks. 
-We particularly interested in scientific campaigns comprised by workflows that can be described via the PST model.
+Based on our use cases, we particularly interested in scientific campaigns comprised by workflows that can be described via the PST model.
 Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomolecular sciences (Fig.~\ref{fig:bio_workflow}) and the earth sciences (Fig.~\ref{fig:earth_workflow}). 
 
 \begin{figure*}[ht!]
@@ -53,15 +37,33 @@ Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomol
     \caption{Biomolecular and Earth Science example workflows. \ref{fig:bio_workflow} Biomolecular workflow based on PST model example~\cite{dakka2018concurrent}; \ref{fig:earth_workflow} Earth science workflow based on PST model example~\cite{paraskevakos2019workflow}}\label{fig:bio_earth_workflows}
 \end{figure*}
 
+Resource requirements of these campaigns are heterogeneous, in terms of number of resources required and type. 
+Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either simulations or analysis.
+In addition, some biomolecular analysis tool require data oriented frameworks, such as PMDA~\cite{fan2019pmda}.
+Earth sciences applications, based on imagery, are creating workflows that are executing a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}.
+
+HPC resource are dynamic in nature, as their availability is subject to a broad spectrum of policies.
+These policies determine:
+\begin{inparaenum}[1)]
+\item the maximum number of resources and walltime a user can request concurrently in a single request,
+\item the maximum number of concurrently submitted or active requests, and
+\item one or more usage charging models, which determine the total amount or resources the has access to.
+\end{inparaenum}
+
+Computational campaigns enact an execution plan to allow users achieve a computational objective.
+A computational objective is a set of values selected by the user for a set of metrics, e.g., time to completion and throughput.
+A plan describes a sequence of actions that satisfies the computational objective as, for example, selecting, acquiring and configuring resources, and establishing the execution order of workflows.
+The makespan of a campaign is the time needed to execute all the workflows of the campaign, or alternatively, the maximum execution time among all paths throughout the campaign~\cite{chirkin2017execution}.
+When a campaign consists of workflows that are homogeneous in space, i.e. number of tasks and resource requirements, and time, i.e. the execution time needed to execute, any order of workflow execution would provide the same makespan.
+When heterogeneity is introduced in the workflows, a random order of workflows' execution does not provide provide the same makespan.
+As a result, calculating the makespan of the campaign based on workflow order execution becomes important to decide whether the selected mapping satisfies or not the campaign's computational campaign.
+
 % ----------------------------------------------------------------------------
 % campaign makespan modeling
-Achieving a campaign computational objective, such as time to completion or throughput, would require calculating and optimizing the makespan of the campaign.
-The makespan of a campaign is the time needed to execute all the workflows of the campaign, or alternatively, the maximum execution time among all paths throughout the campaign~\cite{chirkin2017execution}.
-We propose to utilize and extend the Heterogeneous Earliest Finish Time (HEFT) algorithm~\cite{topcuoglu2002performance} algorithm.
+We propose to initially utilize and extend the Heterogeneous Earliest Finish Time (HEFT)~\cite{topcuoglu2002performance} algorithm.
 HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources.
-HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task. 
-HEFT has complexity proportional to the number of dependencies between tasks and the number of resources offered.
-Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a method to extended HEFT on dynamic resources~\cite{dong2007pfas}.
+HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered.
+Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}.
 
 There are several alternative methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent of the campaign.
@@ -70,42 +72,25 @@ Domain specific languages would require too much engineering effort to convert a
 Machine Learning approaches would require model training, validation and testing to produce a model.
 In addition, since the execution is done on dynamic resources, the model should be retrained after every workflow execution.
 
-Initially, we will assume a static campaign with static workflows, executing on static resources. 
-This will allow us to understand the selected algorithm, and find its performance compared to a random plan.
-Next, we will relax the assumption of static resources and work with dynamic resources.
-We will introduce workflow execution time as a normal distribution.
-HEFT assumes static resources.
-Introducing resource dynamicity requires to further extend HEFT to take into account execution time distributions to decide on which resources it will schedule workflows.
-In addition, we will try to further relax our assumptions and introduce dynamic campaigns, and dynamic workflows.
-
-% ----------------------------------------------------------------------------
-% Campaign management system
-There are software systems that are supporting computational campaigns in one way or another.
-PanDA WMS~\cite{maeno2008panda,maeno2014evolution} is possibly the most widely used workload and workflow management system, supporting thousands of users and millions of core-hours and tasks worldwide.
-PanDA is built based on the grid computing paradigm, and undergoes an effort to support HPC resources~\cite{de2016accelerating}.
-PanDA WMS was initially built to support the ATLAS project~\cite{atlas} at LHC, and has been extended to support other domain specific scientific workflows.
-Similarly, DIRAC~\cite{casajus2010dirac} is built to support domain workflows and specifically workflows from the LHCb experiment at CERN.
-These are domain science specific and make specific assumptions about the environment ands type of workflows they support.
-
-
-
-\gpnote{write about Panda, Blasam, Pegasus, ASKALON, DIRAC, QCFractal(?)}
-
 % ----------------------------------------------------------------------------
 % Initial Assumptions
-
+HEFT assumes static resources.
+Introducing resource dynamicity requires to further extend HEFT to take into account resource availability to decide on which resources it will schedule workflows, as well as update the schedule as resource become unavailable.
+In addition, we will try to further relax our assumptions and introduce dynamic campaigns, and dynamic workflows.
 % ----------------------------------------------------------------------------
 % Campaign Manager definition, requirements, features and capabilities
-
-RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) defines 
-an application manager (AM), and a resource manager (RM). EnTK defines an 
-application as a sequence of workflows that are executed. The workflows may 
-either reuse resources or request new ones, based on how the user has 
-programmed the application. In addition, the time requested for each resource 
-is also decided by the user. The AM currently submits a workflow to the 
-resources managed by RM and checks their overall execution state. In addition,
- the resource manager requests computing resource from an HPC and monitors 
-their state. None of these components have any decision capabilities.
+We propose to design a campaign manager (CM) which, given a campaign, an objective, and a set of constraints, can derive an execution plan by utilizing the proposed makespan HEFT method.
+Execution planning for workflows are provided by Pegasus~\cite{deelman2015pegasus}, and ASKALON~\cite{fahringer2005askalon}.
+We plan to extend these capability to campaigns.
+Figure~\ref{fig:refarch} shows a reference architecture where the CM has two sub-components:
+\begin{inparaenum}[(1)]
+\item Makespan Calculator which implements HEFT, and
+\item an Executor which executes the plan. 
+\end{inparaenum}
+Workflow execution will be done through an existing workflow management framework (WMF) on HPC resources.
+If necessary, CM will adapt the execution plan by updating the workflows to resource mapping decisions. 
+These updates will be based on workflows execution metrics provided by the selected WMF such as tasks execution time, overheads calculation and time to completion.
+These metrics will be aggregated across workflows resulting in campaign-wide execution metrics.
 
 \begin{figure*}[t]
     \centering
@@ -113,22 +98,35 @@ their state. None of these components have any decision capabilities.
     \caption{Reference Architecture of a Campaign Manager. Basic 
     subcomponents of Campaign Manager (CM): 1) Makespan Calculation, and 2) Executor. 
     CM communicates decisions to RADICAL-EnTK. CM communicates with HPCs to 
-    execute parts of the campaign.\vspace{-2.5ex}}\label{refarch}
+    execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
+The Makespan Calculator will be responsible for calculating and optimizing the makespan of a campaign based on a set of workflows, a set of resources, and the objective.
+Calculating the makespan requires the calculator to have knowledge or derive of the execution time of the workflows that comprise the campaign on the available resources, as well as their availability.
+HPC resources are dynamic, in the sense that their performance~\cite{pouchard2019computational} and availability fluctuates.
+As a result, the Makespan Calculator requires to take into account performance fluctuations as workflows are being executed.
+In addition, the Campaign Manager should be able to verify whether a resource is available and update the plan accordingly.
 
-\gpnote{
-\begin{enumerate}
-\item After the architecture start discussing implementation. 
-\item Since we are discussing about pilot jobs refer to RP and EnTK.
-\end{enumerate}}
+The Executor sub-component is responsible to execute, and monitor the plan by interfacing with a WMF.
+Based on the plan the Makespan calculator decided, the Executor submits workflows to a WMF to execute on the selected resource.
+This requires the Executor to work upon multiple workflows concurrently.
+In addition, it should monitor workflow execution and resource availability.
+An important requirement for the executor is to identify the reason of a failing workflow.
+When the failure is because the resource is not available the specific workflow may need to be rescheduled and the plan to be updated.
 
-%We propose to extend these two components of EnTK and introduce an autonomic tuner, as defined in Ref~\cite{jha2009self}. The AM, apart from the workflow definitions, can take as input information of the desired resources to execute the workflow, and an Application objective. Initially, the application objective could be as simple as an execution deadline, but it should be easily extensible to other metrics. The resource manager based on the desired resources can provide information about them, such maximum allowed node requests, maximum queue times, and more. The autonomic tuner, we propose to add, can use this information along with execution models for the workflow tasks to decide concurrency and timeline of the execution of the application. This achieves the self-configuration property of an autonomic system. The AM already monitors the execution state and it can report it to the tuner in specified intervals, achieving this way the self-monitoring property. The tuner then can decide whether more resources are required for achieving the deadline and update the decision rule, thus achieving the self-regulating aspect of an autonomic system. The resource manager acquires and monitors resource availability as they are needed by the tuner's decisions. In addition, the resource manager will provide information about which resources a workflow is executing. Figure~\ref{refarch} shows a simple diagram of the architecture of the proposed extension.
+RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workflow management framework.
+We selected to utilize EnTK because it fits the requirements of the target use cases.
+EnTK defines workflows as a set of pipelines, each pipeline is a sequence of stages, and in turn each stage a set of tasks.
+EnTK support the execution of a sequence of workflows may either reuse resources or request new ones, based on how the user has programmed the application.
+EnTK workflow execution is stateful, provides execution metrics, such as task execution time, and supports workflow execution on multiple HPC resources.
+Furthermore, it support a pilot runtime system, RADICAL-Pilot~\cite{merzky2019using}, to execute workflows on HPC resources.
+Pilot systems submit job placeholders on resources, and are able to execute tasks on the acquired resources.
+In addition, the specifics of each individual resource is abstracted and hidden from the upper layer.
+As a result, the campaign manager will see a set of resources where workflows should be executed upon.
+The proposed campaign manager will interface with EnTK to execute workflows based on derived execution plan.
 
-%Changing the number of resources used executing a workflow in HPC resources is not trivial. When more resources are required to a achieve a deadline, the workflow system through its autonomic capabilities can request as many computational nodes as needed. On the other hand, when resources are underutilized, the autonomic system should either release part of them or update the decision for subsequent runs. Nodes on HPCs can be requested either as single or multiple nodes. Since many resources have policies at place to regulate the total number of concurrent jobs a user has, it is preferable to request nodes in numbers larger than one. That requires, whenever resources are released, to release them also as multiple nodes. Initially, we will assume that our workflows do not underutilize the resources.
 
-
-\gpnote{Talk about EnTK's AppManager. See how an autonomic system controller 
-can be added to extend it. It makes sense that each app manager will be able 
-to decide it self about the execution of a workflow. }
-
+Initially, we will assume a static campaign with static heterogeneous workflows, executing on static resources.
+This will allow us to understand the selected algorithm, and find its performance compared to a random plan.
+Next, we will relax the assumption of static resources and work with dynamic resources.
+We will introduce resource dynamicity as resource availability, where resources will not be available and the plan would have to be adjusted.
