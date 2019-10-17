@@ -122,20 +122,29 @@ Our experiment based methodology to compare designs applies to the evaluation of
 We can use the overheads characterization as a baseline to evaluate a production-grade implementations, as well as identify the bottlenecks of the used middleware.
 
 
-
-
 \subsection{Related Work}
 % ----------------------------------------------------------------------------
 % Campaign management system
 \gpnote{write about Panda, Blasam, Pegasus, ASKALON, DIRAC, QCFractal(?), GlideInWMS}
 
-There are software systems that are supporting computational campaigns in one way or another. 
-PanDA WMS~\cite{maeno2008panda,maeno2014evolution}, possibly the most widely used workload and workflow management system, DIRAC~\cite{casajus2010dirac}, and glideinWMS~\cite{sfiligoi2008glidein} support domain specific workflows.
-These systems assume a specific software stack environment that support their use case.
-Our approach is domain agnostic and it makes zero assumptions of a specific pre-existing software stack. 
-Furthermore, PanDA, DIRAC, and glideIN are grid oriented campaign managers, without or minimal support of HPC resources.
-For example, PanDA undergoes an effort to support HPC~\cite{de2016accelerating}, but it is limited to ORNL Titan~\cite{titan}.
-Workflow management systems on HPCs, like Pegasus~\cite{deelman2015pegasus}, and Balsam~\cite{salim2019balsam} support the execution of multiple workflows on HPC resources from multiple users as independent entities.
-A common denominator between all the above campaign, workflow or workload managers, is that they provide a capability to define a set of workflows with a common computational objective.
-We want to extend this notion and allow users to define a single computational objective for a campaign.
-As a result, the above execution model becomes a special case, where a campaign is a single workflow.
+There are software systems that are supporting computational campaigns in one way or another, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, glideinWMS~\cite{sfiligoi2008glidein}, and others. 
+PanDA WMS~\cite{maeno2008panda}, possibly the most widely used workload and workflow management system, is built to support the ATLAS experiment~\cite{atlas} at LHC, and is able to execute several thousand concurrently and it processes million of tasks in a week~\cite{de2015future}.
+DIRAC~\cite{tsaregorodtsev2003dirac} is a LHCb Monte Carlo production system at CERN, and 
+Both PanDA and DIRAC make assumptions about the expected workload, the type of task to be executed, and the software stack that will be used.
+As such, using them for different use cases or scientific domains is very difficult.
+QCFractal~\cite{qcfractal} is a campaign manager to execute upon large scale quantum chemistry data.
+Similarly to PanDA and DIRAC, QCFractal is a domain specific campaign manager.
+Specifically, QCFractal offers a package with the scientific software it supports.
+In addition, it assumes that the data communicated between tasks of the workflows will not exceed few MB of size.
+Our approach is domain agnostic, and makes no assumptions on the type of tasks, the software stack that is going to be used, or data communication between tasks.
+
+Campaign managers support a plethora of computing resources, including Grid resources, HPCs and Cloud.
+PanDA, glideinWMS~\cite{sfiligoi2008glidein}, and DIRAC mainly support grid resources.
+PanDA has been extended to support HPC resources~\cite{de2015future, de2016accelerating}, and clouds~\cite{de2016accelerating}, while glideinWMS~\cite{sfiligoi2008glidein} supports clouds.
+QCFractal~\cite{qcfractal} supports a set of heterogeneous resources including local campus clusters, HPC resources and clouds.
+Workflow management systems on HPCs, like Pegasus~\cite{deelman2015pegasus}, and Balsam~\cite{salim2019balsam} support the execution of multiple workflows on HPC resources.
+
+Most campaign managers are built in a monolithic approach, despite their modular design.
+For example, PanDA~\cite{maeno2008panda}, Pegasus~\cite{deelman2015pegasus}, and glideinWMS~\cite{sfiligoi2008glidein} are not easily extensible to use other capabilities or runtime systems.
+In contrast, QCFractal is built to be extensible and be able to interface with different workflow and workload management systems.
+Our approach will be based by the building blocks approach~\cite{turilli2019middleware} providing a solution that is characterized by the properties of the building blocks approach.
