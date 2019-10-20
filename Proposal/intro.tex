@@ -1,11 +1,20 @@
-Scientific applications are benefiting from defining ensembles of computational tasks whose collective impact provide insight to the studied problem.
-These tasks are organized in pipelines with well defined temporal and data dependencies, and create complex workflows with hundreds or thousands ensemble members~\cite{malawski2015algorithms,rietmann2012forward,dakka2018high}.
-These workflows are either well known prior to execution, and as a result static, or change by adapting tasks to ensemble member and/or ensemble members of the workflow, thus dynamic.
-Static~\cite{paraskevakos2019workflow} and dynamic~\cite{dakka2018high} workflows are used and applied in many scientific domains, e.g. ecological and biomolecular sciences. 
-
-There is a set of scientific applications which require the execution of multiple workflows, with or without dependencies amongst them, to achieve scientific insight.
+\jhanote{Some high-level comments, which we can discuss / elaborate on further:
+\begin{enumerate}
+    \item First two paragraphs can be removed. Done
+    \item I do not think dask is a WMF, recalling L1-L4, no strong preference, but you need to be consistent, as you go on to say about "dask" "data intensive tasks via data parallel frameworks"
+    \item Remove basic definitions to the end. You can assume your committee knows what a MakeSpan is.
+    \item Proposed Topic --> Questions 
+    \item (multiple) repeats of "context" and "definitions" on pg 7. Campaign and manager definitions are repeated a lot
+    \item Distinction between HETF for workflows and Campaigns. How is campaign different from workflows and there is already a problem statement. Use the space to talk about solution.
+    \item Separate details of 'what' and 'how' on research challenges.
+    \item Still not specific enough and is too general.
+    \item I am talking for ensemble based use cases and then I'm going to campaign. Go the other way around.
+    \item More technical in the solution side of things. At least one paragraph for each objective based on timeline.
+\end{enumerate}}
+Scientific applications are benefiting from executing multiple workflows, with or without dependencies amongst them, to achieve scientific insight.
 Biomolecular sciences, for example, execute workflows simulating physical systems and based on local or global analysis may require the execution of additional workflows or stopping the execution of the remaining.
 Ecological sciences that use very high resolution (VHR) satellite imagery, require the analysis of TB of data from different calendar years to create time series of ecological changes.
+These workflows are either well known prior to execution, and as a result static, or change by adapting tasks to ensemble member and/or ensemble members of the workflow, thus dynamic.
 This departs from the approach where the user submits a single workflow and wait for the final results.
 Instead the user monitors the execution of several workflows, selects resources, and submits workflows for execution, while coordinating data analysis and workflow adaptation.
 This way of execution is called executing a computational campaign.
@@ -18,12 +27,12 @@ A plan describes a sequence of actions that solves the objective function as, fo
 Several factors influence the execution plan of campaign on high performance computing resources (HPC), including resource capabilities, and resource dynamicity.
 Resource capabilities refer to the type and amount of computational resources, including: 
 \begin{inparaenum}[1)]
-\item offered computing capacity in terms of number of CPU cores, and possible accelerators, such as GPUs,
-\item offered main memory size, and
-\item offered filesystem in terms of size, and whether it is shared or not.
+\item computing capacity in terms of number of CPU cores, and possible accelerators, such as GPUs,
+\item main memory size, and
+\item filesystem in terms of size, and whether it is shared or not.
 \end{inparaenum}
 A resource is considered static when its availability remains constant over time, and dynamic when its availability changes.
-The user has, based on resource capacity, and resource dynamicity to evaluate how such capacity satisfies the campaign execution over the allocation period.
+The user has, based on resource capacity and resource dynamicity, to evaluate how such capacity satisfies the campaign execution over the allocation period.
 These are complex and time consuming evaluations that depend on many variables, including resource usage policies, and amount of resources consumed by the campaign’s workflows.
 
 Scientific workflows are mainly executed by utilizing dedicated workflow management frameworks (WMF), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus} and others.
