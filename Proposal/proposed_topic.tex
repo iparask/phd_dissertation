@@ -13,7 +13,7 @@ These workflows can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{d
 
 % ------------------------------------------------------------------------------
 % Scientific campaings
-Scientific workflows are generally described by a direct acyclic graph, where the nodes are tasks and the edges dependencies.
+Scientific workflows are generally described by a direct acyclic graph (DAG), where the nodes are tasks and the edges dependencies.
 A subset of this general description of workflows are those which can be represented via the Pipeline, Stage, Task (PST) model~\cite{balasubramanian2018harnessing}.
 The PST model describes workflows as a set of pipelines, where each pipeline is a sequence of stages.
 Each stage then is a set of tasks that need to be executed.
@@ -50,12 +50,12 @@ These policies determine:
 \item one or more usage charging models, which determine the total amount or resources the has access to.
 \end{inparaenum}
 
-Computational campaigns enact an execution plan to allow users achieve a computational objective.
-A computational objective is a set of values selected by the user for a set of metrics, e.g., time to completion and throughput.
-A plan describes a sequence of actions that satisfies the computational objective as, for example, selecting, acquiring and configuring resources, and establishing the execution order of workflows.
-The makespan of a campaign is the time needed to execute all the workflows of the campaign, or alternatively, the maximum execution time among all paths throughout the campaign~\cite{chirkin2017execution}.
-When a campaign consists of workflows that are homogeneous in space, i.e. number of tasks and resource requirements, and time, i.e. the execution time needed to execute, any order of workflow execution would provide the same makespan.
-When heterogeneity is introduced in the workflows, a random order of workflows' execution does not provide provide the same makespan.
+The makespan of a campaign can be from a simple arithmetics calculation to a complex problem, depending on the heterogeneity of the campaign's workflows, maximum concurrency and resource dynamicity.
+Workflows can be heterogeneous in space, i.e. the number of tasks and resource requirements, and in time, i.e. the execution time needed to execute.
+When workflows are the same in space and time, they are considered homogeneous.
+Assuming enough resources to execute a workflow, when a campaign consists of homogeneous workflows any order of workflow execution would provide the same makespan. 
+When heterogeneity is introduced, randomly ordering the workflows' execution does not provide the same makespan for different instances of the ordering.
+This is especially true, when there are not enough resources to execute all the workflows concurrently.
 As a result, calculating the makespan of the campaign based on workflow order execution becomes important to decide whether the selected mapping satisfies or not the campaign's computational campaign.
 
 % ----------------------------------------------------------------------------
@@ -67,16 +67,21 @@ Furthermore, there has been some initial research to extend HEFT to resources th
 
 There are several alternative methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent of the campaign.
-A campaign is a set of workflows, and as a result having the user provide a queuing network representation of the campaign adds an additional layer of complexity.
+As a result, having the user provide a queuing network representation of the campaign adds an additional layer of complexity.
 Domain specific languages would require too much engineering effort to convert a workflow representation based on domain specific assumptions, e.g. MPI style workflow, or specific languages representation, e.g Swift, to a PST model representation.
 Machine Learning approaches would require model training, validation and testing to produce a model.
 In addition, since the execution is done on dynamic resources, the model should be retrained after every workflow execution.
 
 % ----------------------------------------------------------------------------
 % Initial Assumptions
-HEFT assumes static resources.
-Introducing resource dynamicity requires to further extend HEFT to take into account resource availability to decide on which resources it will schedule workflows, as well as update the schedule as resource become unavailable.
-In addition, we will try to further relax our assumptions and introduce dynamic campaigns, and dynamic workflows.
+We propose to extend HEFT to support execution of a computational campaign in dynamic resources.
+When executing a workflows HEFT assumes that any available resource can execute the workflow's tasks.
+In addition, when executing a workflow on HPC resources, it can be assumed that all the resources will be available during the execution of the workflows.
+These two assumptions are not necessarily true when a computational campaign is executed.
+As campaign's workflows are heterogeneous, not all resources will satisfy the space requirements for all the workflows.
+Introducing resource dynamicity requires HEFT to take into account resource availability to decide on which resources it will schedule workflows.
+In addition, it should update the schedule as resources become unavailable.
+
 % ----------------------------------------------------------------------------
 % Campaign Manager definition, requirements, features and capabilities
 We propose to design a campaign manager (CM) which, given a campaign, an objective, and a set of constraints, can derive an execution plan by utilizing the proposed makespan HEFT method.
@@ -101,10 +106,8 @@ These metrics will be aggregated across workflows resulting in campaign-wide exe
     execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
-The Makespan Calculator will be responsible for calculating and optimizing the makespan of a campaign based on a set of workflows, a set of resources, and the objective.
-Calculating the makespan requires the calculator to have knowledge or derive of the execution time of the workflows that comprise the campaign on the available resources, as well as their availability.
-HPC resources are dynamic, in the sense that their performance~\cite{pouchard2019computational} and availability fluctuates.
-As a result, the Makespan Calculator requires to take into account performance fluctuations as workflows are being executed.
+The Makespan Calculator will be responsible for calculating and optimizing the makespan of a campaign based on a set of resources, and the objective.
+The calculator will utilize the extend HEFT algorithm to derive an execution plan of the campaign.
 In addition, the Campaign Manager should be able to verify whether a resource is available and update the plan accordingly.
 
 The Executor sub-component is responsible to execute, and monitor the plan by interfacing with a WMF.

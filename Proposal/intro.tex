@@ -46,27 +46,27 @@ Such a system can utilize campaign makespan calculations, alongside workflow exe
 
 Planning and enacting the execution of a campaign poses four main challenges: 
 \begin{inparaenum}[(i)]
-\item evaluating the time needed to execute the campaign, i.e., the makespan, on possibly heterogeneous and dynamic resources;
-\item understanding the conditions under which an execution plan performs better compared to a random resource selection;
+\item evaluating the makespan of a campaign on heterogeneous and dynamic resources;
+\item the conditions under which an execution plan performs better compared to a random resource selection;
 \item determining a campaign execution plan on available resources that satisfies the given objective function, requirements and constraints of a campaign, while accounting for resource dynamism; and
 \item adapting the plan in case of deviation from the objective achievement.
 \end{inparaenum}
 
-The makespan of a campaign is the time needed to execute all the workflows of the campaign, or alternatively, the maximum execution time among all paths throughout the campaign~\cite{chirkin2017execution}.
 Calculating the makespan of a computational campaign depends on workflow characteristics, workflow dependencies, campaign dynamicity, and resource dynamicity.
 Task execution time depends on parallelism, coordination between tasks, task characteristics~\cite{khoshlessan2017parallel}, the framework used to support task execution~\cite{paraskevakos2018task}, and resource dynamicity and performance variations~\cite{paraskevakos2019workflow, pouchard2019computational}.
 
 Based on workflow tasks’ characteristics, resources may need to be configured with different execution engines.
-Compute intensive tasks on HPC resources are mainly executed via OpenMP/MPI benefiting from parallelism at scale, while data intensive tasks via data parallel frameworks such as Spark~\cite{zaharia2010spark}, or Dask~\cite{rocklin2015dask}.
+Compute intensive applications on HPC resources are mainly executed via OpenMP/MPI benefiting from parallelism at scale, while data intensive application are parallelized  via data parallel frameworks such as Spark~\cite{zaharia2010spark}, or Dask~\cite{rocklin2015dask}.
 Traditionally, HPC resources are designed to optimize the execution of MPI tasks, leaving data-parallel frameworks largely unsupported.
 In Ref.~\cite{luckow2016hadoop}, we show how a pilot-based middleware~\cite{merzky2019using} can support the efficient and scalable execution of data-parallel applications on HPC resources.
 Such capabilities are necessary to support and plan the execution of a data-intensive campaign.
 
 In this proposal, we propose a campaign manager for executing scientific computational campaigns on high performance computing resources.
-This campaign manager, given a campaign, an objective and a set of constraints, will derive and enact upon an execution plan. In case, the plan deviates from achieving the objective of the campaign the campaign manager will adjust it.
+This campaign manager, given a campaign, an objective and a set of constraints, will derive and enact upon an execution plan. 
+In case, the plan deviates from achieving the objective of the campaign the campaign manager will adjust it.
 During the execution of this proposal, we will:
 \begin{inparaenum}[(1)]
-\item an algorithm to calculate the makespan of a campaign and determine an execution plan on possibly heterogeneous and dynamic resources;
+\item select an algorithm to calculate the makespan of a campaign and determine an execution plan on possibly heterogeneous and dynamic resources;
 \item a software system that implements the makespan algorithm, and executes a campaign on resources; and 
 \item a method to evaluate the performance of our approach compared to a random plan. 
 \end{inparaenum}
