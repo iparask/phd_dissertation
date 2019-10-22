@@ -1,20 +1,19 @@
 \jhanote{Some high-level comments, which we can discuss / elaborate on further:
 \begin{enumerate}
-    \item First two paragraphs can be removed. Done
-    \item I do not think dask is a WMF, recalling L1-L4, no strong preference, but you need to be consistent, as you go on to say about "dask" "data intensive tasks via data parallel frameworks"
-    \item Remove basic definitions to the end. You can assume your committee knows what a MakeSpan is.
+    \item First two paragraphs can be removed. \gpnote{Addressed}
+    \item Remove basic definitions to the end. You can assume your committee knows what a MakeSpan is. \gpnote{Addressed}
     \item Proposed Topic --> Questions 
-    \item (multiple) repeats of "context" and "definitions" on pg 7. Campaign and manager definitions are repeated a lot
-    \item Distinction between HETF for workflows and Campaigns. How is campaign different from workflows and there is already a problem statement. Use the space to talk about solution.
-    \item Separate details of 'what' and 'how' on research challenges.
-    \item Still not specific enough and is too general.
+    \item (multiple) repeats of "context" and "definitions" on pg 7. Campaign and manager definitions are repeated a lot \gpnote{Addressed}
+    \item Distinction between HETF for workflows and Campaigns. How is campaign different from workflows and there is already a problem statement. Use the space to talk about solution. \gpnote{Addressed. Not very sure}
+    \item Separate details of 'what' and 'how' on research challenges. 
+    \item Still not specific enough and is too general. 
     \item I am talking for ensemble based use cases and then I'm going to campaign. Go the other way around.
-    \item More technical in the solution side of things. At least one paragraph for each objective based on timeline.
+    \item More technical in the solution side of things. At least one paragraph for each objective based on timeline.  \gpnote{Addressed. One subsection for each objective.}
 \end{enumerate}}
 Scientific applications are benefiting from executing multiple workflows, with or without dependencies amongst them, to achieve scientific insight.
 Biomolecular sciences, for example, execute workflows simulating physical systems and based on local or global analysis may require the execution of additional workflows or stopping the execution of the remaining.
 Ecological sciences that use very high resolution (VHR) satellite imagery, require the analysis of TB of data from different calendar years to create time series of ecological changes.
-These workflows are either well known prior to execution, and as a result static, or change by adapting tasks to ensemble member and/or ensemble members of the workflow, thus dynamic.
+These workflows are either well known prior to execution, and as a result static~\cite{paraskevakos2019workflow}, or change by adapting tasks to ensemble member and/or ensemble members of the workflow, thus dynamic~\cite{dakka2018high}.
 This departs from the approach where the user submits a single workflow and wait for the final results.
 Instead the user monitors the execution of several workflows, selects resources, and submits workflows for execution, while coordinating data analysis and workflow adaptation.
 This way of execution is called executing a computational campaign.
