@@ -14,7 +14,7 @@ In this section, we motivate and propose a Campaign Manager (CM) for creating an
 % ------------------------------------------------------------------------------
 % Scientific campaings
 Scientific workflows are generally described by direct acyclic graphs (DAG), where the nodes are tasks and the edges are dependencies.
-A subset of this general description of workflows are those which can be represented via the Pipeline, Stage, Task (PST) model~\cite{balasubramanian2018harnessing}.
+A subset of this general description of workflows are those which can be represented via the Pipeline, Stage, Task (PST) model~\cite{balasubramanian2018harnessing}. \mtnote{As discussed, EnTK and PST are implementation details.}
 The PST model describes workflows as a set of pipelines, where each pipeline is a sequence of stages.
 Each stage then is a set of tasks that need to be executed.
 Concurrency is achieved at the level of pipelines and the level of tasks. 
@@ -24,7 +24,7 @@ Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomol
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/bio_workflow.pdf}
+         \includegraphics[width=\linewidth]{figures/bio_workflow.pdf}
         \caption{}
         \label{fig:bio_workflow}
     \end{subfigure}%
@@ -37,9 +37,9 @@ Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomol
     \caption{Biomolecular and Earth Science example workflows. \ref{fig:bio_workflow} Biomolecular workflow based on PST model example~\cite{dakka2018concurrent}; \ref{fig:earth_workflow} Earth science workflow based on PST model example~\cite{paraskevakos2019workflow}}\label{fig:bio_earth_workflows}
 \end{figure*}
 
-Resource requirements of \mtnote{which ones?} campaigns are heterogeneous, in terms of number of resources required and type. 
+Computational campaigns resource requirements can be heterogeneous and cover a broad spectrum of resource types and numbers.
 Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either physical systems simulations or trajectory data analysis. \mtnote{simulations of? Analysis of?}
-In addition, some biomolecular analysis tool require data oriented frameworks, such as Parallel MDAnalysis~\cite{fan2019pmda}\mtnote{expand acronym, add other examples.}.
+In addition, some biomolecular analysis tool require specific computational environment or frameworks, such as Parallel MDAnalysis~\cite{fan2019pmda}, HiMach~\cite{tiankai2008scalable}.\mtnote{expand acronym, add other examples.}.
 Earth sciences applications, based on imagery, use workflows that execute a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}\mtnote{This is specific to the applications you worked on, not necessarely true for all workflows used by the earth sciences communities. This comment seems to apply also to all the other examples of this paragraph}.
 
 HPC resource are dynamic in nature, as their availability is subject to a broad spectrum of policies.
@@ -82,27 +82,60 @@ The combination of workflow stacking, execution order, and workflow to resource 
 
 % ----------------------------------------------------------------------------
 % campaign makespan modeling
-We propose to initially utilize and extend the Heterogeneous Earliest Finish Time (HEFT)~\cite{topcuoglu2002performance} algorithm \mtnote{for doing what?}.
-HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources.
-HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered \mtnote{Why suddenly are we writing about tasks? What is the relationship between HEFT, tasks, workflows and campaigns?}
+We propose to initially utilize and extend the Heterogeneous Earliest Finish Time (HEFT)~\cite{topcuoglu2002performance} algorithm to calculate the makespan of computational campaigns\mtnote{for doing what?}.
+HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
+HEFT makes two important assumptions.
+First, any task in a workflow can be executed in all available resources, and second all resources are always available.
+HEFT is mainly used to derive and execution plan for workflows, i.e. the execution order and resource placement of the tasks that comprise the workflow.
+Because we are interested in campaigns, our HEFT extension will provide an execution plan based on workflows as the unit it will operate.
+HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered.\mtnote{Why suddenly are we writing about tasks? What is the relationship between HEFT, tasks, workflows and campaigns?}
 Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}.
 
+We identify four points of possible extensions:
+\begin{inparaenum}[(i)]
+    \item some workflows may not fit some resources,
+    \item resources are becoming unavailable during execution,
+    \item user may want some workflows to have higher priority than others, and
+    \item multiple workflows may fit in a single resource.
+\end{inparaenum}
+Because workflows are heterogeneous in space and time, we assume that at least one resource can satisfy the computational requirements of every workflow, but not necessarily all resources.
+Resources may become unavailable because the user has no allocation left, a scheduled maintenance is taking place, or some unscheduled downtime.
+During the execution of a campaign, some workflows may have a higher priority compared to other due to user preference, or as response to an unforeseen event.
+As a result, HEFT's data structure and HEFT needs to be extended to identify whether a workflow can be executed in a given resource or not, whether a resource is available or not, and user provided initial priorities.
+Finally, a resource may be large enough so that multiple workflows may be able to execute concurrently.
+We will investigate how HEFT can be extended to support variable resource capacity.\gpnote{It may need further extension.}
+
+%There are several alternative methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
+%Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent of the campaign.
+%As a result, having the user provide a queuing network representation of the campaign adds an additional layer of complexity. \mtnote{These two sentences are unclear, please revise.}
+%Domain specific languages would require too much engineering effort to convert a workflow representation based on domain specific assumptions, e.g., MPI style workflow, or specific languages representation, e.g., Swift, to a PST model representation \mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}.
+%Machine Learning approaches would require model training, validation and testing to produce a model \mtnote{Why would this be a problem?}.
+%In addition, since the execution is done on dynamic resources, the model should be retrained after every workflow execution.
+
 There are several alternative methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
-Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent of the campaign.
-As a result, having the user provide a queuing network representation of the campaign adds an additional layer of complexity. \mtnote{These two sentences are unclear, please revise.}
-Domain specific languages would require too much engineering effort to convert a workflow representation based on domain specific assumptions, e.g., MPI style workflow, or specific languages representation, e.g., Swift, to a PST model representation \mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}.
-Machine Learning approaches would require model training, validation and testing to produce a model \mtnote{Why would this be a problem?}.
-In addition, since the execution is done on dynamic resources, the model should be retrained after every workflow execution.
+Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent to the campaign.
+In the case the campaign contains only independent workflows, a single queue system with multiple servers would be sufficient, but a campaign with complex dependencies between workflows may require expertise outside of the user domain to define the equivalent queuing network.
+HEFT sorts workflows based on the number of dependencies they have in the campaign.
+\mtnote{These two sentences are unclear, please revise.}\gpnote{any better?}
+% Application models contain descriptions of resource usage of an algorithm (such as the computation and communication require- ments) and control flow (iteration, sequential and parallel dependencies, and kernel nesting).
+Domain specific languages approaches either require description of the resource usage of workflows~\cite{carothers2017durango}, or execute part of the campaign to obtain execution skeleton of the campaign~\cite{maheshwari2016workflow}.
+When executing a campaign, workflows may require days to execute to obtain execution time information, and users rarely know the resource usage of their workflows to provide enough useful information.
+In addition, the workflow of a campaign may be different and executing some of them may not provide any information about the execution of others.
+\mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}
+Similarly, machine learning approaches would be of limited use since there is no guarantee that the workflows of a campaign is are going to be similar.
+As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign.\mtnote{Why would this be a problem?}.
+We want to provide an approach that only requires the user to provide as few information as possible, such as the workflows and an educated guess of their execution time  \gpnote{any better?}.
+
 
 % ----------------------------------------------------------------------------
 % Initial Assumptions
-We propose to extend HEFT to support execution of a computational campaign on dynamic resources \mtnote{and heterogeneous?}.
-When executing a workflows HEFT assumes that any available resource can execute the workflow's tasks \mtnote{Why this statement is relevant?}.
-In addition, when executing a workflow on HPC resources, it can be assumed that all the resources will be available during the execution of the workflows \mtnote{Explain further, you seem to be assuming the reader understand a lot of implications of what you are writing. This is generally untrue has the reader has a very different background from yours and never thought to what you are writing here before.}.
-These two assumptions are not necessarily true when a computational campaign is executed.
-As campaign's workflows are heterogeneous, not all resources will satisfy the space requirements for all the workflows \mtnote{why?}.
-Introducing resource dynamicity requires HEFT to take into account resource availability to decide on which resources it will schedule workflows.
-In addition, it should update the schedule as resources become unavailable.
+%We propose to extend HEFT to support execution of a computational campaign on dynamic resources \mtnote{and heterogeneous?}.
+%When executing a workflows HEFT assumes that any available resource can execute the workflow's tasks \mtnote{Why this statement is relevant?}.
+%In addition, when executing a workflow on HPC resources, it can be assumed that all the resources will be available during the execution of the workflows \mtnote{Explain further, you seem to be assuming the reader understand a lot of implications of what you are writing. This is generally untrue has the reader has a very different background from yours and never thought to what you are writing here before.}.
+%These two assumptions are not necessarily true when a computational campaign is executed.
+%As campaign's workflows are heterogeneous, not all resources will satisfy the space requirements for all the workflows \mtnote{why?}.
+%Introducing resource dynamicity requires HEFT to take into account resource availability to decide on which resources it will schedule workflows.
+%In addition, it should update the schedule as resources become unavailable.
 
 % ----------------------------------------------------------------------------
 % Campaign Manager definition, requirements, features and capabilities
@@ -157,4 +190,4 @@ This will allow us to understand the selected algorithm \mtnote{what algorithm? 
 Next, we will relax the assumption of static resources and work with dynamic resources.
 We will introduce resource dynamicity as resource availability, where resources will not be available and the plan would have to be adjusted.
 
-\mtnote{General note: this needs to be expanded following the comments I left. At the moment, a lot of this still reads as a set of sometimes disconnected statements. We need to iterate so to produced a more detailed description of the research you propose to conduct in the next year, a description backed by existing literature and your own argumentation. From our discussions, I know you have the material needed to iterate this initial draft. }
+\mtnote{General note: this needs to be expanded following the comments I left. At the moment, a lot of this still reads as a set of sometimes disconnected statements. We need to iterate so to produced a more detailed description of the research you propose to conduct in the next year, a description backed by existing literature and your own argumentation. From our discussions, I know you have the material needed to iterate this initial draft.}
