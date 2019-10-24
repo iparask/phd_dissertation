@@ -24,6 +24,7 @@ Subsections~\ref{obj1},~\ref{obj2}, and~\ref{obj3} provide more details as to wh
 
 \subsubsection{Phase 1: Design and implementation of a campaign manager}
 \label{obj1}
+
 Phase 1 would include design discussions for a prototype of the campaign manager.
 Design a prototype is an iterative process, and it will provided the basic functionality of the campaign manager.
 Result of these discussions will result to the requirements of the campaign manager and its API.
@@ -36,12 +37,22 @@ Understanding whether or not existing design approaches fit the requirements of 
 
 A prototype will be implemented and will provide campaign execution capabilities.
 The prototype will be implemented in python and interface with RADICAL-EnTK as its WMF.
+Initially, we will assume that the workflows of the campaign are described based on the EnTK's API.
+This will allows us to quickly develop the prototype for the campaign manager.
+If there is time in phase 1 we will relax this assumption and try to support different methods of describing workflows based on our use cases.
+This will require to translate a workflow from any representation to EnTK's.
+Furthermore, the planner component should easily allow to support multiple makespan algorithms.
 Success of this phase will provide an installable python package. 
+
 
 \subsubsection{Phase 2: Implementation and performance analysis of makespan algorithm}
 \label{obj2}
-Phase 2 includes implementing the proposed algorithm in the prototype, supporting dynamic resources and understand its performance.
-Initially, we will implement a random planner, while we will extend and implement HEFT to support the campaign.
+Phase 2 includes implementing the proposed HEFT algorithm in the prototype, supporting dynamic resources and understand its performance.
+Initially, we will implement a random planner, while we extend and implement HEFT to support the campaign.
+In addition, we will assume a static campaign with static heterogeneous workflows, executing on static resources.
+This will allow us to understand our proposed algorithm, and find its performance compared to a random plan.
+Next, we will relax the assumption of static resources and work with dynamic resources and introduce resource dynamicity.
+
 Preliminary experimentation during this phase will provide us with information on whether HEFT can support a campaign execution or not.
 In case it does, we will proceed with phase 3 as soon as possible.
 Otherwise, we will research algorithms that can support campaign execution and implement them.

@@ -77,8 +77,8 @@ Instead, executing the three workflows with the largest concurrently and positio
 This problem becomes complicated when the number of workflows in the campaign is in the order of thousands.
 Workflows are heterogeneous in size, and as a consequence multiple workflows may fit in a single resource.
 Grouping multiple workflows together to execute as a single workflow may further reduce the campaigns makespan.
-As a result, calculating the makespan of the campaign for based on workflow stacking, execution order, and workflow to resource mapping becomes important.
-The combination of workflow stacking, execution order, and workflow to resource mapping that produces a makespan which satisfies the computational objective of the campaign is the execution plan of the campaign.
+As a result, calculating the makespan of the campaign for based on workflow grouping, execution order, and workflow to resource mapping becomes important.
+The combination of workflow grouping, execution order, and workflow to resource mapping that produces a makespan which satisfies the computational objective of the campaign defines the execution plan of the campaign.
 
 % ----------------------------------------------------------------------------
 % campaign makespan modeling
@@ -123,7 +123,7 @@ When executing a campaign, workflows may require days to execute to obtain execu
 In addition, the workflow of a campaign may be different and executing some of them may not provide any information about the execution of others.
 \mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}
 Similarly, machine learning approaches would be of limited use since there is no guarantee that the workflows of a campaign is are going to be similar.
-As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign.\mtnote{Why would this be a problem?}.
+As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign.\mtnote{Why would this be a problem?}\gpnote{changed it}.
 We want to provide an approach that only requires the user to provide as few information as possible, such as the workflows and an educated guess of their execution time  \gpnote{any better?}.
 
 
@@ -139,55 +139,68 @@ We want to provide an approach that only requires the user to provide as few inf
 
 % ----------------------------------------------------------------------------
 % Campaign Manager definition, requirements, features and capabilities
-We propose to design a campaign manager (CM) which, given a campaign, an objective, and a set of constraints, can derive an execution plan by utilizing the proposed makespan HEFT method.
-Execution planning for workflows are provided by Pegasus~\cite{deelman2015pegasus}, and ASKALON~\cite{fahringer2005askalon} \mtnote{only these two among all the existing systems? Please refine and expand, explaining that these are just examples. Also, expand appropriately introducing the notions of planning and plan and explaining why they relate to campaign management.}.
-We propose to extend these capability to campaigns.
+We propose to design a campaign manager (CM) which, given a campaign, an objective, and a set of constraints, can derive an execution plan by utilizing the proposed makespan HEFT method, and execute a campaign.
+If necessary the CM will change the execution plan by updating workflow to resource mapping, and resource availability.
+Execution planning for workflows are provided by several workflow execution systems, such as Pegasus~\cite{deelman2015pegasus}, and ASKALON~\cite{fahringer2005askalon}.
+Campaign management systems, such as PanDA~\cite{maeno2008panda}, do not provide a campaign planning feature.
+QCFractal~\cite{qcfractal} offers some form of planning by allowing user to specify the priority of a workflow in a campaign, but it does not plan with taking into account the makespan of the campaign.\mtnote{only these two among all the existing systems? Please refine and expand, explaining that these are just examples. Also, expand appropriately introducing the notions of planning and plan and explaining why they relate to campaign management.}\gpnote{I introduced the plan a few paragraphs before. It may still need to be expanded.}
 
-Figure~\ref{fig:refarch} shows a reference architecture where the CM has two sub-components:
+
+Figure~\ref{fig:refarch} shows a reference architecture where the CM has three components:
 \begin{inparaenum}[(1)]
-\item Makespan Calculator which implements HEFT, and
-\item an Executor which executes the plan. 
+\item a Planner,
+\item and Enactor, and
+\item a Bookkeeper. 
 \end{inparaenum}
 Workflow execution will be done through an existing workflow management framework (WMF) on HPC resources.
-If necessary, CM will adapt the execution plan by updating the workflows to resource mapping decisions. 
-These updates will be based on workflows execution metrics provided by the selected WMF such as tasks execution time, overheads calculation and time to completion.
+Plan updates will be based on workflows execution metrics provided by the selected WMF such as tasks execution time, overheads calculation and time to completion.
 These metrics will be aggregated across workflows resulting in campaign-wide execution metrics.
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/CEM_RefArch.pdf}
+    \includegraphics[width=.95\textwidth]{figures/CEM_design.pdf}
     \caption{Reference Architecture of a Campaign Manager. Basic 
-    subcomponents of Campaign Manager (CM): 1) Makespan Calculation, and 2) Executor. 
+    components of Campaign Manager (CM): 1) Planner, 2) Enactor and 3) Bookkeeper. 
     CM communicates decisions to RADICAL-EnTK. CM communicates with HPCs to 
     execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
-The Makespan Calculator will be responsible for calculating and optimizing \mtnote{is it a calculator or an optimizer? Seem different capabilities to me and not necessarely part of the same component} the makespan of a campaign based on a set of resources, and the objective.
-The calculator will utilize the extend HEFT algorithm to derive an execution plan of the campaign. \mtnote{It seems to me that makespan calculation is only one of the elements needed to derive a plan. As such, I think you need at least two components in your architecture: makespan calculator and planner.}
-In addition, the Campaign Manager \mtnote{are we describing the Makespan Calculator or the Campaign Manager} should be able to verify whether a resource is available and update the plan accordingly.
+The Planner will be responsible for deriving an execution plan  \mtnote{is it a calculator or an optimizer? Seem different capabilities to me and not necessarely part of the same component} the makespan of a campaign based on a set of resources, and the objective.
+It will utilize the extend HEFT algorithm to derive an execution plan of the campaign. \mtnote{It seems to me that makespan calculation is only one of the elements needed to derive a plan. As such, I think you need at least two components in your architecture: makespan calculator and planner.}
+In addition based on information from the other components, the planner may update the plan accordingly.
 
-The Executor sub-component is responsible to execute and monitor the plan \mtnote{where is the plan coming from?} by interfacing with a WMF.
-Based on the plan the Makespan calculator decided, the Executor submits workflows to a WMF to execute on the selected resource.
-This requires the Executor to work upon multiple workflows concurrently \mtnote{and why is this important?}.
-In addition, it should monitor workflow execution and resource availability \mtnote{why?}.
-An important requirement for the executor is to identify the reason of a failing workflow.
-When the failure is because the resource is not available, the specific workflow may need to be rescheduled and the plan to be updated.
+The Bookkeeper component is responsible to monitor the execution of the campaign.
+This component knows the state of the campaign, the execution plan, the availability of the resources, and the campaign's objective.
+The state of the campaign is based on information that the bookkeeper is receiving from the used WMF and the enactor component.
+In addition, it knows the state of the resources, the campaign is using.
+Based on this set of information, it checks whether the campaign's objective can be achieved.
+If any change in the campaign happens, such as workflows are added or removed, a resource is not available any more, or the objective is not going to be met, the bookkeeper informs the planner to update the plan.
+An important feature of the bookkeeper is to identify the reason of a failing workflow.
+When the failure is because the resource is not available, the specific workflow may need to be executed and the plan to be updated.
+
+The Enactor is responsible to execute the plan decided by the planner by interfacing with the WMF.
+Based on the plan, the enactor is responsible to execute workflows on the respective resources based on the plan.
+To achieve that, the enactor informs the WMF to acquire resources, translates the workflow from the user's specification to the API provided by the WMF, and submits the workflow.
+In the case where a group of workflows is to be executed as a single workflow, the enactor is responsible to group them as well.
+Furthermore, it informs the bookkeeper which workflows were submitted for execution.
+
+%The Executor sub-component is responsible to execute and monitor the plan \mtnote{where is the plan coming from?} by interfacing with a WMF.
+%Based on the plan the Makespan calculator decided, the Executor submits workflows to a WMF to execute on the selected resource.
+%This requires the Executor to work upon multiple workflows concurrently \mtnote{and why is this important?}.
+%In addition, it should monitor workflow execution and resource availability \mtnote{why?}.
+%An important requirement for the executor is to identify the reason of a failing workflow.
+%When the failure is because the resource is not available, the specific workflow may need to be rescheduled and the plan to be updated.
 
 RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workflow management framework.
-We selected to utilize EnTK because it fits the requirements of the target use cases.
+We selected to utilize EnTK because it fits the requirements of the target use cases, and it utilizes a pilot framework as its runtime system.
 EnTK defines workflows as a set of pipelines, each pipeline is a sequence of stages, and in turn each stage a set of tasks.
-EnTK support the execution of a sequence of workflows may either reuse resources or request new ones, based on how the user has programmed the application \mtnote{grammar: from `may' onwards I do not understand the sentence anymore.}.
-EnTK workflow execution is stateful, provides execution metrics, such as task execution time, and supports workflow execution on multiple HPC resources.
-Furthermore, EnTK supports a pilot runtime system, RADICAL-Pilot~\cite{merzky2019using}, to execute workflows on HPC resources.
+Concurrency during execution happens at the level of pipelines and tasks.
+Furthermore, EnTK supports the execution of a sequence of workflows by either reusing already acquired resources or by requesting new ones\mtnote{grammar: from `may' onwards I do not understand the sentence anymore.}.
+EnTK workflow execution is stateful, provides execution timing traces for tasks and workflows, and supports workflow execution on multiple HPC resources.
+Furthermore, EnTK utilizes a pilot runtime system, RADICAL-Pilot~\cite{merzky2019using}, to execute workflows on HPC resources.
 Pilot systems submit job placeholders on resources, and are able to execute tasks on the acquired resources.
-In addition, the specifics of each individual resource is abstracted and hidden from the upper layer.
-As a result, the campaign manager will see a set of resources where workflows should be executed upon \mtnote{not sure  understand how this follows from your explanation of pilots.}.
-The proposed campaign manager will interface with EnTK to execute workflows based on a derived execution plan.
-
-
-Initially, we will assume a static campaign with static heterogeneous workflows, executing on static resources.
-This will allow us to understand the selected algorithm \mtnote{what algorithm? For doing what?}, and find its performance compared to a random plan.
-Next, we will relax the assumption of static resources and work with dynamic resources.
-We will introduce resource dynamicity as resource availability, where resources will not be available and the plan would have to be adjusted.
+This capability allows to execute multiple workflows to resources that are acquired once, either sequentially or concurrently.
+%As a result, the campaign manager will see a set of resources where workflows should be executed upon \mtnote{not sure  understand how this follows from your explanation of pilots.}.
+The proposed campaign manager will interface with EnTK through the enactor and bookkeeper components to execute and monitor workflows based on the derived execution plan.
 
 \mtnote{General note: this needs to be expanded following the comments I left. At the moment, a lot of this still reads as a set of sometimes disconnected statements. We need to iterate so to produced a more detailed description of the research you propose to conduct in the next year, a description backed by existing literature and your own argumentation. From our discussions, I know you have the material needed to iterate this initial draft.}
