@@ -12,43 +12,43 @@ In this section, we motivate and propose a Campaign Manager (CM) for creating an
 %These workflows can be static~\cite{paraskevakos2019workflow} or dynamic~\cite{dakka2018high}. \mtnote{Did we explained why campaigns from these two science domains are interesting for this proposal?}
 
 % ------------------------------------------------------------------------------
-% Scientific campaings
-Scientific workflows are generally described by direct acyclic graphs (DAG), where the nodes are tasks and the edges are dependencies.
-A subset of this general description of workflows are those which can be represented via the Pipeline, Stage, Task (PST) model~\cite{balasubramanian2018harnessing}. \mtnote{As discussed, EnTK and PST are implementation details.}
-The PST model describes workflows as a set of pipelines, where each pipeline is a sequence of stages.
-Each stage then is a set of tasks that need to be executed.
-Concurrency is achieved at the level of pipelines and the level of tasks. 
-Based on our use cases, we are particularly interested in scientific campaigns comprised by workflows that can be described via the PST model. \mtnote{Why?}
-Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomolecular sciences (Fig.~\ref{fig:bio_workflow}) and the earth sciences (Fig.~\ref{fig:earth_workflow}). 
+% Scientific campaigns
+Scientific campaigns execute workflows on heterogeneous resources either for large periods of time~\cite{maeno2008panda} or with a given objective.
+This objective can be translated to a computational objective function that would either minimize or maximize a computational metric.
+Calculating the makespan of the campaign means finding the execution plan that satisfies the computational objective function.
+%As a result, calculating the makespan of the campaign for based on workflow grouping, execution order, and workflow to resource mapping becomes important.
+%The combination of workflow grouping, execution order, and workflow to resource mapping that produces a makespan which satisfies the computational objective of the campaign defines the execution plan of the campaign.
 
-\begin{figure*}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-         \includegraphics[width=\linewidth]{figures/bio_workflow.pdf}
-        \caption{}
-        \label{fig:bio_workflow}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/earth_workflow.pdf}
-        \caption{}
-        \label{fig:earth_workflow}
-    \end{subfigure}
-    \caption{Biomolecular and Earth Science example workflows. \ref{fig:bio_workflow} Biomolecular workflow based on PST model example~\cite{dakka2018concurrent}; \ref{fig:earth_workflow} Earth science workflow based on PST model example~\cite{paraskevakos2019workflow}}\label{fig:bio_earth_workflows}
-\end{figure*}
 
-Computational campaigns resource requirements can be heterogeneous and cover a broad spectrum of resource types and numbers.
-Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either physical systems simulations or trajectory data analysis. \mtnote{simulations of? Analysis of?}
-In addition, some biomolecular analysis tool require specific computational environment or frameworks, such as Parallel MDAnalysis~\cite{fan2019pmda}, HiMach~\cite{tiankai2008scalable}.\mtnote{expand acronym, add other examples.}.
-Earth sciences applications, based on imagery, use workflows that execute a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}\mtnote{This is specific to the applications you worked on, not necessarely true for all workflows used by the earth sciences communities. This comment seems to apply also to all the other examples of this paragraph}.
+%Scientific workflows are generally described by direct acyclic graphs (DAG), where the nodes are tasks and the edges are dependencies.
+%A subset of this general description of workflows are those which can be represented via the Pipeline, Stage, Task (PST) model~\cite{balasubramanian2018harnessing}. \mtnote{As discussed, EnTK and PST are implementation details.}
+%The PST model describes workflows as a set of pipelines, where each pipeline is a sequence of stages.
+%Each stage then is a set of tasks that need to be executed.
+%Concurrency is achieved at the level of pipelines and the level of tasks. 
+%Based on our use cases, we are particularly interested in scientific campaigns comprised by workflows that can be described via the PST model. \mtnote{Why?}
+%Figure~\ref{fig:bio_earth_workflows} shows two example workflows from the biomolecular sciences (Fig.~\ref{fig:bio_workflow}) and the earth sciences (Fig.~\ref{fig:earth_workflow}). 
 
-HPC resource are dynamic in nature, as their availability is subject to a broad spectrum of policies.
-These policies determine:
-\begin{inparaenum}[1)]
-\item the maximum number of resources and walltime a user can request concurrently in a single request,
-\item the maximum number of concurrently submitted or active requests, and
-\item one or more usage charging models, which determine the total amount or resources the has access to.
-\end{inparaenum}
+%\begin{figure*}[ht!]
+%    \centering
+%    \begin{subfigure}[b]{0.45\textwidth}
+%         \includegraphics[width=\linewidth]{figures/bio_workflow.pdf}
+%        \caption{}
+%        \label{fig:bio_workflow}
+%    \end{subfigure}%
+%    ~ 
+%    \begin{subfigure}[b]{0.45\textwidth}
+%        \includegraphics[width=\linewidth]{figures/earth_workflow.pdf}
+%        \caption{}
+%        \label{fig:earth_workflow}
+%    \end{subfigure}
+%    \caption{Biomolecular and Earth Science example workflows. \ref{fig:bio_workflow} Biomolecular workflow based on PST model example~\cite{dakka2018concurrent}; \ref{fig:earth_workflow} Earth science workflow based on PST model example~\cite{paraskevakos2019workflow}}\label{fig:bio_earth_workflows}
+%\end{figure*}
+
+%Computational campaigns resource requirements can be heterogeneous and cover a broad spectrum of resource types and numbers.
+%Biomolecular science software tools support MPI/OpenMP, GPUs, and other accelerators, such as Intel Phi processors~\cite{cheatham2015impact} for executing either physical systems simulations or trajectory data analysis. \mtnote{simulations of? Analysis of?}
+%In addition, some biomolecular analysis tool require specific computational environment or frameworks, such as Parallel MDAnalysis~\cite{fan2019pmda}, HiMach~\cite{tiankai2008scalable}.\mtnote{expand acronym, add other examples.}.
+%Earth sciences applications, based on imagery, use workflows that execute a series of CPU based preprocessing, and eventually execute a computer vision algorithm on GPUs~\cite{paraskevakos2019workflow}\mtnote{This is specific to the applications you worked on, not necessarily true for all workflows used by the earth sciences communities. This comment seems to apply also to all the other examples of this paragraph}.
+
 
 %The makespan of a campaign can be \mtnote{missing verb: derived maybe?} from a simple arithmetics calculation to a complex problem, depending on the heterogeneity of the campaign's workflows, maximum concurrency and resource dynamicity. \mtnote{This seems to assume that the reader has to understand the relation between makespan, heterogeneity and dynamicity on her own. I would refine and explain better.}
 %Workflows can be heterogeneous in space, i.e., the number of tasks and resource requirements, and in time, i.e., the execution time needed to execute.
@@ -75,10 +75,8 @@ A possible execution order would be to place three consecutive workflows to each
 The makespan would be equal to the summation of the execution time of last workflows, i.e. $7 + 8 + 9 = 24$ time units.
 Instead, executing the three workflows with the largest concurrently and position new workflows to resources as they become available, it can produce a makespan of $16$ time units.
 This problem becomes complicated when the number of workflows in the campaign is in the order of thousands.
-Workflows are heterogeneous in size, and as a consequence multiple workflows may fit in a single resource.
-Grouping multiple workflows together to execute as a single workflow may further reduce the campaigns makespan.
-As a result, calculating the makespan of the campaign for based on workflow grouping, execution order, and workflow to resource mapping becomes important.
-The combination of workflow grouping, execution order, and workflow to resource mapping that produces a makespan which satisfies the computational objective of the campaign defines the execution plan of the campaign.
+
+
 
 % ----------------------------------------------------------------------------
 % campaign makespan modeling
