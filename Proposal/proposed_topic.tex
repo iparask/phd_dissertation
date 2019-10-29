@@ -13,7 +13,7 @@ In this section, we motivate and propose a Campaign Manager (CM) for creating an
 
 % ------------------------------------------------------------------------------
 % Scientific campaigns
-Scientific campaigns execute workflows on heterogeneous resources either for large periods of time~\cite{maeno2008panda} or with a given objective.
+Scientific campaigns execute workflows on heterogeneous resources either with a given objective or for large periods of time~\cite{maeno2008panda}.
 This objective can be translated to a computational objective function that would either minimize or maximize a computational metric.
 Calculating the makespan of the campaign means finding the execution plan that satisfies the computational objective function.
 %As a result, calculating the makespan of the campaign for based on workflow grouping, execution order, and workflow to resource mapping becomes important.
@@ -82,14 +82,19 @@ This problem becomes complicated when the number of workflows in the campaign is
 % campaign makespan modeling
 We propose to initially utilize and extend the Heterogeneous Earliest Finish Time (HEFT)~\cite{topcuoglu2002performance} algorithm to calculate the makespan of computational campaigns\mtnote{for doing what?}.
 HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
-HEFT makes two important assumptions.
+HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
+HEFT provided better performance in terms of makespan minimization when compared to a random or round robin plan~\cite{deelman2015pegasus}.
+This makes HEFT a good candidate for minimizing the makespan of a campaign
+
+
+HEFT makes two important assumptions when used to work upon workflows.
 First, any task in a workflow can be executed in all available resources, and second all resources are always available.
 HEFT is mainly used to derive and execution plan for workflows, i.e. the execution order and resource placement of the tasks that comprise the workflow.
 Because we are interested in campaigns, our HEFT extension will provide an execution plan based on workflows as the unit it will operate.
 HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered.\mtnote{Why suddenly are we writing about tasks? What is the relationship between HEFT, tasks, workflows and campaigns?}
 Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}.
 
-We identify four points of possible extensions:
+We identify four points of possible extensions, so that HEFT can be utilized for campaigns:
 \begin{inparaenum}[(i)]
     \item some workflows may not fit some resources,
     \item resources are becoming unavailable during execution,
@@ -163,9 +168,10 @@ These metrics will be aggregated across workflows resulting in campaign-wide exe
     execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
-The Planner will be responsible for deriving an execution plan  \mtnote{is it a calculator or an optimizer? Seem different capabilities to me and not necessarely part of the same component} the makespan of a campaign based on a set of resources, and the objective.
+The Planner will be responsible for deriving an execution plan by calculating \mtnote{is it a calculator or an optimizer? Seem different capabilities to me and not necessarily part of the same component}\gpnote{any better?} the makespan of a campaign based on a set of resources, and the objective.
 It will utilize the extend HEFT algorithm to derive an execution plan of the campaign. \mtnote{It seems to me that makespan calculation is only one of the elements needed to derive a plan. As such, I think you need at least two components in your architecture: makespan calculator and planner.}
-In addition based on information from the other components, the planner may update the plan accordingly.
+The planner uses the bookkeeper to retrieve information about the state of resources as well as the state of the workflows of the campaign.
+In addition based on information from the other components, the planner may update the plan accordingly. 
 
 The Bookkeeper component is responsible to monitor the execution of the campaign.
 This component knows the state of the campaign, the execution plan, the availability of the resources, and the campaign's objective.
@@ -193,7 +199,7 @@ RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workfl
 We selected to utilize EnTK because it fits the requirements of the target use cases, and it utilizes a pilot framework as its runtime system.
 EnTK defines workflows as a set of pipelines, each pipeline is a sequence of stages, and in turn each stage a set of tasks.
 Concurrency during execution happens at the level of pipelines and tasks.
-Furthermore, EnTK supports the execution of a sequence of workflows by either reusing already acquired resources or by requesting new ones\mtnote{grammar: from `may' onwards I do not understand the sentence anymore.}.
+Furthermore, EnTK supports the execution of a sequence of workflows by either reusing already acquired resources or by requesting new ones\mtnote{grammar: from `may' onwards I do not understand the sentence anymore.}\gpnote{fixed it}.
 EnTK workflow execution is stateful, provides execution timing traces for tasks and workflows, and supports workflow execution on multiple HPC resources.
 Furthermore, EnTK utilizes a pilot runtime system, RADICAL-Pilot~\cite{merzky2019using}, to execute workflows on HPC resources.
 Pilot systems submit job placeholders on resources, and are able to execute tasks on the acquired resources.
