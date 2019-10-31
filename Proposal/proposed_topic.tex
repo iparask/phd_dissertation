@@ -13,7 +13,37 @@ In this section, we motivate and propose a Campaign Manager (CM) for creating an
 
 % ------------------------------------------------------------------------------
 % Scientific campaigns
-Scientific campaigns execute workflows on heterogeneous resources either with a given objective or for large periods of time~\cite{maeno2008panda}.
+%Several factors influence the execution plan of campaign on high performance computing resources (HPC), including resource capabilities, and resource dynamicity.
+%Resource capabilities refer to the type and amount of computational resources, including: 
+%\begin{inparaenum}[1)]
+%\item computing capacity in terms of number of CPU cores, and possible accelerators, such as GPUs,
+%\item main memory size, and
+%\item filesystem in terms of size, and whether it is shared or not.
+%\end{inparaenum}
+%A resource is considered static when its availability remains constant over time, and dynamic when its availability changes.
+%The user has, based on resource capacity and resource dynamicity, to evaluate how such capacity satisfies the campaign execution over the allocation period.
+%These are complex and time consuming evaluations that depend on many variables, including resource usage policies, and amount of resources consumed by the campaign’s workflows.
+
+%Scientific workflows are mainly executed by utilizing dedicated workflow management frameworks (WMF), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus} and others.
+%These frameworks offer runtime capabilities, such as task execution, data dependency resolution, and workflow definition and monitoring.
+%Given a set of resources and a walltime, WMF try to maximize resource utilization and minimize time to completion.
+%WMF assume that the user selects sufficient resources and walltime to execute the workflow.
+%Some workflow management frameworks, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, by scaling up or down, based on the current state of execution.
+%In addition, some  WMFs~\cite{deelman2015pegasus} may support the concurrent execution of multiple workflows as independent entities, but not a single unified entity to achieve a single objective.
+%Providing a campaign manager with capabilities to plan, monitor, and adapt the execution of a campaign becomes therefore desirable.
+%Such a system can utilize campaign makespan calculations, alongside workflow execution capabilities, to automate campaign planning and execution. 
+%Calculating the makespan of a computational campaign depends on workflow characteristics, workflow dependencies, campaign dynamicity, and resource dynamicity.
+%Task execution time depends on parallelism, coordination between tasks, task characteristics~\cite{khoshlessan2017parallel}, the framework used to support task execution~\cite{paraskevakos2018task}, and resource dynamicity and performance variations~\cite{paraskevakos2019workflow, pouchard2019computational}.
+
+%Based on workflow tasks’ characteristics, resources may need to be configured with different execution engines.
+%Compute intensive applications on HPC resources are mainly executed via OpenMP/MPI benefiting from parallelism at scale, while data intensive application are parallelized  via data parallel frameworks such as Spark~\cite{zaharia2010spark}, or Dask~\cite{rocklin2015dask}.
+%Traditionally, HPC resources are designed to optimize the execution of MPI tasks, leaving data-parallel frameworks largely unsupported.
+%In Ref.~\cite{luckow2016hadoop}, we show how a pilot-based middleware~\cite{merzky2019using} can support the efficient and scalable execution of data-parallel applications on HPC resources.
+%Such capabilities are necessary to support and plan the execution of a data-intensive campaign.
+
+
+
+Scientific campaigns execute workflows on heterogeneous resources either with a given objective~\cite{casajus2010dirac} or for large periods of time~\cite{maeno2008panda}.
 This objective can be translated to a computational objective function that would either minimize or maximize a computational metric.
 Calculating the makespan of the campaign means finding the execution plan that satisfies the computational objective function.
 %As a result, calculating the makespan of the campaign for based on workflow grouping, execution order, and workflow to resource mapping becomes important.
@@ -194,6 +224,13 @@ Furthermore, it informs the bookkeeper which workflows were submitted for execut
 %In addition, it should monitor workflow execution and resource availability \mtnote{why?}.
 %An important requirement for the executor is to identify the reason of a failing workflow.
 %When the failure is because the resource is not available, the specific workflow may need to be rescheduled and the plan to be updated.
+
+Scientific workflows are mainly executed by utilizing dedicated workflow management frameworks (WMF), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus} and others.
+These frameworks offer runtime capabilities, such as task execution, data dependency resolution, and workflow definition and monitoring.
+Given a set of resources and a walltime, WMF try to maximize resource utilization and minimize time to completion.
+WMF assume that the user selects sufficient resources and walltime to execute the workflow.
+Some workflow management frameworks, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, by scaling up or down, based on the current state of execution.
+In addition, some  WMFs~\cite{deelman2015pegasus} may support the concurrent execution of multiple workflows as independent entities, but not a single unified entity to achieve a single objective.
 
 RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing} (EnTK) is a workflow management framework.
 We selected to utilize EnTK because it fits the requirements of the target use cases, and it utilizes a pilot framework as its runtime system.
