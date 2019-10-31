@@ -1,8 +1,6 @@
 \label{research}
-So far, we discussed an extension of the pilot abstraction to support data analytics and task based data intensive applications on HPC resources, a comparison between different task-based data oriented frameworks, and a design comparison for scientific workflows.
-In addition, we identified a need for the execution of scientific computational campaigns with minimum user intervention, independent from users' scientific domain.
-In this section, we motivate and propose a Campaign Manager (CM) for creating and enacting a campaign execution plan. \mtnote{Do we need to explain how these three topics fit together?}
-
+So far, we discussed an extension of the pilot abstraction to support data analytics and task based data intensive applications on HPC resources, a comparison between different task-based data oriented frameworks, and a design comparison for executing scientific workflows.
+In this section, we motivate and propose a Campaign Manager (CM) to execute scientific campaigns via creating and enacting a campaign execution plan on heterogeneous and dynamic HPC resources. \mtnote{Do we need to explain how these three topics fit together?}\gpnote{I am not sure}
 
 \subsection{Proposed Topic}
 %Campaigns from the biomolecular and earth sciences are diverse in terms of composition, number and size of workflow members, and dynamicity. \mtnote{What does ``composition'' stand for in this context?}
@@ -46,6 +44,7 @@ In this section, we motivate and propose a Campaign Manager (CM) for creating an
 Scientific campaigns execute workflows on heterogeneous resources either with a given objective~\cite{casajus2010dirac} or for large periods of time~\cite{maeno2008panda}.
 This objective can be translated to a computational objective function that would either minimize or maximize a computational metric.
 Calculating the makespan of the campaign means finding the execution plan that satisfies the computational objective function.
+
 %As a result, calculating the makespan of the campaign for based on workflow grouping, execution order, and workflow to resource mapping becomes important.
 %The combination of workflow grouping, execution order, and workflow to resource mapping that produces a makespan which satisfies the computational objective of the campaign defines the execution plan of the campaign.
 
@@ -89,7 +88,7 @@ Calculating the makespan of the campaign means finding the execution plan that s
 %As a result, calculating the makespan of the campaign based on workflow order execution becomes important to decide whether the selected mapping satisfies or not the campaign's computational campaign \mtnote{``campaign's computational campaign'' makes no sense.}.
 
 \mtnote{This seems to assume that the reader has to understand the relation between makespan, heterogeneity and dynamicity on her own. I would refine and explain better.}\gpnote{Broke it into two paragraphs.}
-Several factor can influence the complexity of calculating the makespan of a campaign, such as heterogeneity of the campaign's workflows, concurrency and resource dynamicity.
+
 Workflows can be heterogeneous in space, i.e., the number of tasks and resource requirements, and in time, i.e., the execution time needed to execute.
 When workflows are the same in space and time, they are considered homogeneous.
 Assuming homogeneous workflows and a single static resource, the makespan of the campaign is equal to the addition of the execution time of all workflows.
