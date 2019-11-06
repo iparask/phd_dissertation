@@ -22,8 +22,8 @@ Calculating the makespan of the campaign means finding the execution plan that s
 \end{enumerate}}
 \gpnote{moved it here}
 
-The way workflows of a given campaign are mapped to resources can affect the makespan of the campaign. 
-Figure~\ref{fig:example_makespan} shows an example of a campaign with heterogeneous workflows, and the makespan two different mappings produce.
+The way workflows of a given campaign are mapped to resources can affect the makespan calculation of a given campaign. 
+Figure~\ref{fig:example_makespan} shows an example of a campaign with workflows of different size and execution times, and the makespan two different mappings produce.
 The makespan of the campaign on the left subfigure is $20$, while on the right it is $16$.
 In addition, the size of the workflows, i.e., the number of resources they require, becomes relevant and resources may be underutilized, as shown in Figure~\ref{fig:example_makespan}.
 
@@ -33,7 +33,7 @@ In addition, the size of the workflows, i.e., the number of resources they requi
     \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
 \end{figure*}
 
-We are making a set of assumptions which we do not relax during our initial analysis.
+We are making a set of assumptions which we do not relax during the initial analysis of a model that calculates the makespan of a campaign.
 These are:
 \begin{inparaenum}[(1)]
     \item a workflow is an atomic unit and cannot be decomposed;
@@ -47,10 +47,10 @@ These are:
 
 We denote a computational campaign as $w = [w_{i}: 1 \leq i \leq W]$, where $w_{i}$ is a workflow and $W$ is the total number of workflows, $r = [ r_{j}: 1 \leq j \leq R]$ is a set of available resources, where $r_{j}$ is a resource and $R$ is the total number of available resources, and $ m(w,r) = [(w_i, r_j): 1 \leq i \leq W, r_j \in r] $ is a mapping function of workflows onto resources.
 In addition, we denote as $TTX_{w_{i}}$ the execution time of a workflow, $TTX_{w}$ as the makespan of campaign $w$, and $TTX_{w}^{m}$ as the makespan of campaign $w$ for a given mapping function $ m $.
-Assumption~\#3 allows to abstract the resource implementation, as workflows can be executed on different resources such as HPCs, Clouds, pilots and more. 
+Assumption~\#3 allows to abstract the resource implementation details, as workflows can be executed on different resources such as HPCs, Clouds, pilots and more. 
 Lastly, we will assume homogeneous resources as it simplifies the formalization of the problem.
 
-Assuming a single resource, i.e., $R = 1$, the workflows of the campaign will be executed sequentially, whether the workflows are homogeneous or heterogeneous.
+Assuming a single resource, i.e., $R = 1$, the workflows of the campaign will be executed sequentially, regardless the execution order or if the workflows are homogeneous or heterogeneous.
 As a result the makespan of the campaign is
 \begin{equation}
    TTX_{w} = \sum_{i=1}^{W}TTX_{w_{i}} 
@@ -58,12 +58,12 @@ As a result the makespan of the campaign is
 
 When assuming multiple homogeneous resources, i.e., $1 < R < W$, the workflows can be executed concurrently.
 Furthermore, this is semantically equivalent to executing on a single resource large enough to allow concurrent workflow execution, where each workflow executes on resource partition. 
-Because of assumptions~\#4 and~\#6, executing homogeneous workflows or heterogeneous in space workflows is the same.
+Because of assumptions~\#4 and~\#6, executing homogeneous or heterogeneous in space workflows is the same.
 A random mapping of workflows onto resource will have a makespan
 \begin{equation}
    TTX_{w}^{random} \geq \frac{1}{R}\sum_{i=1}^{W} TTX_{w_{i}} 
 \end{equation}
-When executing workflows heterogeneous in time, whether they are heterogeneous in space or not as well, on multple homogeneous resources, the makespan of the campaign for a given mapping function $ m $ is
+When executing workflows heterogeneous in time, whether they are heterogeneous in space or not as well, on multiple homogeneous resources, the makespan of the campaign for a given mapping function $ m $ is
 
 \begin{equation}
 TTX_{w}^{m} = \max_{r_{j}\in r}\Big\{\sum_{r_{i}\in m(w,r_{j})}TTX_{w_{i}}\Big\}
@@ -71,10 +71,12 @@ TTX_{w}^{m} = \max_{r_{j}\in r}\Big\{\sum_{r_{i}\in m(w,r_{j})}TTX_{w_{i}}\Big\}
 \end{equation}
 
 During the next year, we propose to expand the model, as it is represented in equation~\ref{eq:makespan}, by relaxing some of the initial assumptions.
-First, we will relax the assumption that resources are homogeneous in terms of (1) maximum number of resources they have available; (2) type of resources, e.g., CPUs or GPGPUs; and (3) the time they are available.
-Second, we will add resource type heterogeneity of workflows.
+First, we will relax the assumption that resources are homogeneous in terms of (1) maximum number of resources they have available; and (2) type of resources, e.g., CPUs or GPGPUs; and (3) the time they are available.
+We will then add resource type heterogeneity of workflows.
 As a result, workflows will not be able to be executed on all available resources affecting the way the makespan is being calculated.
-Furthermore, we propose to explore algorithmic instances of the mapping function $ m $, and if there is time, we will propose a quantitative definition of $ m $.
+We will continue by introducing resource dynamism, as resource availability changes in time.
+Furthermore, we propose to explore algorithmic instances of the mapping function $ m $ such that $TTX_{w}^{random} \geq TTX_{w}^{m} \geq min(TTX_{w})$.
+Lastly, if there is time, we will propose a quantitative definition of $ m $.
 
 \mtnote{I think that we will need either equations or diagrammatic representation of the placement + makespan, ideally both. Even knowing quite well what you are trying to write, it is very difficult to follow your argumentation. There are elements of the argumentation (assuming I understand it well enough) that I might disagree with but I am going to keep those thoughts for after the proposal :)}
 \gpnote{separate document moved here.}
@@ -95,37 +97,33 @@ Because we are interested in campaigns, our HEFT extension will provide an execu
 HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered.\mtnote{Why suddenly are we writing about tasks? What is the relationship between HEFT, tasks, workflows and campaigns?}\gpnote{HEFT was created to work on workflows. I added the next paragraph to show how HEFT for campaigns might be different.}
 Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}.
 
-We identify four points of possible extensions, so that HEFT is utilized for campaigns.
+We identify three points of possible extensions, so that HEFT is utilized for campaigns.
 These are:
 \begin{inparaenum}[(i)]
-    \item selecting resource that can execute a given workflow,
-    \item taking into account dynamic resources, as they may become unavailable during execution,
-    \item multiple workflows may be executed in a single resource concurrently, and
-    \item including user specified priorities for workflows.
+    \item to support heterogeneous in type workflows,
+    \item to support heterogeneous resources, and
+    \item to support dynamic resources, as they may become unavailable during execution.
 \end{inparaenum}
-Because workflows are heterogeneous, we assume that there is at least one resource can satisfy the computational requirements of any workflow in the campaign, but not necessarily all resources.
-Resources may become unavailable because the user has no allocation left, a scheduled maintenance is taking place, or due to some unscheduled downtime.
-During the execution of a campaign, some workflows may have a higher priority compared to other due to user preference, or as response to an unforeseen event.
-As a result, HEFT's data structure and HEFT needs to be extended to identify whether a workflow can be executed in a given resource or not, whether a resource is available or not, and user provided initial priorities.
+As a result, HEFT's data structure and HEFT needs to be extended to identify whether a workflow can be executed in a given resource or not, and whether a resource is available or not.
 Finally, a resource may have enough capacity so that multiple workflows can be executed concurrently.
-We will investigate how HEFT can be extended to support variable resource capacity.\gpnote{It may need further extension.}
+%We will investigate how HEFT can be extended to partition resources  variable resource capacity.\gpnote{It may need further extension.}
 
 There are several alternative methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 Queuing networks will be of limited use because they require from the user to provide a queuing network equivalent to the campaign.
 In the case the campaign contains only independent workflows, a single queuing system with multiple servers would be sufficient, but a campaign with complex dependencies between workflows may require expertise outside of the user domain to define the equivalent queuing network.
 HEFT sorts workflows based on the number of dependencies they have in the campaign.
-Furthermore, using queuing systems to derive the makespan of a campaign requires to search for possible mappings and keep the one that optimizes the makespan.
-HEFT provides as an output, the plan that minimizes the makespan.
+Furthermore, using queuing systems to derive the makespan of a campaign requires to search for possible mappings and keep the one that optimizes the makespan, while HEFT uses a heuristic to derive an execution plan.
 \mtnote{These two sentences are unclear, please revise.}\gpnote{any better?}
 
 Domain specific languages approaches either require description of the resource usage of workflows~\cite{carothers2017durango}, or execute part of the campaign to obtain execution skeleton of the campaign~\cite{maheshwari2016workflow}.
 When executing a campaign, workflows may require days to execute to obtain execution time information, and users rarely know the resource usage of their workflows to provide enough useful information.
 In addition, the workflows of a campaign may be different and executing some of them may not provide any information about the execution of others.
-HEFT also requires an initial estimation of the execution time of the workflows. We plan to utilize initial estimations provided by the users and update the values as workflows are being executed.
-\mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}\gpnote{I removed the EnTK argument.}
-Similarly, machine learning approaches would be of limited use since there is no guarantee that the workflows of a campaign is are going to be similar.
-As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign\mtnote{Why would this be a problem?}\gpnote{changed it}.
-We want to provide an approach that only requires the user to provide as few information as possible, such as the workflows and an educated guess of their execution time\gpnote{any better?}.
+HEFT also requires an initial estimation of the execution time of the workflows, and we plan to utilize initial estimations provided by the user.
+
+%\mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}\gpnote{I removed the EnTK argument.}
+%Similarly, machine learning approaches would be of limited use since there is no guarantee that the workflows of a campaign is are going to be similar.
+%As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign\mtnote{Why would this be a problem?}\gpnote{changed it}.
+%We want to provide an approach that only requires the user to provide as few information as possible, such as the workflows and an educated guess of their execution time\gpnote{any better?}.
 
 % ----------------------------------------------------------------------------
 % Campaign Manager definition, requirements, features and capabilities

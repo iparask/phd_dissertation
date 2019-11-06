@@ -4,7 +4,7 @@ Given the size of the problem space and that the proposed work will be performed
 \item evaluating and deriving the makespan for a campaign as a set of independent static O(10) workflows with heterogeneous resource requirements provided by ecological and biomolecular sciences use cases on dynamic resources; 
 \item offering execution planning capabilities to minimize the makespan of a campaign; and 
 \item validating our planning capability by executing the workflows of our use cases and measuring the accuracy of the estimated campaign runtime and planned execution compared to a random plan.
-\end{inparaenum}.
+\end{inparaenum}
 In addition, we will explore the requirements to support campaigns with dynamic workflows.
 
 To this end, we propose to achieve the following objectives with an estimation of the time needed:
@@ -47,11 +47,11 @@ Success of this phase will provide an installable python package.
 
 \subsubsection{Phase 2: Implementation and performance analysis of makespan algorithm}
 \label{obj2}
-Phase 2 includes implementing the proposed HEFT algorithm in the prototype, supporting dynamic resources and understand its performance.
+Phase 2 includes implementing the proposed HEFT algorithm in the prototype, and understand its performance.
 Initially, we will implement a random planner, while we extend and implement HEFT to support the campaign.
-In addition, we will assume a static campaign with static heterogeneous workflows, executing on static resources.
+In addition, we will assume a campaign with heterogeneous workflows, executing on static resources.
 This will allow us to understand our proposed algorithm, and find its performance compared to a random plan.
-Next, we will relax the assumption of static resources and work with dynamic resources and introduce resource dynamicity.
+Next, we will relax the assumption of static resources and introduce resource dynamicity.
 
 Preliminary experimentation during this phase will provide us with information on whether HEFT can support a campaign execution or not.
 In case it does, we will proceed with phase 3 as soon as possible.

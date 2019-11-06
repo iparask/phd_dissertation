@@ -7,7 +7,7 @@ As a result, supporting both types of workflows on HPC resources is important.
 
 \subsection{Data analytics on HPC}
 \label{data_analysis_hpc}
-Task-parallel frameworks, used mainly for data-intensive applications, involve partitioning a workload into a set of self-contained units of work. 
+Task-parallel frameworks, used mainly for data-intensive applications, involve partitioning a workload into a set of self-contained units of work, i.e., tasks. 
 Based on the application, these tasks can be independent or coupled with varying degrees of data dependencies. 
 Scientific workflows exploit task parallelism for simulations as well as data analysis.
 Scientific data analysis tools, such as MDAnalysis~\cite{gowers2016mdanalysis,michaud2011mdanalysis}, support domain specific data analytics, but scaling on large data volumes remains a challenge.
@@ -54,19 +54,21 @@ For fine-grained data parallelism, a data-parallel framework is more suited comp
 In addition, the data shuffling size significantly impacts performance and needs to be included in a decision.
 The performance analysis of these algorithms implemented in all three frameworks provided us with information to create a conceptual model for selecting the better suitable framework based on algorithmic characteristics.
 
-Data analysis during scientific campaigns may vary depending on the stage of the campaign. 
-As a result, the ability to select the best suited framework, given requirements and constraints to execute it is important. 
+Understanding the performance of, and supporting data-parallel frameworks on HPC resources is important to support scientific campaigns that will execute data-analysis workflows in conjunction to simulation workflows.
+%Providing the capabilities that allow the execution of data
+%Data analysis during scientific campaigns may vary depending on the stage of the campaign. 
+%As a result, the ability to select the best suited framework, given requirements and constraints to execute a workflow is important. 
 
 \subsection{Workflow execution based on middleware design}
 \label{design_comp}
 Task-parallel data-driven workflow design and execution requires an understanding of the used middleware design, as well as the overheads imposed.
 Having a methodology to compare the performance and overheads of different design that in independent of the use case and computing framework becomes important.
-We developed experimentally such methodology in Ref.~\cite{paraskevakos2019workflow} using a paradigmatic use case from the earth sciences.
+We developed experimentally such a methodology in Ref.~\cite{paraskevakos2019workflow} using a paradigmatic use case from the earth sciences.
 
 In Ref.~\cite{paraskevakos2019workflow}, we compare the execution time of a data-intensive workflow, as well as the overheads of three different designs that support the use case.
 Specifically, the workflow under investigation requires the execution of two tasks consecutively over a set of inputs. 
 The tasks are heterogeneous, and have different computational requirements. 
-Design 1 implements uses a program-based task parallel framework to execute the workflow, while designs 2 and 2A use a queue based middleware.
+Design 1 implementation uses a program-based task parallel framework to execute the workflow, while designs 2 and 2A use a queue based middleware.
 Figure~\ref{fig:designs} shows the three designs under comparison, and Fig.~\ref{fig:overall_performance} shows the comparison between the execution time of the workflows per design, and their respective overheads.
 
 \begin{figure*}[ht!]
@@ -119,6 +121,7 @@ Design 1 shows imposes the most overheads, due to executing a program for each t
 
 Our experiment based methodology to compare designs applies to the evaluation of designs of existing and future computing frameworks to support data-intensive workflows.
 We can use the overheads characterization as a baseline to evaluate a production-grade implementations, as well as identify the bottlenecks of the used middleware.
+It is important to note that this methodology can be extended to characterize and compare different middleware designs that support scientific campaigns.
 
 
 \subsection{Related Work}
@@ -126,13 +129,13 @@ We can use the overheads characterization as a baseline to evaluate a production
 % Campaign management system
 \gpnote{write about Panda, Blasam, Pegasus, ASKALON, DIRAC, QCFractal(?), GlideInWMS}
 
-There are software systems that are supporting computational campaigns in one way or another, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others. 
-PanDA WMS~\cite{maeno2008panda}, is built to support the ATLAS experiment~\cite{atlas} at LHC, and is able to execute several thousand jobs concurrently processing million of tasks in a week~\cite{de2015future}.
+There are software systems that are supporting computational campaigns, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others. 
+PanDA WMS~\cite{maeno2008panda}, is built to support the ATLAS experiment~\cite{atlas} at LHC, and is able to execute several thousand jobs concurrently processing million of tasks per week~\cite{de2015future}.
 DIRAC~\cite{tsaregorodtsev2003dirac} is LHCb Monte Carlo production system at CERN.
 QCFractal~\cite{qcfractal} is a campaign manager to execute upon large scale quantum chemistry data.
-These campaign managers are domain specific and make assumptions about the underlying software stack, and the type of workflows to be executed.
-Our approach is domain agnostic, and makes no assumptions about workflows, or the software stack that is going to be used.
+These are domain specific campaign managers and make assumptions about the underlying software stack, and the type of workflows to be executed.
 GlideInWMS~\cite{sfiligoi2008glidein} is a more general purpose campaign manager as it was designed to support different use cases.
+Our proposed approach is domain agnostic, and makes no assumptions about workflows, or the software stack that is going to be used.
 
 Campaign managers support a plethora of computing resources, including Grid resources, HPCs and Cloud.
 PanDA~\cite{maeno2008panda}, glideinWMS~\cite{sfiligoi2008glidein}, and DIRAC~\cite{casajus2010dirac} mainly support grid resources.
