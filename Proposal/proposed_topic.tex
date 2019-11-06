@@ -30,7 +30,7 @@ In addition, the size of the workflows, i.e., the number of resources they requi
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=.95\textwidth]{figures/random_vs_specific.pdf}
-    \caption{Random plan versus minimum makespan plan}\label{fig:example_makespan}
+    \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
 \end{figure*}
 
 We are making a set of assumptions which we do not relax during our initial analysis.
@@ -117,13 +117,14 @@ HEFT sorts workflows based on the number of dependencies they have in the campai
 Furthermore, using queuing systems to derive the makespan of a campaign requires to search for possible mappings and keep the one that optimizes the makespan.
 HEFT provides as an output, the plan that minimizes the makespan.
 \mtnote{These two sentences are unclear, please revise.}\gpnote{any better?}
+
 Domain specific languages approaches either require description of the resource usage of workflows~\cite{carothers2017durango}, or execute part of the campaign to obtain execution skeleton of the campaign~\cite{maheshwari2016workflow}.
 When executing a campaign, workflows may require days to execute to obtain execution time information, and users rarely know the resource usage of their workflows to provide enough useful information.
 In addition, the workflows of a campaign may be different and executing some of them may not provide any information about the execution of others.
 HEFT also requires an initial estimation of the execution time of the workflows. We plan to utilize initial estimations provided by the users and update the values as workflows are being executed.
 \mtnote{This is unconvincing: we choose to use the PST model and then we say that it requires too much effort? Remember: the argumentation here has to be `scientific', not just based on 'I want to use EnTK so this would require too much time'.}\gpnote{I removed the EnTK argument.}
 Similarly, machine learning approaches would be of limited use since there is no guarantee that the workflows of a campaign is are going to be similar.
-As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign.\mtnote{Why would this be a problem?}\gpnote{changed it}.
+As a result, to gather enough information to build a makespan calculation model may require the execution of the campaign\mtnote{Why would this be a problem?}\gpnote{changed it}.
 We want to provide an approach that only requires the user to provide as few information as possible, such as the workflows and an educated guess of their execution time\gpnote{any better?}.
 
 % ----------------------------------------------------------------------------
@@ -133,6 +134,13 @@ If necessary the CM will change the execution plan by updating workflow to resou
 Execution planning for workflows are provided by several workflow execution systems, such as Pegasus~\cite{deelman2015pegasus}, and ASKALON~\cite{fahringer2005askalon}.
 Campaign management systems, such as PanDA~\cite{maeno2008panda}, do not provide a campaign planning feature.
 QCFractal~\cite{qcfractal} offers some form of planning by allowing user to specify the priority of a workflow in a campaign, but it does not plan with taking into account the makespan of the campaign.\mtnote{only these two among all the existing systems? Please refine and expand, explaining that these are just examples. Also, expand appropriately introducing the notions of planning and plan and explaining why they relate to campaign management.}\gpnote{I introduced the plan a few paragraphs before. It may still need to be expanded.}
+
+Currently, campaign managers are making assumptions about the resources and the middleware they are utilizing, are monolithic software systems, and/or they are domain specific.
+The proposed CM will support multiple use case from different domains, such as molecular dynamics and earth sciences.
+As a result, it is domain agnostic.
+In addition, the proposed CM prototype will be designed based on the building blocks approach~\cite{turilli2019middleware}.
+As a result, the proposed CM will be agnostic of the system it interfaces to execute workflows.
+This, in turn, allows the CM to make no assumptions about the resources and the middleware that is utilized for workflow execution.
 
 Figure~\ref{fig:refarch} shows a reference architecture where the CM has three components:
 \begin{inparaenum}[(1)]
