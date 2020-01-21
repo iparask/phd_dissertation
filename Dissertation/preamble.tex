@@ -1,0 +1,81 @@
+% \usepackage[utf8]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage[toc,acronym]{glossaries} 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{comment}
+\usepackage{fixltx2e}
+\usepackage{float}
+\usepackage{flushend}
+\usepackage{ifpdf}
+\usepackage{keyval}
+\usepackage{listings}
+\usepackage{makecell}
+\usepackage{microtype}
+\usepackage{moresize}
+\usepackage{multirow}
+\usepackage{paralist}
+\usepackage{setspace}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage{subfig}
+% \usepackage{tabularx}
+\usepackage{url}
+% \usepackage{xcolor}
+\usepackage{wrapfig}
+\usepackage{xspace}
+\usepackage{hyperref}
+\usepackage{hypcap}
+% \usepackage{rotating}
+
+\setcounter{secnumdepth}{4}
+\newcommand{\I}[1]{\textit{#1}\xspace}
+\newcommand{\B}[1]{\textbf{#1}\xspace}
+\newcommand{\T}[1]{\texttt{#1}\xspace}
+
+\newcommand{\mr}[1]{\multirow{2}{*}{#1}}%
+\newcommand{\mc}[2]{\multicolumn{#1}{l}{#2}}
+
+\newif\ifdraft
+%\drafttrue
+\ifdraft
+\definecolor{ocolor}{rgb}{1,0,0.4}
+\newcommand{\jwave}[1]{ {\reduwave{#1}}}
+\newcommand{\jhanote}[1]{ {\textcolor{red} { ***shantenu: #1 }}}
+\newcommand{\mtnote}[1]{ {\textcolor{cyan} { ***matteo: #1 }}}
+\definecolor{orange}{rgb}{1,.5,0}
+\definecolor{dandelion}{cmyk}{0,0.29,0.84,0}
+\newcommand{\gpnote}[1]{{\textcolor{blue} {***giannis: #1}}}
+\newcommand{\note}[1]{ {\textcolor{magenta} { ***Note: #1 }}}
+\else
+\newcommand{\jwave}[1]{}
+\newcommand{\jhanote}[1]{}
+\newcommand{\mtnote}[1]{}
+\newcommand{\gpnote}[1]{}
+\newcommand{\note}[1]{}
+\fi
+
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
