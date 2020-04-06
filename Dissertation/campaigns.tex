@@ -7,6 +7,9 @@ Among the many metrics that could be considered, the most common one is the tota
 An execution plan of a campaign is a mapping between workflows and resource to execute upon.
 Calculating the makespan of a campaign means finding an execution plan that satisfies the computational objective function.
 
+The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the calculation of the makespan of a campaign given a set of assumptions that are progressively relaxed.
+Section \S~\ref{sec:algo} discusses three selected makespan calculation algorithms and \S~\ref{sec:algo_perf_comp} compares their performance, i.e the derived makespan.
+
 \section{Calculating campaign's makespan}
 \label{sec:makespan_calc}
 The way workflows of a given campaign are mapped to resources can affect the makespan calculation. 
@@ -16,7 +19,7 @@ In addition, the size of the workflows, i.e., the number of resources they requi
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=.95\textwidth]{./figures/random_vs_specific.pdf}
+    \includegraphics[width=.95\textwidth]{figures/random_vs_specific.pdf}
     \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
 \end{figure*}
 
@@ -58,6 +61,70 @@ TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \end{equation}
 \section{Makespan algorithms}
 \label{sec:algo}
+There is a plethora of methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
+From this plethora of selections, we selected to investigate three algorithms, each one representative of a larger family of algorithms.
+These are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a .... algorithm
+
+HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
+HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
+HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}.
+
+HEFT makes two important assumptions when used on multiple workflows, i.e., a campaign: (1) any task in a workflow can be executed on all available resources; and (2) all resources are always available.
+HEFT is mainly used to derive an execution plan for workflows, i.e., the execution order and resource placement of the tasks that comprise the workflow.
+HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered. 
+Because we are interested in campaigns, our HEFT extension will provide an execution plan based on workflows as atomic units instead of tasks.
+Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}. 
+Algorithm~\ref{alg:heft} shows HEFT for placing independent heterogeneous workflows on heterogeneous resources.
+
+\begin{algorithm}[ht]
+    \caption{Heterogeneous Earliest Finish Time (HEFT) algorithm}
+    \label{alg:heft}
+    \begin{algorithmic}[1]
+        \Procedure{HEFT}{$W$,$R$}\Comment{$W$ and $R$ are a set of workflow and resources respectively}
+        \State \texttt{Calculate the computation cost $w_{tx}^{ij}$ of each workflow for all resources}
+        \State \texttt{Assign $rank_i = \overline{w_{i}} = \nicefrac{\sum_{j=1}^{|R|}w_{tx}^{ij}}{|R|}$}
+        \State \texttt{Sort workflows by non-increasing order of $rank_i$}
+        \While{unscheduled workflows}
+        \State \texttt{Select the first workflow $\tilde{w}$ from the sorted list}
+        \For{$\forall r_{j}$ in $R$}
+        \State\texttt{Compute earliest finish time for $\tilde{w}$ on $r_{j}$, $eft_{\tilde{w},r_j}$ }
+        \EndFor
+        \State \texttt{Assign  $\tilde{w}$ on $r_k$ with $\min{(eft_{\tilde{w},r_j})}$}
+        \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+As mentioned above HEFT makes the assumption that all resources are always available and static.
+Based on this assumption, HEFT makes the implicit assumption that resources are available based on the times it internally computes.
+As a result, it has no external knowledge or representation of when a resource becomes available.
+HPC resources may become unavailable for multiple reasons, including but not limited to maintenance, a random failure, executing a workflows over the expected time., etc.
+In order to be able to utilize HEFT for dynamic resources, we had to extend Algorithm~\ref{alg:heft} to take as input the time that a resource is initially available.
+This input can be represented as a dictionary where the keys are the available resources and the values are the time a resource becomes available.
+The extended algorithm is shown in Algorithm~\ref{alg:ext_heft}.
+Although the extension may be small, it is crucial to allow to reuse HEFT based on the state of the execution at a given point in time.
+
+\begin{algorithm}[ht]
+    \caption{Extended Heterogeneous Earliest Finish Time (EHEFT) algorithm}
+    \label{alg:ext_heft}
+    \begin{algorithmic}[1]
+        \Procedure{EHEFT}{$W$, $R$, $T$}\Comment{$W$ and $R$ are a set of workflow and resources respectively. $T$ is a dictionary of when a resource becomes available.}
+        \State \texttt{Calculate the computation cost $w_{tx}^{ij}$ of each workflow for all resources}
+        \State \texttt{Assign $rank_i = \overline{w_{i}} = \nicefrac{\sum_{j=1}^{|R|}w_{tx}^{ij}}{|R|}$}
+        \State \texttt{Sort workflows by non-increasing order of $rank_i$}
+        \While{unscheduled workflows}
+        \State \texttt{Select the first workflow $\tilde{w}$ from the sorted list}
+        \For{$\forall r_{j}$ in $R$}
+        \State\texttt{Compute earliest finish time for $\tilde{w}$ on $r_{j}$ based on $T(r_j)$, $eft_{\tilde{w},r_j}$ }
+        \EndFor
+        \State \texttt{Assign  $\tilde{w}$ on $r_k$ with $\min{(eft_{\tilde{w},r_j})}$}
+        \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+
 
 \section{Makespan algorithm performance comparison}
 \label{sec:algo_perf_comp}
+
