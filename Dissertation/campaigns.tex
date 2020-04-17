@@ -1,5 +1,6 @@
 \label{campaigns}
-As the capabilities of workflow and workload management frameworks~\cite{balasubramanian2018harnessing,deelman2015pegasus,maeno2008panda} increase, along with the capabilities of HPC resources, scientists started executing mulitple workflows to achieve scientific insight. In the case of COVID-19, for example, related research, users are running the same molecular dynamics simulation and drug discovery workflows continuously with different initial parameters.
+As the capabilities of workflow and workload management frameworks~\cite{balasubramanian2018harnessing,deelman2015pegasus,maeno2008panda} increase, along with the capabilities of HPC resources, scientists started executing mulitple workflows to achieve scientific insight.
+In the case of COVID-19, for example, related research, users are running the same molecular dynamics simulation and drug discovery workflows continuously with different initial parameters.
 This type of execution, where multiple workflows are executed on resources with a given objective, is called scientific campaigns~\cite{maeno2008panda}, often for long periods of time~\cite{casajus2010dirac}.
 
 The objective of a campaign can be translated to a computational objective function that would either minimize or maximize a metric.
@@ -80,7 +81,11 @@ HEFT is an offline scheduling algorithm which calculates the makespan of a workf
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
 HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}. 
 
-HEFT makes two important assumptions when used on multiple workflows, i.e., a campaign: (1) any task in a workflow can be executed on all available resources; and (2) all resources are always available.
+HEFT makes two important assumptions when used on multiple workflows, i.e., a campaign: 
+\begin{inparaenum}[(1)] 
+    \item any task in a workflow can be executed on all available resources; and 
+    \item all resources are always available.
+\end{inparaenum}
 HEFT is mainly used to derive an execution plan for workflows, i.e., the execution order and resource placement of the tasks that comprise the workflow.
 HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered. 
 Because we are interested in campaigns, our HEFT extension will provide an execution plan based on workflows as atomic units instead of tasks.
@@ -148,10 +153,51 @@ In general, genetic algorithms are working based on the following procedure:
     \item re-evaluate chromosomes in the population to check convergence.
 \end{inparaenum}
 
-The selected genetic algorithm~\cite{page2005algorithm} is 
+The selected genetic algorithm~\cite{page2005algorithm} is developed to support the placement of independent task on heterogeneous resources.
+It assumes that all tasks can be executed on all available resources, are independent and indivisible.
+These assumptions are in accordance with the assumptions made for workflows in a campaign.
+As a result, this algorithm can be extended to support scientific campaigns.
+The pseudocode of this algorithm is shown in Algorithm~\ref{alg:gen_algo}.
+
+\begin{algorithm}[ht]
+    \caption{Genetic Algorithm}
+    \label{alg:gen_algo}
+    \begin{algorithmic}[1]
+        \Procedure{GA}{$W$, $R$, $T$}\Comment{$W$ and $R$ are a set of workflow and resources respectively. $T$ is a dictionary of when a resource becomes available.}
+        \State \texttt{Initaliaze population}
+        \While{Conergence Criteria not met and \#Gen $<$ Total\_Generations}
+        \State{Selection}
+        \State{Reproduce}
+        \State{Randomly mutate}
+        \State{Balance}
+        \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+The chromosomes of the initial population are constructed semi-random.
+Specifically, a specific percentage of the workflows are assigned randomly to resources, where the assignment is drawn by uniform distribution.
+The rest of the workflows are assigned based on an earlier finish time (EFT) heuristic, similar to the one used by HEFT.
+The population size is relatively small to 20 chromosomes, i.e., potential plans, called micro-GA.
+Micro-GA reduces the computational load of the genetic algorithm, while it does not significantly impact the final result~\cite{zomaya2001observations}.
+
+Selection of the chromosomes to reproduce is based on a fitness function, which calculates the relative distance from a theoretical optimal processing time.
+Each chromosome is assigned a fitness value, which then defines the probability of a chromosome to be selected.
+Reproduction uses cyclic rotation to generate the new population members.
+Mutation randomly selects an individual from the population and randomly swaps workflows.
+Finally, a rebalancing heuristic tries to rebalance and create fitter individuals in the population.
+
+We extend this algorithm in the population initialization to support replanning..
+The initialization method takes into account the times resources will be available during for the EFT heuristic.
+Another point of extension would be the fitness function.
+However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
+
 
 \subsection{Third algorithm}
 \label{algo:third}
+
+
+
 
 % -------------------------------------------------------------------
 \section{Makespan algorithm performance comparison}
