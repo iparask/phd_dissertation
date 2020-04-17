@@ -10,6 +10,7 @@ Calculating the makespan of a campaign means finding an execution plan that sati
 The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the calculation of the makespan of a campaign given a set of assumptions that are progressively relaxed.
 Section \S~\ref{sec:algo} discusses three selected makespan calculation algorithms and \S~\ref{sec:algo_perf_comp} compares their performance, i.e the derived makespan.
 
+% -------------------------------------------------------------------
 \section{Calculating campaign's makespan}
 \label{sec:makespan_calc}
 The way workflows of a given campaign are mapped to resources can affect the makespan calculation. 
@@ -19,7 +20,7 @@ In addition, the size of the workflows, i.e., the number of resources they requi
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/random_vs_specific.pdf}
+    \includegraphics[width=.99\textwidth]{figures/plan_comp.pdf}
     \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
 \end{figure*}
 
@@ -59,15 +60,25 @@ Given multiple homogeneous resources, when executing workflows that are heteroge
 TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \label{eq:makespan}
 \end{equation}
-\section{Makespan algorithms}
+
+% -------------------------------------------------------------------
+\section{Makespan calculating algorithms}
 \label{sec:algo}
+
 There is a plethora of methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 From this plethora of selections, we selected to investigate three algorithms, each one representative of a larger family of algorithms.
-These are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a .... algorithm
+These are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a .... algorithm.
+
+\subsection{Heterogeneous Earlier Finish Time (HEFT) algorithm}
+\label{algo:heft}
+List scheduling algorithms represent a general family of heuristic based scheduling algorithms to schedule workflows described as direct acyclic graphs~\cite{dong2006scheduling,list_sched_wiki}. 
+These algorithms assign priorities to tasks based on a heuristic and them non-increasingly based on the derived priorities.
+Then, this list is traversed and tasks are assigned to resources.
+HEFT is a classic example of this type of algorithms~\cite{dong2006scheduling}.
 
 HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
-HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}.
+HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}. 
 
 HEFT makes two important assumptions when used on multiple workflows, i.e., a campaign: (1) any task in a workflow can be executed on all available resources; and (2) all resources are always available.
 HEFT is mainly used to derive an execution plan for workflows, i.e., the execution order and resource placement of the tasks that comprise the workflow.
@@ -123,8 +134,26 @@ Although the extension may be small, it is crucial to allow to reuse HEFT based 
     \end{algorithmic}
 \end{algorithm}
 
+\subsection{Genetic algorithm}
+\label{algo:gen}
+Genetic algorithms are represent another family of algorithms that are been used to minimize the makespan of an execution~\cite{dong2006scheduling}.
+Genetic algorithms are evolving to the final answer as they iterate and improve possible answers.
+In general, genetic algorithms are working based on the following procedure:
+\begin{inparaenum}[(i)]
+    \item create an initial population, where the population is a set of chromosomes. 
+          Chromosomes, in the context of planning the execution workflows on resources, is a potential placement of workflows on resources;
+    \item evaluate the chromosomes based on a fitness value, which represents the makespan on the campaign;
+    \item reproduce by selecting chromosomes, either randomly or based on their fitness value, and generate a new set of chromosomes (called children);
+    \item mutate randomly, where randomly selected workflows from a random chromosome are reassigned to resources; and
+    \item re-evaluate chromosomes in the population to check convergence.
+\end{inparaenum}
 
+The selected genetic algorithm~\cite{page2005algorithm} is 
 
+\subsection{Third algorithm}
+\label{algo:third}
+
+% -------------------------------------------------------------------
 \section{Makespan algorithm performance comparison}
 \label{sec:algo_perf_comp}
 
