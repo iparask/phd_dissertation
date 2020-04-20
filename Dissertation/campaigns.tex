@@ -29,7 +29,7 @@ We are making a set of assumptions which we do not relax during the initial anal
 These are:
 \begin{inparaenum}[(1)]
     \item a workflow is an atomic unit and cannot be decomposed;
-    \item workflow resource request is sufficient to execute the workflow; % and the requested resources are utilized;
+    \item workflow resource request is sufficient to execute the workflow;
     \item a resource is an aggregate of computing capabilities;
     \item resources are homogeneous;
     \item every workflow of a given campaign can be executed on the given resources;
@@ -193,13 +193,42 @@ Another point of extension would be the fitness function.
 However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
 
 
-\subsection{Third algorithm}
-\label{algo:third}
+\subsection{Largest to fastest algorithm}
+\label{algo:l2ff}
+The last algorithm places workflows based on the rule largest workflows to fastest resource~\cite{balasubramanian2019programming}.
+This algorithm sorts the workflows based on the number of operations and resources based on their performance.
+Then it places workflows on resources in a round robin fashion.
+Algorithm~\ref{alg:l2ff} show the pseudocode for this algorithm.
 
+\begin{algorithm}[ht]
+    \caption{Longest to Fastest First (L2FF)}
+    \label{alg:l2ff}
+    \begin{algorithmic}[1]
+        \Procedure{l2ff}{$W$, $R$}\Comment{$W$ and $R$ are a set of workflow and resources respectively.}
+        \State \texttt{$W_{sorted}=sort(W)$} 
+        \State \texttt{$R_{sorted}=sort(R)$}
+        \For{$w$ in $W_{sorted}$}
+        \State{Assign $w$ to $r_{k}$ where $k=w_{idx} \mod N_{R}$}
+        \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
 
-
+This algorithm does not specify in any way when resources are either becoming or are available.
+As a consequence, there is no need to extend it when dynamic resources are used, as long as the resource performance is updated accordingly.
 
 % -------------------------------------------------------------------
 \section{Makespan algorithm performance comparison}
 \label{sec:algo_perf_comp}
+
+We executed two experiments in order to analyze the performance of the selected planners in terms of the makespan they produce.
+In addition to these two experiments, we also executed an experiment to measure the time each planner took to provide a plan.
+These sets of experiments allows us to a methodology to compare planning algorithms and decide which algorithm is more suited based on a campaign's computation requirements, i.e. workflow size and resource performance/availability.
+
+\subsection{Experiment 1: Measuring  makespan on static resources}
+
+
+\subsection{Experiment 2: Measuring makespan on dynamic resources}
+
+\subsection{Time to calculate a plan}
 
