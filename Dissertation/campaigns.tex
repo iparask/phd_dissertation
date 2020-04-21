@@ -227,8 +227,118 @@ These sets of experiments allows us to a methodology to compare planning algorit
 
 \subsection{Experiment 1: Measuring  makespan on static resources}
 
+- Analysis of homogeneous/homogeneous cases:
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/StHomoCampaigns_4StHomoResources.pdf}
+        \caption{}
+        \label{fig:StHomoCampaigns_4StHomoResources}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{figures/StHomoResources_StHomoCampaigns.pdf}
+        \caption{}
+        \label{fig:StHomoResources_StHomoCampaigns}
+    \end{subfigure}
+    \caption{~\ref{fig:StHomoCampaigns_4StHomoResources}Makespan of increasing number of homogeneous worklfows on homogeneous resources.
+        ~\ref{fig:StHomoResources_StHomoCampaigns}Makespan of homogeneous campaign on different number of homogeneous resources.}
+    \label{fig:homog_analysis}
+\end{figure*}
+
+
+- Analysis of heterogeneous/heterogeneous cases:
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/StHeteroCampaigns_4StHeteroResources.pdf}
+        \caption{}
+        \label{fig:StHeteroCampaigns_4StHeteroResources}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{figures/StHeteroResources_StHeteroCampaigns.pdf}
+        \caption{}
+        \label{fig:StHeteroResources_StHeteroCampaigns}
+    \end{subfigure}
+    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}Makespan of increasing number of heterogeneous worklfows on heterogeneous resources.
+        ~\ref{fig:StHeteroResources_StHeteroCampaigns}Makespan of heterogeneous campaign on different number of heterogeneous resources..}
+    \label{fig:heter_analysis}
+\end{figure*}
+
+Generally on Static resources, HEFT provides consistently the best makespan compared to the other algorithms.
+This is because: 1) its deterministic behavior, as it produce always the same plan for the same workflows and resources; and 2) its knowledge of when a resource is available.
+The genetic algorithm provides worse makespan compared to HEFT mainly because of the randomness introduced during the population initialization.
 
 \subsection{Experiment 2: Measuring makespan on dynamic resources}
 
+\subsection{No replanning}
+
+- Analysis of homogeneous/homogeneous cases: Resource dynamism is drawn by a normal distribution.
+
+Since there is no replanning, we just calculate the final makespan based on the plan that was offered initially.
+ I expect that HEFT will be better than other planners, with the genetic and the L2FF being very close to random.
+%\begin{figure*}[ht!]
+%    \centering
+%    \begin{subfigure}[b]{0.45\textwidth}
+%        \includegraphics[width=.95\textwidth]{figures/StHomoCampaigns_4StHomoResources.pdf}
+%        \caption{}
+%        \label{fig:StHomoCampaigns_4StHomoResources}
+%    \end{subfigure}%
+%    ~ 
+%    \begin{subfigure}[b]{0.45\textwidth}
+%        \includegraphics[width=\linewidth]{figures/StHomoResources_StHomoCampaigns.pdf}
+%        \caption{}
+%        \label{fig:StHomoResources_StHomoCampaigns}
+%    \end{subfigure}
+%    \caption{~\ref{fig:StHomoCampaigns_4StHomoResources}Makespan of increasing number of homogeneous worklfows on homogeneous resources.
+%        ~\ref{fig:StHomoResources_StHomoCampaigns}Makespan of homogeneous campaign on different number of homogeneous resources.}
+%    \label{fig:homog_analysis}
+%\end{figure*}
+
+
+- Analysis of heterogeneous/heterogeneous cases:
+I do not expect siginificant differences between planners.
+I think that the final makespan will be similar for all planners and the will not be distinguishable within error bars.
+%\begin{figure*}[ht!]
+%    \centering
+%    \begin{subfigure}[b]{0.45\textwidth}
+%        \includegraphics[width=.95\textwidth]{figures/StHeteroCampaigns_4StHeteroResources.pdf}
+%        \caption{}
+%        \label{fig:StHeteroCampaigns_4StHeteroResources}
+%    \end{subfigure}%
+%    ~ 
+%    \begin{subfigure}[b]{0.45\textwidth}
+%        \includegraphics[width=\linewidth]{figures/StHeteroResources_StHeteroCampaigns.pdf}
+%        \caption{}
+%        \label{fig:StHeteroResources_StHeteroCampaigns}
+%    \end{subfigure}
+%    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}Makespan of increasing number of heterogeneous worklfows on heterogeneous resources.
+%        ~\ref{fig:StHeteroResources_StHeteroCampaigns}Makespan of heterogeneous campaign on different number of heterogeneous resources..}
+%    \label{fig:heter_analysis}
+%\end{figure*}
+
+\subsection{Replanning}
+
+Replanning will allow for adjustments of the plan during runtime.
+In this case I expect HEFT to provide the better makespan, but I think it is going to be marginally better than the genetic algorithm. 
+L2FF will provide a makepsan that fluctuates significantly between different cases.
+Finally, the random planner will show erratic behavior, depending on the run.
+
+\subsection{Resource availability}
+
+Explore how HEFT and GA behave for different resource initial availability.
+
 \subsection{Time to calculate a plan}
 
+Based on experiments HEFT and L2FF will have the smallest overhead for calculating the makespan.
+This is due to their deterministic behavior.
+GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
+
+\section{Conclusions}
+
+Based on our analysis, we conclude that selecting algorithm1 over algorithm2 provides the better makespan in most cases. 
+But due to the time scales at which the execution of a campaign runs, the computation complexity of the algorithm, as long as, it remains in the order of minutes is not significant.
+In addition, selecting an algorithm that can encode resource availability is beneficial, since resources can become unavailable either due to performance dynamism, or due to unforeseen events
