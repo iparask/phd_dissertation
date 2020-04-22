@@ -70,6 +70,7 @@ There is a plethora of methods and algorithms to calculate and optimize the make
 From this plethora of selections, we selected to investigate three algorithms, each one representative of a larger family of algorithms.
 These are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a .... algorithm.
 
+% -------------------------------------------------------------------
 \subsection{Heterogeneous Earlier Finish Time (HEFT) algorithm}
 \label{algo:heft}
 List scheduling algorithms represent a general family of heuristic based scheduling algorithms to schedule workflows described as direct acyclic graphs~\cite{dong2006scheduling,list_sched_wiki}. 
@@ -139,6 +140,7 @@ Although the extension may be small, it is crucial to allow to reuse HEFT based 
     \end{algorithmic}
 \end{algorithm}
 
+% -------------------------------------------------------------------
 \subsection{Genetic algorithm}
 \label{algo:gen}
 Genetic algorithms are represent another family of algorithms that are been used to minimize the makespan of an execution~\cite{dong2006scheduling}.
@@ -192,7 +194,7 @@ The initialization method takes into account the times resources will be availab
 Another point of extension would be the fitness function.
 However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
 
-
+% -------------------------------------------------------------------
 \subsection{Largest to fastest algorithm}
 \label{algo:l2ff}
 The last algorithm places workflows based on the rule largest workflows to fastest resource~\cite{balasubramanian2019programming}.
@@ -225,7 +227,7 @@ We executed two experiments in order to analyze the performance of the selected 
 In addition to these two experiments, we also executed an experiment to measure the time each planner took to provide a plan.
 These sets of experiments allows us to a methodology to compare planning algorithms and decide which algorithm is more suited based on a campaign's computation requirements, i.e. workflow size and resource performance/availability.
 
-\subsection{Experiment 1: Measuring  makespan on static resources}
+\subssection{Experiment 1: Measuring  makespan on static resources}
 
 - Analysis of homogeneous/homogeneous cases:
 
@@ -274,7 +276,7 @@ The genetic algorithm provides worse makespan compared to HEFT mainly because of
 
 \subsection{Experiment 2: Measuring makespan on dynamic resources}
 
-\subsection{No replanning}
+\subsubsection{No replanning}
 
 - Analysis of homogeneous/homogeneous cases: Resource dynamism is drawn by a normal distribution.
 
@@ -320,18 +322,18 @@ I think that the final makespan will be similar for all planners and the will no
 %    \label{fig:heter_analysis}
 %\end{figure*}
 
-\subsection{Replanning}
+\subsubsection{Replanning}
 
 Replanning will allow for adjustments of the plan during runtime.
 In this case I expect HEFT to provide the better makespan, but I think it is going to be marginally better than the genetic algorithm. 
-L2FF will provide a makepsan that fluctuates significantly between different cases.
+L2FF will provide a makespan that fluctuates significantly between different cases.
 Finally, the random planner will show erratic behavior, depending on the run.
 
-\subsection{Resource availability}
+\subsubsection{Resource availability}
 
 Explore how HEFT and GA behave for different resource initial availability.
 
-\subsection{Time to calculate a plan}
+\subsubsection{Time to calculate a plan}
 
 Based on experiments HEFT and L2FF will have the smallest overhead for calculating the makespan.
 This is due to their deterministic behavior.
