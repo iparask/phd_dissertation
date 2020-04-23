@@ -7,7 +7,7 @@ This subsection will include the work with Andre Luckow for pilot-hadoop
 \section{Modeling the task-parallel execution of data intensive workflows}
 \label{task-par}
 bla bla bla
-\section{Molecular Dynamics Analysis Applications}
+\subsection{Molecular Dynamics Analysis Applications}
 \label{use_cases}
 Some commonly used algorithms for analyzing MD trajectories are Root Mean Square Deviation (RMSD), Pairwise Distances (PD), and Sub-setting~\cite{mura2014biomolecules}.
 Two more advanced algorithms are Path Similarity Analysis (PSA)~\cite{seyler2015path} and Leaflet Identification~\cite{michaud2011mdanalysis}.
@@ -34,12 +34,12 @@ The Views are:
 \end{inparaenum}
 
 
-\subsection{MDAnalysis}
+\subsubsection{MDAnalysis}
 \label{sec:mda}
 MDAnalysis is a Python library~\cite{michaud2011mdanalysis,gowers2016mdanalysis} that provides a comprehensive environment for filtering, transforming and analyzing MD trajectories in all commonly used file formats.
 It provides a common object-oriented API to trajectory data and leverages existing libraries in the scientific Python software stack, such as NumPy~\cite{numpy} and Scipy~\cite{scipy}.
 
-\subsubsection{Path Similarity Analysis (PSA): Hausdorff Distance}Path Similarity Analysis (PSA)~\cite{seyler2015path} is used to quantify the similarity between trajectories considering their full atomic detail.
+\subsubsection*{Path Similarity Analysis (PSA): Hausdorff Distance}Path Similarity Analysis (PSA)~\cite{seyler2015path} is used to quantify the similarity between trajectories considering their full atomic detail.
 The basic idea is to compute pair-wise distances (for instance, using the Hausdorff metric~\cite{huttenlocher1993comparing}) between members of an ensemble of trajectories and cluster the trajectories based on their distance matrix.
 
 Each trajectory is represented as a two dimensional array.
@@ -104,7 +104,7 @@ Input data volume is medium to large while the output is small.
 Specific execution environments, such as HPC nodes, and Python arithmetic libraries, e.g., NumPy, are used (execution view).
 Input data are produced by HPC simulations, and are stored on HPC storage systems, such as parallel filesystem like Lustre (data source \& style view).
 
-\subsubsection{Leaflet Finder}Algorithm~\ref{alg:leafletfinder} describes the Leaflet Finder (LF) algorithm as presented in Ref.~\cite{michaud2011mdanalysis}.
+\subsubsection*{Leaflet Finder}Algorithm~\ref{alg:leafletfinder} describes the Leaflet Finder (LF) algorithm as presented in Ref.~\cite{michaud2011mdanalysis}.
 LF assigns particles to one of two curved but locally approximately parallel sheets, provided that the inter-particle distance is smaller than the distance between sheets.
 In biomolecular simulations of lipid membranes, consisting of a double layer of lipid molecules, LF is used to identify the lipids in the outer and inner leaflets (sheets).
 The algorithm consists of two stages:
@@ -150,7 +150,7 @@ Leaflet Finder can be efficiently implemented using the MapReduce abstraction (p
 It uses graph algorithms and linear algebra kernels (processing view facets).
 The data source \& style view facets are the same as the PSA algorithm.
 
-\subsection{CPPTraj}
+\subsubsection{CPPTraj}
 CPPTraj~\cite{roe2013ptraj,roe2018parallelization} is a C++ MD trajectory analysis tool.
 It is parallelized via MPI and OpenMP.
 CPPtraj reads in parallel frames from a single trajectory file or ensemble members of the same trajectory from different files.
@@ -158,7 +158,7 @@ The frames are equally distributed to the MPI processes.
 Computational intensive algorithms are further parallelized using OpenMP.
 It requires at least one MPI process per ensemble member, where each member is a single trajectory file.
 
-\section{Background of Evaluated Frameworks}
+\subsection{Background of Evaluated Frameworks}
 \label{frameworks}
 The landscape of frameworks for data-intensive applications is manifold~\cite{jha2014tale,kamburugamuve2017anatomy} and has been extensively studied in the context of scientific~\cite{jha2017introducing} applications.
 In this section, we investigate the suitability of frameworks such as Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and RADICAL~-Pilot~\cite{merzky2019using}, for MD data analytics.
@@ -186,7 +186,7 @@ The following describes each framework in detail.
     \label{fig:figures_bigdata_framework_stack}
 \end{figure}
 
-\subsection{Spark}
+\subsubsection*{Spark}
 Spark~\cite{zaharia2010spark} extends MapReduce~\cite{dean2004mapreduce} providing a rich set of operations on top of the Resilient Distributed Dataset (RDD) abstraction~\cite{zaharia2012resilient}.
 RDDs are cached in-memory making Spark well suitable for iterative applications that need to cache a set of data across multiple stages.
 PySpark provides a Python API to Spark.
@@ -204,7 +204,7 @@ As a result, it allows quick access to those data when transmitted to an executo
 Finally, Spark provides a set of actions that write text files, Hadoop sequence files or object files to local filesystems, HDFS or any filesystem that supports Hadoop.
 In addition, Spark supports higher-level data abstractions for processing structured data, such as dataframes, Spark-SQL, datasets, and data streams.
 
-\subsection{Dask}
+\subsubsection*{Dask}
 Dask~\cite{rocklin2015dask} provides a Python-based parallel computing library, which is designed to parallelize native Python code written for NumPy and Pandas.
 In contrast to Spark, Dask also provides a lower-level task API (\texttt{delayed} API) that allows users to construct arbitrary workflow graphs.
 Being written in Python, it does not require to translate data 
@@ -227,7 +227,7 @@ In addition, familiarity with Spark or MapReduce helps to minimize the learning 
 As a result, implementing MD analysis algorithms on Dask did not require significant engineering time.
 In addition, setting up a Dask cluster on a set of resources was relatively straightforward, since it provides all the binaries, e.g. \texttt(dask-ssh).
 
-\subsection{RADICAL-Pilot}
+\subsubsection*{RADICAL-Pilot}
 RADICAL~-Pilot~\cite{merzky2019using} is a Pilot system that implements the pilot paradigm as outlined in Ref.~\cite{turilli2018comprehensive}.
 RADICAL~-Pilot (RP) is implemented in Python and provides a well defined API and usage modes.
 Although RP is vehicle for research in scalable computing, it also supports production grade science.
@@ -245,7 +245,7 @@ Task execution coordination and communication is done through a database (MongoD
 RADICAL~-PIlot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
 Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop new algorithms.
 
-\subsection{Comparison of Frameworks}
+\subsubsection{Comparison of Frameworks}
 \begin{table}[t]
     \begin{tabular}{@{}p{3cm}|p{3.5cm}p{3.5cm}p{3.5cm}@{}}
         \toprule
@@ -341,7 +341,7 @@ Leaflet Finder is more complex and requires two stages:
 It is possible to implement Leaflet Finder with a simple task-management API, although the MapReduce programming model allows more efficient implementation with a \texttt{map} for computing and filtering distances and a \texttt{reduce} for finding the components.
 The shuffling required between map and reduce is medium as the number of edges is a fraction of the input data.
 
-\section{Experiments and Discussion}
+\subsection{Experiments and Discussion}
 \label{impl_exp}
 In this section, we characterize the performance of RADICAL~-Pilot, Spark and Dask compared to MPI4py.
 In section~\ref{sec:framework_eval} we evaluate the task throughput using a synthetic workload.
@@ -362,7 +362,7 @@ We used RADICAL~-Pilot 0.46.3, Spark 2.2.0, Dask 0.14.1 and Distributed 1.16.3.
 The data presented are means over multiple runs; error bars represent the standard deviation of the sample.
 We employed up to $10$ nodes in Comet and Wrangler. 
 
-\subsection{Frameworks Evaluation}
+\subsubsection{Frameworks Evaluation}
 \label{sec:framework_eval}
 
 \begin{figure}[t]
@@ -406,7 +406,7 @@ Spark's throughput is an order of magnitude lower than Dask's.
 RADICAL~-Pilot's throughput plateaus at below $100 task/sec$.
 Wrangler and Comet show a comparable performance with Comet slightly outperforming Wrangler.
 
-\subsection{Path Similarity Analysis: Hausdorff Distance}
+\subsubsection{Path Similarity Analysis: Hausdorff Distance}
 \label{sec:psa}
 The PSA algorithm is embarrassingly parallel and can be implemented using simple task-level parallelism or a map only MapReduce application.
 The input data, i.\,e. a set of trajectory files, is equally distributed over the cores, generating one task per core.
@@ -472,7 +472,7 @@ Figure~\ref{fig:cpptraj_resutls} shows the runtimes and speedup.
 MPI C++ provides lower execution times.
 However, we are interested in scalable solutions, that may offer worse performance in absolute numbers, but allows easier integration, i.e., less lines of code, and/or less engineering time.
 
-\subsection{Leaflet Finder}
+\subsubsection{Leaflet Finder}
 \label{sec:leaflet}
 \begin{table*}[ht]
     \centering
@@ -567,7 +567,7 @@ We continue by analyzing the performance of each architectural approach and used
     \label{fig:WranglerLeafLetFinderApp1}
 \end{figure}
 
-\subsubsection{Broadcast and 1-D Partitioning}
+\subsubsection*{Broadcast and 1-D Partitioning}
 Approach 1 utilizes a broadcast to distribute the data to all nodes, which is supported by Spark, Dask and MPI.
 All nodes maintain a complete copy of the dataset.
 Each \texttt{map} task computes the pairwise distance on its partition.
@@ -599,7 +599,7 @@ Dask is at least two times slower than our MPI implementation.
     \label{fig:rpLF}
 \end{figure}
 
-\subsubsection{Task-API and 2-D Partitioning}
+\subsubsection*{Task-API and 2-D Partitioning}
 Approach~\ref{en:2} tries to overcome the limitations of approach 1, especially broadcasting and 1-D partitioning.
 A 2-D block partitioning is essential, as it evenly distributes the compute and more efficiently utilizes the available memory.
 2-D partitioning is not well supported by Spark and Dask.
@@ -623,7 +623,7 @@ Despite this fact, both frameworks had similar performance on $32$ cores for the
 
 %%%%%%%%%%%%%% Approach 3 %%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Parallel Connected Components}
+\subsubsection*{Parallel Connected Components}
 Communication between the edge discovery and connected components stages is another important aspect.
 The edge discovery phase output for the $524k$ atoms dataset is $\approx$$100\,\textup{MB}$.
 To reduce the amount of data that need to be shuffled, we refined the algorithm to compute the graph components on the partial dataset in the \texttt{map} phase.
@@ -639,7 +639,7 @@ In addition, Spark is able to scale almost linearly for the $4M$ atoms dataset p
 
 %%%%%%%%%%%%%% Approach 4 %%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Tree-Search}
+\subsubsection*{Tree-Search}
 A bottleneck of approaches~\ref{en:1},~\ref{en:2} and~\ref{en:3} is the edge 
 discovery via the naive calculation of the distances between all pairs of atoms. 
 In approach~\ref{en:4}, we replace the pairwise distance function with a tree-based, 
@@ -664,7 +664,7 @@ This is not true for $4M$ atoms, indicating that Dask's communication layer is n
 Spark shows similar performance with MPI4py for the largest dataset due to minimal shuffle traffic.
 Thus, MPI's efficient communication does not become relevant.
 
-\subsection{Conceptual Framework and Discussion}
+\subsubsection{Conceptual Framework and Discussion}
 In this section we provide a conceptual framework that allows application developers to carefully select a framework according to their requirements (e.\,g., compute and I/O).
 It is important to understand both the properties of the application and Big Data frameworks.
 Table~\ref{tab:framework} illustrates the criteria of this conceptual framework and ranks the three frameworks.
@@ -695,7 +695,7 @@ Table~\ref{tab:framework} illustrates the criteria of this conceptual framework 
 \end{table}
 %  application perspective
 
-\subsubsection{Application Perspective}
+\subsubsection*{Application Perspective}
 We showed that we can implement MD trajectory data analysis applications using all three frameworks, as well as MPI4py.
 Implementation aspects, such as computational complexity, and shuffled data size influence the performance greatly.
 For embarrassingly parallel applications with coarse grained tasks, such as PSA, the choice of the framework does not significantly influence performance (Figures~\ref{fig:HausdorffWrangler} and~\ref{fig:comet_wrangler_haus}).
@@ -716,7 +716,7 @@ RADICAL~-Pilot's learning curve is more steep, but is more versatile than Dask a
 Spark had the slowest learning curve.
 It required tuning to get the number of tasks correctly, as well as argument passing to map and reduce functions.
 
-\subsubsection{Framework Perspective}
+\subsubsection*{Framework Perspective}
 RADICAL~-Pilot is well suited for HPC applications, e.\,g., ensembles (up to $50k$ tasks) of parallel MPI applications, as shown in Ref.~\cite{merzky2018design,merzky2019using}.
 It has limited scalability when supporting large numbers of short-running tasks, as often found in data-intensive workloads.
 The file staging implementation of RADICAL~-Pilot is not suitable for supporting the data exchange patterns, i.e. shuffling, required for these applications.
