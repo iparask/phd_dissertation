@@ -2,7 +2,8 @@
 \label{data_hpc}
 \section{Integrating Hadoop and Spark with HPC workload management system}
 \label{sec:pilot-data-hadoop}
-
+bla bla
+\subsection{Some title here}
 An important motivation of our work is to provide advanced and scalable data analysis capabilities for existing high-performance applications (e.g., large-scale molecular dynamics simulations).
 This requires adding data-intensive analysis while preserving high-performance computing capabilities.
 Having established the potential of the Pilot~-Abstraction for a range of high-performance applications~\cite{treikalis2016repex,ragothaman2014developing,ko2014numerical}, we use it as the starting point for integrated high-performance compute and data-intensive analysis.
@@ -33,7 +34,7 @@ In section~\ref{sec:saga_hadoop} we present SAGA-Hadoop, a light-weight, easy-to
 We then discuss, the integration of Hadoop and Spark runtimes into RADICAL~-Pilot, which enables both the interoperable use of HPC and Hadoop, as well as the integration of HPC and Hadoop applications (Mode I and II) (Section~\ref{sec:pilot_hadoop_hpc} to~\ref{sec:rp_spark}).
 Using these new capabilities, applications can seamlessly connect HPC stages (e.\,g.\ simulation stages) with analysis staging using the Pilot-Abstraction to provide unified resource management.
 
-\subsection{SAGA-Hadoop: Supporting Hadoop/Spark on HPC}
+\subsubsection{SAGA-Hadoop: Supporting Hadoop/Spark on HPC}
 \label{sec:saga_hadoop}
 
 SAGA-Hadoop~\cite{saga-hadoop} is a tool for supporting the deployment of Hadoop and Spark on HPC resources (Mode I in Figure~\ref{fig:figures_hadoop-on-hpc-viceverse}).
@@ -64,7 +65,7 @@ Once the cluster is setup, users can submit applications using a simple API that
 While SAGA-Hadoop provides the interoperability between YARN and HPC resources by treating YARN as a substitute for SLURM or Torque, the integration of YARN and HPC application or application stages remains challenging.
 In the following, we explore the usage of the Pilot~-Abstraction, an implementation of which is RADICAL~-Pilot, to enable the integration between these different application types.
 
-\subsection{RADICAL~-Pilot and YARN Overview}
+\subsubsection{RADICAL~-Pilot and YARN Overview}
 \label{sec:pilot_hadoop_hpc}
 \label{sec:rp-impl}
 
@@ -112,7 +113,7 @@ The {\bf Launch Method} encapsulates the environment specifics for executing an 
 After the Task Spawner completes the execution of a unit, it collects the exit code, standard input and output, and instructs the scheduler about the freed cores.
 
 
-\subsection{Integration of RADICAL~-Pilot and YARN}
+\subsubsection{Integration of RADICAL~-Pilot and YARN}
 
 There are two integration options for RADICAL~-Pilot and YARN: (i) Integration on Pilot-Manager level, via a SAGA adaptor, and (ii) integration on the RADICAL~-Pilot-Agent level.
 The first approach is associated with several challenges: firewalls typically prevent the communication between external machines and a YARN clusters.
@@ -178,7 +179,7 @@ Every Compute Unit is mapped to a YARN application consisting of an Application 
 In the future, we will further optimize the implementation by providing support for Application Master and container re-use.
 
 
-\subsection{Spark Integration}
+\subsubsection{Spark Integration}
 \label{sec:rp_spark}
 Spark offers multiple deployment modes: standalone, YARN and Mesos.
 While it is possible to support Spark on top of YARN, this approach is associated with significant complexity and overhead as two instead of one framework need to be configured and run.
@@ -196,7 +197,7 @@ Similar to YARN, a Spark RADICAL~-Pilot-Agent scheduler is used for managing Spa
 During the termination of the RADICAL~-Pilot-Agent, the LRM is shutting down the Spark cluster using Spark’s \texttt{sbin/stop-all.sh} script, which stops both the master and the slave nodes.
 Similarly, the Spark specific methods for launching and managing Compute Units on Spark are encapsulated in a Task Spawner and Launch Method component.
 
-\section{Experiments and Evaluation}
+\subsection{Experiments and Evaluation}
 \label{sec:experiments}
 
 To evaluate the RADICAL~-Pilot YARN and Spark extension, we conduct two experiments: in Section~\ref{sec:startup_pilot_unit}, we analyze and compare RADICAL~-Pilot and RADICAL~-Pilot-YARN with respect to startup times of both the Pilot and the Compute Units.
@@ -204,7 +205,7 @@ We use the well-known K-Means algorithm to investigate the performance and runti
 Experiments are performed on two different XSEDE allocated machines: Wrangler~\cite{wrangler} and Stampede~\cite{stampede}.
 On Stampede every node has 16 cores and 32 GB of memory; on Wrangler 48\,cores and 128\,GB of memory.
 
-\subsection{Pilot Startup and Compute Unit Submission}
+\subsubsection{Pilot Startup and Compute Unit Submission}
 \label{sec:startup_pilot_unit}
 
 \begin{figure}
@@ -232,7 +233,7 @@ In the future, we will optimize this process by re-using the YARN application ma
 In summary, while there are overheads associated with execution inside of YARN, we believe these are acceptable, in particular for long-running tasks.
 The novel capabilities of executing HPC tasks and YARN tasks within the same application has significant benefits for which measured overheads are likely acceptable.
 
-\subsection{K-Means}
+\subsubsection{K-Means}
 
 We compare the time-to-completion of the K-Means algorithm using two configurations: RADICAL~-Pilot on HPC and RADICAL~-Pilot in HPC/YARN mode. 
 
