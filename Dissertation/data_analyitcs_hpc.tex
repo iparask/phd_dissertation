@@ -355,7 +355,7 @@ The first dimension corresponds to time frames of the trajectory, the second to 
 Algorithm~\ref{alg:hausdorff} describes the PSA algorithm with the Hausdorff metric over multiple trajectories.
 We apply a 2-dimensional data partitioning over the output matrix to parallelize, shown in algorithm~\ref{alg:partition}.
 Our Hausdorff metric calculation is based on a naive algorithm.
-Recently, an algorithm was introduced that uses early break to speedup execution~\cite{fasthausdorff}, although we are not aware of a parallel implementation of this algorithm.
+Recently, an algorithm was introduced that uses early break to speedup execution~\cite{taha2015efficient}, although we are not aware of a parallel implementation of this algorithm.
 
 \begin{algorithm}[ht]
     \scriptsize
@@ -514,12 +514,12 @@ It uses the existing environment of the resource to execute tasks.
 Any data communication between tasks is done via an underlying shared filesystem, e.g., Lustre.
 Task execution coordination and communication is done through a database (MongoDB).
 
-RADICAL~-PIlot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
+RADICAL~-Pilot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
 Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop new algorithms.
 
 \subsubsection{Comparison of Frameworks}
 \begin{table}[t]
-    \begin{tabular}{@{}p{3cm}|p{3.5cm}p{3.5cm}p{3.5cm}@{}}
+    \begin{tabular}{@{}p{2.75cm}|p{3.25cm}p{3.25cm}p{3.25cm}@{}}
         \toprule
         &\textbf{RADICAL-Pilot} &
         \textbf{Spark} &
