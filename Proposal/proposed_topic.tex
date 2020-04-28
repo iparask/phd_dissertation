@@ -47,27 +47,27 @@ These are:
     \item a workflows can be homogeneous or heterogeneous in space---maximum number of resources they need, and time---the amount of time they are executing.
 \end{inparaenum}
 
-We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{w}]$, where $w_{i}$ is a workflow and $N_{w}$ is the total number of workflows, $R = [ r_{j}: 1 \leq j \leq N_{r}]$ is a set of available resources, where $r_{j}$ is a resource and $N_{r}$ is the total number of available resources, and $ M(C,R) = [(w_i, r_j): 1 \leq i \leq N_{w}, r_j \in R] $ is a mapping function of workflows onto resources.
-In addition, we denote the execution time of a workflow as $TTX_{w_{i}}$, the makespan of campaign $C$ as $TTX_{C}$, and the makespan of campaign $C$ for a given mapping function $ M $ as $TTX_{C}(M)$.
+We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{C}]$, where $w_{i}$ is a workflow and $N_{C}$ is the total number of workflows, $R = [ r_{j}: 1 \leq j \leq N_{R}]$ is a set of available resources, where $r_{j}$ is a resource and $N_{R}$ is the total number of available resources, and $ M(C,R) = [(w_i, r_j): 1 \leq i \leq N_{C}, r_j \in R] $ is a mapping function of workflows onto resources.
+In addition, we denote the execution time of a workflow as $Tx_{w_{i}}$, the makespan of campaign $C$ as $TTX_{C}$, and the makespan of campaign $C$ for a given mapping function $ M $ as $TTX_{C}(M)$.
 Assumption~\#3 allows to abstract the resource implementation details, as workflows can be executed on different resources such as HPCs, Clouds, pilots and more. 
 Lastly, we will assume homogeneous resources as it simplifies the formalization of the problem.
 
-With a single resource, i.e., $N_{r} = 1$, the workflows of a campaign will be executed sequentially, regardless the execution order or if the workflows are homogeneous or heterogeneous.
+With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be executed sequentially, regardless the execution order or if the workflows are homogeneous or heterogeneous.
 As a result the makespan of the campaign is:
 \begin{equation}
-   TTX_{C} = \sum_{i=1}^{N_{w}}TTX_{w_{i}} 
+   TTX_{C} = \sum_{i=1}^{N_{C}}Tx_{w_{i}} 
 \end{equation}
 
-With multiple homogeneous resources, i.e., $1 < R < N_{w}$, the workflows of a campaign can be executed concurrently.
+With multiple homogeneous resources, i.e., $1 < N_{R} < N_{C}$, the workflows of a campaign can be executed concurrently.
 Furthermore, this is semantically equivalent to executing on a single resource large enough to allow concurrent workflow execution, where each workflow executes on a resource partition. 
 Because of assumptions~\#5 and~\#7, executing homogeneous or heterogeneous in space workflows has the same makespan.
 A random mapping of workflows onto resource will have a makespan:
 \begin{equation}
-   TTX_{C}(Random) \geq \frac{1}{N_{r}}\sum_{i=1}^{N_{w}} TTX_{w_{i}} 
+   TTX_{C}(Random) \geq \frac{1}{N_{R}}\sum_{i=1}^{N_{C}} Tx_{w_{i}} 
 \end{equation}
 Given multiple homogeneous resources, when executing workflows that are heterogeneous in time and that can be homogeneous or heterogeneous in space, the makespan of the campaign for a given mapping function $ M $ is:
 \begin{equation}
-TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{r_{i}\in M(C,r_{j})}TTX_{w_{i}}\Big\}
+TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \label{eq:makespan}
 \end{equation}
 
@@ -89,8 +89,10 @@ We propose to utilize and extend the Heterogeneous Earliest Finish Time (HEFT)~\
 %\mtnote{for doing what?}\gpnote{any better?}
 HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
-HEFT has been shown to provide better performance in terms of makespan minimization when compared to a random or round robin plan~\cite{topcuoglu2002performance,deelman2015pegasus}.
+HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}.
 This makes HEFT a good candidate for minimizing the makespan of a campaign.
+In this context, we propose to evaluate how HEFT performs when compared to a plan in which the mapping between workflows and resources is random.
+
 
 HEFT makes two important assumptions when used on multiple workflows, i.e., a campaign: (1) any task in a workflow can be executed on all available resources; and (2) all resources are always available.
 HEFT is mainly used to derive an execution plan for workflows, i.e., the execution order and resource placement of the tasks that comprise the workflow.
@@ -170,7 +172,7 @@ The planner will use the proposed extension of the HEFT algorithm to derive an e
 The planner will pull information about the state of resources as well as the state of the workflows of the campaign from the bookkeeper component.
 In addition, based on information from the other components, the planner might be able to update the plan during the campaign runtime. 
 
-\mtnote{is it a calculator or an optimizer? Seem different capabilities to me and not necessarily part of the same component}\gpnote{any better?}\mtnote{It seems to me that makespan calculation is only one of the elements needed to derive a plan. As such, I think you need at least two components in your architecture: makespan calculator and planner.}\gpnote{The planner uses the makespan calculation to derive a plan. I do not think they should be two different components.}
+%\mtnote{is it a calculator or an optimizer? Seem different capabilities to me and not necessarily part of the same component}\gpnote{any better?}\mtnote{It seems to me that makespan calculation is only one of the elements needed to derive a plan. As such, I think you need at least two components in your architecture: makespan calculator and planner.}\gpnote{The planner uses the makespan calculation to derive a plan. I do not think they should be two different components.}
 
 The Bookkeeper component will be responsible for monitoring the execution of the campaign.
 This component will know the state of the campaign, the execution plan, the availability of the resources, and the campaign's objective.

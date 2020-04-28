@@ -1,0 +1,64 @@
+\documentclass[final]{ruthesis}
+\special{papersize=8.5in,11in} %***for A4-default configurations on servers
+\phd
+
+\input{preamble}
+\setcounter{tocdepth}{3}
+
+\begin{document}
+
+\author{Ioannis Paraskevakos}
+\copyrightp
+\title{Campaign manager for executing scientific campaigns on high performance computing resources}
+\author{Ioannis Paraskevakos}					
+\program{Electrical and Computer Engineering}
+\director{Dr. Shantenu Jha and Dr. Matteo Turilli}
+\approvals{4}
+\submissionyear{2020}
+\submissionmonth{October}
+\figurespage
+\tablespage
+
+\abstract{\input{abstract}}
+\acknowledgements{\input{ack}}
+
+\beforepreface
+\afterpreface
+
+% ---------------------------------------------------------
+% CHAPTER 1
+% ---------------------------------------------------------
+\chapter{Introduction}
+\input{intro}
+
+% ---------------------------------------------------------
+% CHAPTER 2
+% ---------------------------------------------------------
+\chapter{Supporting task based data analytics on HPC}
+\input{data_analyitcs_hpc}
+
+% ---------------------------------------------------------
+% CHAPTER 3
+% ---------------------------------------------------------
+\chapter{Middleware design influence in execution time}
+\input{designs}
+
+% ---------------------------------------------------------
+% CHAPTER 4
+% ---------------------------------------------------------
+\chapter{Towards supporting scientific computational campaigns}
+\input{campaigns}
+% ---------------------------------------------------------
+% CHAPTER 5
+% ---------------------------------------------------------
+\chapter{Campaign manager}
+\input{manager}
+% ---------------------------------------------------------
+% CHAPTER 6
+% ---------------------------------------------------------
+\chapter{Conclusions}
+\input{conclusions}
+
+\bibliography{general,data_analytics_hpc,designs,campaigns}
+\bibliographystyle{unsrt}
+\end{document}
