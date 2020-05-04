@@ -1,4 +1,5 @@
-\label{ch:intro}
+% !TEX root = main.tex
+\gpnote{\label{ch:intro}
 \begin{itemize}
     \item Describe use cases and explain why they are computational campaigns.
     \item Show that campaigns can be simulation based, analysis based, and simulation analysis based
@@ -8,5 +9,157 @@
     \item Question 2: How does that affect the performance and how does EnTK and RP perform?
     \item Question 3: Is there a design choice that can affect the execution?
     \item Question 4: What is needed to fully support campaigns?
-\end{itemize}
+\end{itemize}}
+
+Scientific applications are benefiting form executing multiple workflows, with of without dependencies amongst them, to achieve scientific insight.
+These applications span from biomolecular sciences~\cite{dakka2018concurrent}, to enable drug discovery, to data analysis from large scale experiments~\cite{atlas} or remote sensing~\cite{goncalves2020sealnet}.
+Furthermore, the characteristics of the workflows that comprise such applications are different.
+Others gather data either from simulators, such as the ATLAS experiment~\cite{atlas}, or remote sensing, such as satellites~\cite{goncalves2020sealnet}, and require to analyze those data.
+Last but not least are the applications that execute workflows that are simulating systems, analyze produced data and then steer further simulations~\cite{}.
+This way of execution is called computational campaign.
+
+Some drug discovery applications, for example, screen millions of compounds to identify good drug candidates~\cite{dakka2018concurrent}.
+Each compound screening eventually is a workflow which computes the binding affinity of the compound.
+In addition, such applications utilize High Performance Computing (HPC) resources and consume millions of core-hours of compute time.
+In order to maximize the number of good candidates a large number of such workflows should be executed.
+
+Another example of computational campaigns is quantum chemistry campaigns supported by QCFractal~\cite{qcfractal}.
+These campaigns usually have hundreds of workflows as members and can be executed on a set of different resources, based on workflow requirements.
+Moreover, users want to have the ability to prioritize some workflows over others and remove or add workflows or resources.
+
+Ecological sciences that utilize very high resolution satellite imagery~\cite{goncalves2020sealnet}, require the analysis of TB of data from different calendar years to create time series of ecological changes.
+To achieve this, ecological scientist would like to analyze data as they are becoming available by satellite imagery providers. 
+
+
+As it is evident from the above use cases, computational campaigns have a plethora of characteristics and requirements.
+Some of the most important characteristics of campaigns are:
+\begin{inparaenum}[(1)]
+    \item comprised of O(100) workflows;
+    \item workflow requirements are not uniform across workflows;
+    \item use of multiple computational resources;
+    \item finite access time to said resources; and
+    \item well defined computational objectives.
+\end{inparaenum}
+
+Based on the above discussion, it becomes important to support the execution of computational campaigns as the first order of execution.
+Thus there is a need to provide software stack that allows the execution of compute and data oriented workflows on a diverse set of resources.
+Currently, there is a stack comprised by RADICAL-EnTK~\cite{balasubramanian2018harnessing}, RADICAL-Pilot~\cite{merzky2019using} and RADICAL-SAGA~\cite{merzky2015saga} which allows the execution of compute intensive workflows on HPC resources.
+Although, compute oriented workflows and workloads are fully supported, there is a lack of support of data oriented workflows.
+As a result, supporting data oriented and data intensive workflows becomes important, as well as understanding understanding the performance characteristics of data-intensive workflows.
+
+
+\subsection*{Paper 1 intro}
+
+The MapReduce~\cite{mapreduce} abstraction popularized by Apache Hadoop~\cite{hadoop} has been successfully used for many data-intensive applications in different domains~\cite{37684}.
+One important differentiator of Hadoop compared to HPC is the availability of many higher-level abstractions and tools for data storage, transformations and advanced analytics.
+These abstraction typically allow high-level reasoning about data parallelism without the need to manually partition data, manage tasks processing this data and collecting the results, which is required in other environments.
+Within the Hadoop ecosystem, tools like Spark~\cite{Zaharia:2010:SCC:1863103.1863113} have gained popularity by supporting specific data processing and analytics needs and are increasingly used in sciences, e.\,g.\ for DNA sequencing~\cite{Massie:EECS-2013-207}.
+
+
+Data-intensive applications are associated with a wide variety of characteristics and properties, as summarized by Fox et\,al.~\cite{bigdata-ogres,bigdata-use-cases-nist}.
+Their complexity and characteristics are fairly distinct from HPC applications.
+For example, they often comprise of multiple stages such as, data ingest, pre-processing, feature-extraction and advanced analytics.
+While some of these stages are I/O bound, often with different patterns (random/sequential access), other stages are compute-/memory-bound.
+Not surprisingly, a diverse set of tools for data processing (e.\,g.\ MapReduce, Spark RDDs), access to data sources (streaming, filesystems) and data formats (scientific data formats (HDF5), columnar formats (ORC and Parquet)) have emerged and they often need to be combined in order to support the end-to-end needs of applications.
+
+Some applications however, defy easy classification as data-intensive or HPC.
+In fact, there is specific interest in a class of of scientific applications, such as bio-molecular dynamics~\cite{doi:10.1146/annurev-biophys-042910-155245}, that have strong characteristics of both data-intensive and HPC.
+Bio-molecular simulations are now high-performant, reach increasing time scales and problem sizes, and thus generating immense amounts of data.
+The bulk of the data in such simulations is typically trajectory data that is time-ordered set of coordinates and velocity.
+Secondary data includes other physical parameters including different energy components.
+Often times the data generated needs to be analyzed so as to determine the next set of simulation configurations.
+The type of analysis varies from computing the higher order moments, to principal components, to time-dependent variations.
+
+MDAnalysis~\cite{mdanalysis} and CPPTraj~\cite{doi:10.1021/ct400341p} are two tools that evolved to meet the increasing analytics demands of molecular dynamics applications; Ref~\cite{himach} represents an attempt to provide MapReduce based solutions in HPC environments.
+These tools provide powerful domain-specific analytics; a challenge is the need to scale them to high data volumes produced by molecular simulations as well as the coupling between the simulation and analytics parts.
+This points to the need for environments that support scalable data processing while preserving the ability to run simulations at the scale so as to generate the data.
+To the best of our knowledge, there does not exist a solution that provides the integrated capabilities of Hadoop and HPC.
+For example, Cray's analytics platform Urika~\footnote{http://www.cray.com/products/analytics} has Hadoop and Spark running on HPC architecture as opposed to regular clusters, but without the HPC software environment and capabilities.
+However, several applications ranging from bio-molecular simulations to epidemiology models~\cite{network1} require significant simulations interwoven with analysis capabilities such as clustering and graph analytics; in other words some stages (or parts of the same stage) of an application would ideally utilize Hadoop/Spark environments and other stages (or parts thereof) utilize HPC environments.
+
+Over the past decades, the High Performance Distributed Computing (HPDC) community has made significant advances in addressing resource and workload management on heterogeneous resources.
+For example, the concept of multi-level scheduling~\cite{1392910} as manifested in the decoupling of workload assignment from resource management using the concept of intermediate container jobs (also referred to as Pilot-Jobs~\cite{pstar12}) has been adopted for both HPC and Hadoop.
+Multi-level scheduling is a critical capability for data-intensive applications as often only application-level schedulers can be aware of the localities of the data sources used by a specific application.
+This motivated the extension of the Pilot-Abstraction to Pilot-Data~\cite{pilot-data-jpdc-2014} to form the central component of a resource management middleware.
+
+In this paper, we explore the integration between Hadoop and HPC resources utilizing the Pilot-Abstraction allowing application to manage HPC (e.\,g.\ simulations) and data-intensive application stages in a uniform way.
+We propose two extensions to RADICAL-Pilot: the ability to spawn and manage Hadoop/Spark clusters on HPC infrastructures on demand (Mode I), and to connect and utilize Hadoop and Spark clusters for HPC applications (Mode II).
+Both extensions facilitate the complex application and resource management requirements of data-intensive applications that are best met by a best-of-bread mix of Hadoop and HPC.
+By supporting these two usage modes, RADICAL-Pilot dramatically simplifies the barrier of deploying and executing HPC and Hadoop/Spark side-by-side.
+
+\subsection*{Paper 2 intro}
+Frameworks for parallel data analysis have been created by the High Performance Computing (HPC) and Big Data communities~\cite{fox-2017}.
+MPI is the most used programming model for HPC resources.
+It assumes a SPMD execution model where each process executes the same program.
+It is highly optimized for high-performance computing and communication, which along with synchronization need explicit implementation.
+Big Data frameworks utilize higher-level MapReduce~\cite{mapreduce} programming models avoiding explicit implementations of communication.
+In addition, the MapReduce~\cite{mapreduce} abstraction makes it easy to exploit data-parallelism as required by many analysis applications.
+Several recent publications applied HPC techniques to advance traditional Big Data applications and Big Data frameworks~\cite{fox-2017}.
+
+Task-parallel applications involve partitioning a workload into a set of self-contained units of work.
+Based on the application, these tasks can be independent, have no inter-task communication, or coupled with varying degrees of data dependencies.
+Big Data applications exploit task parallelism for data-parallel parts (e.\,g., \texttt{map} operations), but also require coupling, for computing aggregates (the \texttt{reduce} operation).
+The MapReduce~\cite{mapreduce} abstraction popularized this execution pattern.
+Typically, a reduce operation includes shuffling intermediate data from a set of nodes to node(s) where the reduce executes.
+There is a recognized need to optimize communication intensive parts of Big Data frameworks using established HPC techniques for interprocess, e.\,g. shuffle operations~\cite{rdma-spark} and other forms of communication~\cite{hpc-abds,twisterNet}.
+
+Spark~\cite{Zaharia_2010} and Dask~\cite{matthew_rocklin-proc-scipy-2015} are two Big Data frameworks.
+Both provide MapReduce abstractions and are optimized for parallel processing of large data volumes, interactive analytics and machine learning.
+Their runtime engines can automatically partition data, generate parallel tasks, and execute them on a cluster.
+In addition, Spark offers in-memory capabilities allowing caching data that are read multiple times, making it suited for interactive analytics and iterative machine learning algorithms.
+Dask also provides a MapReduce API (Dask Bags).
+Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
+
+In this paper, we investigate the data analysis requirements of Molecular Dynamics (MD) applications.
+MD simulations are significant consumers of computing cycles, producing immense amounts of data.
+A typical $\mu sec$ MD simulation of physical system of $O(100k)$ atoms can produce from $O(10)$ to $O(1000)$ GBs of data~\cite{Cheatham:2015}.
+In addition to being the prototypical HPC application, there is increasingly a need for the analysis to be integrated with simulations and drive the next stages of execution~\cite{extasy}.
+The analysis phase must be performed quickly and efficiently in order to steer the simulations.
+
+We investigate three task-parallel frameworks and their suitability for implementing MD trajectory analysis algorithms.
+In addition to Spark and Dask, we investigate RADICAL-Pilot~\cite{rp-jsspp18}, a Pilot-Job~\cite{pstar12} framework designed for implementing task-parallel applications on HPC.
+We utilize MPI4py~\cite{mpi4py_paper} to provide MPI equivalent implementations of the algorithms.
+The task-parallel implementations performance and scalability compared to MPI is the basis of our analysis.
+MD trajectories are time series of atoms/particles positions and velocities, which are analyzed using different statistical methods to infer certain properties, e.\,g. the relationship between distinct trajectories, snapshots of a trajectory etc.
+As a result, they can be considered as a representative set of scientific datasets that are organized as time series and their analysis algorithms. 
+
+The paper makes the following contributions: 
+\begin{inparaenum}[i)]
+    \item it characterizes and explains the behavior of different MDAnalysis algorithms on these frameworks, and
+    \item provides a conceptual basis for comparing the abstraction, capabilities and performance of these frameworks.
+\end{inparaenum}
+
+\subsection*{Paper 3 intro}
+A growing number of scientific domains are adopting workflows that use multiple analysis algorithms to process a large number of images.
+The volume and scale of data processing justifies the use of parallelism, tailored programming models and high performance computing (HPC) resources.
+While these features create a large design space, the lack of architectural and performance analyses makes it difficult to chose among functionally equivalent implementations.
+
+In this paper we focus on the design of computing frameworks that support the execution of heterogeneous tasks on HPC resources to process large imagery datasets.
+These tasks may require one or more CPUs and GPUs, implement diverse functionalities and execute for different amounts of time.
+Typically, tasks have data dependencies and are therefore organized into workflows.
+Due to task heterogeneity, executing workflows poses the challenges of effective scheduling, correct resource binding and efficient data management.
+HPC infrastructures exacerbate these challenges by privileging the execution of single, long-running jobs.
+
+From a design perspective, a promising approach to address these challenges is isolating tasks from execution management.
+Tasks are assumed to be self-contained programs which are executed in the operating system (OS) environment of HPC compute nodes.
+Programs implement the domain-specific functionalities required by use cases while computing frameworks implement resource acquisition, task scheduling, resource binding, and data management.
+
+Compared to approaches in which tasks are functions or methods, a program-based approach offers several benefits as, for example, simplified implementation of execution management, support of general purpose programming models, and separate programming of management and domain-specific functionalities.
+Nonetheless, program-based designs also impose performance limitations, including OS-mediated inter task communication and task spawning overheads, as programs execute as OS processes and do not share a memory space.
+
+Due to their performance limitations, program-based designs of computing frameworks are best suited to execute compute-intense workflows in which each task requires a certain amount of parallelism and runs from several minutes to hours.
+The emergence of workflows that require heterogeneous, compute-intense tasks to process large amount of data is pushing the boundaries of program-based designs, especially when scale requirements suggest the use of modern HPC infrastructures with large number of CPUs/GPUs and dedicated data facilities.
+
+We use a paradigmatic use case from the polar science domain to evaluate three alternative program-based designs, and experimentally characterize and compare their performance.
+Our use case requires us to analyze satellite images of Antarctica to detect pack-ice seals taken across a whole calendar year.
+The resulting dataset consists of $3,097$ images for a total of $\approx4$~TB.
+The use case requires us to repeatedly process these images, running both CPUs and GPUs code that exchange several GB of data.
+The first design uses a pipeline to independently process each image, while the second and third designs use the same pipeline to process a series of images with differences in how images are bound to available compute nodes.
+
+This paper offers three main contributions: 
+\begin{inparaenum}[(1)]
+    \item a precise indication of how to further the implementation of our workflow engine so as to support the class of use cases we considered while minimizing workflow time to completion and maximizing resource utilization;
+    \item specific design guidelines for supporting data-driven, compute-intense workflows on high-performance computing resources with a task-based computing framework; and
+    \item an experiment-based methodology to compare design performance of alternative designs that does not depend on the considered use case and computing framework.
+\end{inparaenum}
 
