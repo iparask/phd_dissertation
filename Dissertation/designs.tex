@@ -2,6 +2,19 @@
 
 This chapter will include the work of the eScience paper.
 
+We use a paradigmatic use case from the polar science domain to evaluate three alternative program-based designs, and experimentally characterize and compare their performance.
+Our use case requires us to analyze satellite images of Antarctica to detect pack-ice seals taken across a whole calendar year.
+The resulting dataset consists of $3,097$ images for a total of $\approx4$~TB.
+The use case requires us to repeatedly process these images, running both CPUs and GPUs code that exchange several GB of data.
+The first design uses a pipeline to independently process each image, while the second and third designs use the same pipeline to process a series of images with differences in how images are bound to available compute nodes.
+
+This paper offers three main contributions: 
+\begin{inparaenum}[(1)]
+    \item a precise indication of how to further the implementation of our workflow engine so as to support the class of use cases we considered while minimizing workflow time to completion and maximizing resource utilization;
+    \item specific design guidelines for supporting data-driven, compute-intense workflows on high-performance computing resources with a task-based computing framework; and
+    \item an experiment-based methodology to compare design performance of alternative designs that does not depend on the considered use case and computing framework.
+\end{inparaenum}
+
 \section{Satellite Imagery Analysis Application}\label{sec:ucase}
 Imagery employed by ecologists as a tool to survey populations and ecosystems come from a wide range of sensors, e.g., camera-trap surveys~\cite{karanth1995estimating} and aerial imagery transects~\cite{western2009impact}.
 However, most traditional methods can be prohibitively labor-intensive when employed at large scales or in remote regions.
