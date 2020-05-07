@@ -200,7 +200,7 @@ However, the fitness function of the selected algorithm~\cite{page2005algorithm}
 \label{algo:l2ff}
 The last algorithm places workflows based on the rule largest workflows to fastest resource~\cite{balasubramanian2019programming}.
 This algorithm sorts the workflows based on the number of operations and resources based on their performance.
-Then it places workflows on resources in a round robin fashion.
+Then it places each workflow on the first fastest available resource.
 Algorithm~\ref{alg:l2ff} show the pseudocode for this algorithm.
 
 \begin{algorithm}[ht]
