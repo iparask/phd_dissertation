@@ -1,7 +1,26 @@
 % !TEX root = main.tex
 \label{ch:data_hpc}
+In \S~\ref{sec:pilot-data-hadoop}, we explore the integration between Hadoop and HPC resources utilizing the Pilot-Abstraction allowing application to manage HPC (e.\,g.\ simulations) and data-intensive application stages in a uniform way.
+We propose two extensions to RADICAL-Pilot: the ability to spawn and manage Hadoop/Spark clusters on HPC infrastructures on demand (Mode I), and to connect and utilize Hadoop and Spark clusters for HPC applications (Mode II).
+Both extensions facilitate the complex application and resource management requirements of data-intensive applications that are best met by a best-of-bread mix of Hadoop and HPC. 
+By supporting these two usage modes, RADICAL-Pilot dramatically simplifies the barrier of deploying and executing HPC and Hadoop/Spark side-by-side.
+
+In \S~\ref{sec:task-par}, we investigate three task-parallel frameworks and their suitability for implementing MD trajectory analysis algorithms.
+In addition to Spark and Dask, we investigate RADICAL-Pilot~\cite{merzky2019using}, a Pilot-Job~\cite{luckow2012pstar} framework designed for implementing task-parallel applications on HPC.
+We utilize MPI4py~\cite{dalcin2005mpi} to provide MPI equivalent implementations of the algorithms.
+The task-parallel implementations performance and scalability compared to MPI is the basis of our analysis.
+MD trajectories are time series of atoms/particles positions and velocities, which are analyzed using different statistical methods to infer certain properties, e.\,g. the relationship between distinct trajectories, snapshots of a trajectory etc.
+As a result, they can be considered as a representative set of scientific datasets that are organized as time series and their analysis algorithms. 
+
+The paper makes the following contributions: 
+\begin{inparaenum}[i)]
+    \item it characterizes and explains the behavior of different MDAnalysis algorithms on these frameworks, and
+    \item provides a conceptual basis for comparing the abstraction, capabilities and performance of these frameworks.
+\end{inparaenum}
+
+
 \section{Integrating Hadoop and Spark with HPC workload management system}\label{sec:pilot-data-hadoop}
-bla bla
+
 \subsection{Some title here}
 An important motivation of our work is to provide advanced and scalable data analysis capabilities for existing high-performance applications (e.g., large-scale molecular dynamics simulations).
 This requires adding data-intensive analysis while preserving high-performance computing capabilities.
