@@ -8,17 +8,17 @@ Last but not least are the applications that execute workflows that are simulati
 This way of execution is called computational campaign.
 
 Some drug discovery applications, for example, screen millions of compounds to identify good drug candidates~\cite{dakka2018concurrent}.
-Each compound screening eventually is a workflow which computes the binding affinity of the compound.
+Usually, each compound screening is implemented as a workflow which computes the binding affinity of the compound.
 In addition, such applications utilize High Performance Computing (HPC) resources and consume millions of core-hours of compute time.
 In order to maximize the number of good candidates a large number of such workflows should be executed.
 Another example of computational campaigns is quantum chemistry campaigns supported by QCFractal~\cite{qcfractal}.
-These campaigns usually have hundreds of workflows as members and can be executed on a set of different resources, such as workstations, campus clusters and HPC, based on workflow requirements.
+These campaigns usually have hundreds of workflows as members and can be executed on different platforms, such as workstations, campus and HPC clusters, based on workflow requirements.
 Moreover, users want to have the ability to prioritize some workflows over others and remove or add workflows or resources.
 
-Ecological sciences that utilize very high resolution satellite imagery~\cite{goncalves2020sealnet}, require the analysis of TB of data from different calendar years to create time series of ecological changes.
+Ecological sciences that utilize very high resolution satellite imagery~\cite{goncalves2020sealnet}, require the analysis of terabyte (TB) of data from different calendar years to derive time series of ecological changes.
 To achieve this, ecological scientist would like to analyze data as they are becoming available by satellite imagery providers.
 Experiments, like the Large Hadron Collider experiment ATLAS~\cite{atlas}, gather data from sensors.
-Eventually scientists execute workflows to analyze their data repository and decide the next experiment.
+Eventually, scientists execute workflows to analyze their data repository and decide the next experiment.
 
 All these use cases require the execution of a computational campaign to achieve scientific insight.
 Although these campaign are different, they share a number of characteristics and requirements.
@@ -59,7 +59,7 @@ In addition, HPC resources are being designed to support and optimize the execut
 %Not surprisingly, a diverse set of tools for data processing (e.\,g.\ MapReduce, Spark RDDs), access to data sources (streaming, filesystems) and data formats (scientific data formats (HDF5), columnar formats (ORC and Parquet)) have emerged and they often need to be combined in order to support the end-to-end needs of applications.
 
 Data-intensive workflows and applications are associated with a wide variety of characteristics and properties~\cite{fox2014towards,fox2014big}.
-Their complexity and characteristics are fairly distinct from compute intensive applications.
+Their complexity and characteristics are distinct from compute intensive applications.
 They often comprise of multiple stages such as, data ingest, pre-processing, feature-extraction and advanced analytics.
 While some of these stages are I/O bound, often with different patterns (random/sequential access), other stages are compute-/memory-bound.
 As a result, a diverse set of tools for data processing (e.\,g.\ MapReduce~\cite{dean2004mapreduce}, Spark~\cite{zaharia2010spark}), access to data sources and data formats have emerged and often need to be combined in order to support the end-to-end needs of applications.
