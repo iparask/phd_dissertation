@@ -1,14 +1,13 @@
 \label{sec:pilot-data-hadoop}
 Our approach is to design a common software environment while attempting to be agnostic of specific hardware infrastructures, technologies and trends.
-In this section, we provide background information and comparative information on system abstractions, resource management and interoperability in HPC and Hadoop.
-
+%In this section, we provide background information and comparative information on system abstractions, resource management and interoperability in HPC and Hadoop.
 Hadoop~\cite{hadoop} has evolved to become the standard implementation of the MapReduce abstraction on top of the Hadoop filesystem and the YARN resource management.
 In fact, over the past years, Hadoop evolved to a general purpose cluster computing framework suited for data-intensive applications in industry~\cite{luckow2015automotive} and sciences~\cite{jha2014tale}.
 
 HPC and Hadoop originated from the need to support different kinds of applications: compute-intensive applications in the case of HPC, and data-intensive in the case of Hadoop.
 Not surprisingly, they follow different design paradigms: In HPC environments, storage and compute are connected by a high-end network (e.\,g.\ Infiniband) with capabilities such as RDMA; Hadoop co-locates both.
 HPC infrastructures introduced parallel filesystems, such as Lustre, PVFS or GPFS, to meet the increased I/O demands of data-intensive applications and archival storage and to address the need for retaining large volumes of primary simulation output data.
-The parallel filesystem model of using large, optimized storage clusters exposing a POSIX compliant rich interface and connecting it to compute nodes via fast interconnects works well for compute-bound task.
+The parallel filesystem model of using large, optimized storage clusters exposing a POSIX compliant rich interface and connecting it to compute nodes via fast interconnects works well for compute-bound tasks.
 It has however, some limitations for data-intensive, I/O-bound workloads that require a high sequential read/write performance.
 Various approaches for integrating parallel filesystems, such as Lustre and PVFS, with Hadoop emerged~\cite{kulkarni2013hadoop,tantisiriroj2011duality}, which yielded good results in particular for medium-sized workloads.
 
@@ -19,75 +18,75 @@ Examples of such higher-level execution management frameworks for Hadoop are: Sp
 
 The most well-known emerging processing framework in the Hadoop ecosystem is Spark~\cite{zaharia2010spark}.
 In contrast to MapReduce, it provides a richer API, more language bindings and a novel memory-centric processing engines, that can utilize distributed memory and can retain resources across multiple task generation.
-Spark's \emph{Reliable Distributed Dataset (RDD)} abstraction provides a powerful way to manipulate distributed collection stored in the memory of the cluster nodes.
+Spark's \emph{Reliable Distributed Dataset (RDD)} abstraction provides a powerful way to manipulate distributed collections stored in cluster nodes' memory.
 Spark is increasingly used for building complex data workflows and advanced analytic tools, such as MLLib~\cite{mllib} and SparkR.
+Although the addition/development of new and higher-level execution frameworks addressed some of the problems of data processing, it introduced the problem of heterogeneity of access and resource management.
 
-Although the addition/development of new and higher-level execution frameworks addressed some of the problems of data processing, it introduced the problem of heterogeneity of access and resource management, which we now discuss.
-
-Hadoop originally provided a rudimentary resource management system, the YARN scheduler~\cite{vavilapalli2013apache} provides a robust application-level scheduler framework addressing the increased requirements with respect to applications and infrastructure: more complex data localities (memory, SSDs, disk, rack, datacenter), long-lived services, periodic jobs, interactive and batch jobs need to be supported on the same environment.
-In contrast, to traditional batch schedulers, YARN is optimized for data-intensive environments supporting data-locality and the management of a large number of fine-granular tasks (found in data-parallel applications).
+Hadoop originally provided a rudimentary resource management system.
+The YARN scheduler~\cite{vavilapalli2013apache} provides a robust application-level scheduler framework addressing the increased requirements with respect to applications and infrastructure: 
+%more complex data localities (memory, SSDs, disk, rack, datacenter), long-lived services, periodic jobs, interactive and batch jobs need to be supported on the same environment.
+In contrast, to traditional batch schedulers, YARN is optimized for data-intensive environments supporting data-locality and the management of a large number of fine-granular tasks.
+%(found in data-parallel applications).
 
 While YARN manages system-level resources, applications and runtimes have to implement an application-level scheduler that optimizes their specific resource requirements, e.\,g.\ with respect to data locality. This application-level scheduler is referred to as {\it Application Master} and is responsible for allocating resources -- the so called containers -- for the applications and to execute tasks in these containers.
 Data locality, e.\,g.\ between HDFS blocks and container locations, need to managed by the Application Master by requesting containers on specific nodes/racks.
 
-Managing resources on top of YARN is associated with several challenge: while fine-grained, short-running tasks as found in data-parallel MapReduce applications are well supported, other workload characteristics are less well supported, e.\,g.\ gang-scheduled parallel MPI applications and long-running applications found predominantly in HPC environments.
-To achieve interoperability and integration between Hadoop and HPC, it is essential to consider a more diverse set of workloads on top of  YARN.
+Managing resources on top of YARN is associated with several challenge: while fine-grained, short-running tasks as found in data-parallel MapReduce applications are well supported, other workload characteristics are less well supported,such as parallel MPI applications and long-running applications.
+%To achieve interoperability and integration between Hadoop and HPC, it is essential to consider a more diverse set of workloads on top of  YARN.
 
-To achieve interoperability, several frameworks explore the usage of Hadoop on HPC resources.
-Various frameworks for running Hadoop on HPC emerged, e.\,g., Hadoop on Demand~\cite{hod}, JUMMP~\cite{moody2013jummp}, MagPie~\cite{chu2015magpie}, MyHadoop~\cite{krishnan2011myhadoop}, MyCray~\cite{mycray}.
+To achieve interoperability between Hadoop and HPC, several frameworks explore the usage of Hadoop on HPC resources, e.\,g., Hadoop on Demand~\cite{hod}, JUMMP~\cite{moody2013jummp}, MagPie~\cite{chu2015magpie}, MyHadoop~\cite{krishnan2011myhadoop}, MyCray~\cite{mycray}.
 While these frameworks can spawn and manage Hadoop clusters many challenges with respect to optimizing configurations and resource usage including the use of available SSDs for the shuffle phase, of parallel filesystems and of high-end network features, e.\,g.\ RDMA~\cite{rahman2014homr} remain.
 Further, these approaches do not address the need for interoperability between HPC and Hadoop application stages.
 
 A particular challenge for Hadoop on HPC deployment is the choice of storage and filesystem backend.
 Typically, for Hadoop local storage is preferred; nevertheless, in some cases, e.\,g.\ if many small files need to processed, random data access is required or the number of parallel tasks is low to medium, the usage of Lustre or another parallel filesystem can yield in a better performance.
-For this purpose, many parallel filesystems provide a special client library, which improves the interoperability with Hadoop; it limits however data locality and the ability for the application to optimize for data placements since applications are commonly not aware of the complex storage hierarchy.
-Another interesting usage mode is the use of Hadoop as active archival storage -- in particular, the newly added HDFS heterogeneous storage support is suitable for supporting this use case.
+For this purpose, many parallel filesystems provide a special client library, which improves the interoperability with Hadoop; it limits however data locality and the ability for the application to optimize for data placements.
+% since applications are commonly not aware of the complex storage hierarchy.
+%Another interesting usage mode is the use of Hadoop as active archival storage -- in particular, the newly added HDFS heterogeneous storage support is suitable for supporting this use case.
 
 Another challenge is the integration between both HPC and Hadoop environments.
 Rather than preserving HPC and Hadoop ``environments'' as software silos, there is a need for an approach that integrates them. 
-We propose the Pilot-Abstraction as unifying concept to efficiently support the integration, and not just the interoperability between HPC and Hadoop.
-By utilizing the multi-level scheduling capabilities of YARN, Pilot-Abstraction can efficiently manage Hadoop cluster resources providing the application with the necessary means to reason about data and compute resources and allocation.
+We utilize the Pilot-Abstraction as an unifying concept to efficiently support the integration, and not just the interoperability between HPC and Hadoop.
+By utilizing the multi-level scheduling capabilities of YARN, the Pilot-Abstraction can efficiently manage Hadoop cluster resources providing the application with the necessary means to reason about data and compute resources and allocation.
 On the other side, we show, how the Pilot-Abstraction can be used to manage Hadoop applications on HPC environments.
 
 The Pilot-Abstraction~\cite{luckow2012pstar} has been successfully used in HPC environments for supporting a diverse set of task-based workloads on distributed resources.
 A Pilot-job is a placeholder job that is submitted to the resource management system representing a container for a dynamically determined set of compute tasks.
 Pilot-jobs are a well-known example of multi-level scheduling, which is often used to separate system-level resource and user-level workload management.
-The Pilot-Abstraction defines the following entities: A Pilot-Compute allocates a set of computational resources (e.\,g.\,cores); a Compute-Unit (CU) as a self-contained piece of work represented as executable that is submitted to the Pilot-job.
-A CU can have data dependencies, i.\,e.\ a set of files that need to be available when executing the CU.
-A workloads typically consists of a set of dependents CUs.
-The Pilot-Abstraction has been implemented within BigJob~\cite{luckow2012pstar,luckow2010saga} and its second generation prototype RADICAL-Pilot~\cite{merzky2018design}.
-The interoperability layer of both frameworks is SAGA~\cite{merzky2015saga}, which is used for accessing the resource management system (e.\,g.\ SLURM, Torque and SGE) and for file transfers.
-SAGA is a lightweight interface that provides standards-based interoperable capabilities to the most commonly used functionalities required to develop distributed applications, tools and services.
+The Pilot-Abstraction defines the following entities:
+\begin{inparaenum} [(i)]
+    \item a Pilot-Compute allocates a set of computational resources (e.\,g.\,cores);
+    \item  a Compute-Unit (CU) as a self-contained piece of work represented as executable that is submitted to the Pilot-job.
+\end{inparaenum}
+%A CU can have data dependencies, i.\,e.\ a set of files that need to be available when executing the CU.
+%A workflow typically consists of a set of dependents CUs.
+The Pilot-Abstraction has been implemented within RADICAL-Pilot~\cite{merzky2018design}.
+%The interoperability layer is SAGA~\cite{merzky2015saga}, which is used for accessing the resource management system (e.\,g.\ SLURM, Torque and SGE) and for file transfers.
+%SAGA is a lightweight interface that provides standards-based interoperable capabilities to the most commonly used functionalities required to develop distributed applications, tools and services.
 
 
-\subsection{Some title here}
-\label{ssec:some_title}
-An important motivation of our work is to provide advanced and scalable data analysis capabilities for existing high-performance applications (e.g., large-scale molecular dynamics simulations).
-This requires adding data-intensive analysis while preserving high-performance computing capabilities.
+\subsection{Modes of integration}
+\label{ssec:integration_mode}
+%An important motivation of our work is to provide advanced and scalable data analysis capabilities for existing high-performance applications (e.g., large-scale molecular dynamics simulations).
+%This requires adding data-intensive analysis while preserving high-performance computing capabilities.
 Having established the potential of the Pilot~-Abstraction for a range of high-performance applications~\cite{treikalis2016repex,ragothaman2014developing,ko2014numerical}, we use it as the starting point for integrated high-performance compute and data-intensive analysis.
-We propose several extensions to RADICAL~-Pilot to facilitate the integrated use of HPC and Hadoop frameworks using the Pilot~-Abstraction.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/hpc_hadoop/hadoop-on-hpc-viceverse.pdf}
-    \caption{\textbf{Hadoop and HPC Interoperability:}
-        There are two usage modes:
-        (i) spawning a YARN or Spark cluster on a HPC environment (Hadoop on HPC), and
-        (ii) Running HPC applications inside a YARN cluster (HPC on Hadoop).
-        \label{fig:figures_hadoop-on-hpc-viceverse}}
-\end{figure}
-
 As depicted in Figure~\ref{fig:figures_hadoop-on-hpc-viceverse}, there are at least two different usage modes to consider:
 \begin{compactenum}[(i)]
     \item Mode I: Running Hadoop/Spark applications on HPC environments (Hadoop on HPC),
     \item Mode II: Running HPC applications on YARN clusters (HPC on Hadoop).
 \end{compactenum}
 
-Mode I is critical to support traditional HPC environments (e.\,g., the majority of XSEDE resources) so as to support applications with both compute and data requirements.
-Mode II is important for cloud environments (e.\,g.\ Amazon's Elastic MapReduce, Microsoft's HDInsight) and an emerging class of HPC machines with new architectures and usage modes, such as Wrangler~\cite{wrangler} that support Hadoop natively.
-For example, Wrangler supports dedicated Hadoop environments (based on Cloudera Hadoop 5.3) via a reservation mechanism.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/hpc_hadoop/hadoop-on-hpc-viceverse.pdf}
+    \caption{Hadoop and HPC Interoperability modes\label{fig:figures_hadoop-on-hpc-viceverse}}
+\end{figure}
 
-In the following we propose a set of tools for supporting both of these usage modes:
+Mode I is critical to support traditional HPC environments (e.\,g., the majority of XSEDE~\cite{xsede} resources) so as to support applications with both compute and data requirements.
+Mode II is important for cloud environments (e.\,g.\ Amazon's Elastic MapReduce, Microsoft's HDInsight) and an emerging class of HPC machines with new architectures and usage modes, such as Wrangler~\cite{wrangler} that support Hadoop natively.
+For example, Wrangler supported dedicated Hadoop environments (based on Cloudera Hadoop 5.3) via a reservation mechanism.
+
+In the following we discuss a set of tools for supporting both of these usage modes:
 In section~\ref{sssec:saga_hadoop} we present SAGA-Hadoop, a light-weight, easy-to-use tool for running Hadoop on HPC (Mode I).
 We then discuss, the integration of Hadoop and Spark runtimes into RADICAL~-Pilot, which enables both the interoperable use of HPC and Hadoop, as well as the integration of HPC and Hadoop applications (Mode I and II) (Section~\ref{sssec:rp-impl} to~\ref{sssec:rp_spark}).
 Using these new capabilities, applications can seamlessly connect HPC stages (e.\,g.\ simulation stages) with analysis staging using the Pilot-Abstraction to provide unified resource management.
@@ -98,7 +97,6 @@ Using these new capabilities, applications can seamlessly connect HPC stages (e.
 SAGA-Hadoop~\cite{saga-hadoop} is a tool for supporting the deployment of Hadoop and Spark on HPC resources (Mode I in Figure~\ref{fig:figures_hadoop-on-hpc-viceverse}).
 Using SAGA-Hadoop an applications written for YARN (e.\,g.\ MapReduce) or Spark (e.\,g. PySpark, DataFrame and MLlib applications) can be executed on HPC resources.
 
-
 Figure~\ref{fig:saga-hadoop} illustrates the architecture of SAGA-Hadoop.
 SAGA-Hadoop uses SAGA~\cite{merzky2015saga} to spawn and control Hadoop clusters inside an environment managed by an HPC scheduler, such as PBS, SLURM or SGE, or clouds.
 SAGA is used for dispatching a bootstrap process that generates the necessary configuration files and for starting the Hadoop processes.
@@ -106,7 +104,6 @@ The specifics of the Hadoop framework (i.\,e.\ YARN and Spark) are encapsulated 
 SAGA-Hadoop delegates tasks, such as the download, configuration and start of a framework to this plugin.
 In the case of YARN, the plugin is then responsible for launching YARN's Resource and Node Manager processes; in the case of Spark, the Master and Worker processes.
 This architecture allows for extensibility -- new frameworks, e.\,g.\ Flink, can easily be added.
-
 
 While nearly all Hadoop frameworks (e.\,g.\ MapReduce and Spark) support YARN for resource management, Spark provides a standalone cluster mode, which is more efficient in particular on dedicated resources.
 Thus, a special adaptor for Spark is provided.
@@ -125,8 +122,6 @@ In the following, we explore the usage of the Pilot~-Abstraction, an implementat
 
 \subsubsection{RADICAL~-Pilot and YARN Overview}
 \label{sssec:rp-impl}
-
-
 With the introduction of YARN, a broader set of applications can be executed within Hadoop clusters than earlier.
 However, developing and deploying YARN applications potentially side-by-side with HPC applications remains a difficult task.
 Established abstractions that are easy-to-use while enabling the user to reason about compute and data resources across infrastructure types (i.\,e.\ Hadoop, HPC and clouds) are missing. 
