@@ -1,18 +1,19 @@
 % !TEX root = main.tex
 \label{ch:intro}
-Scientific applications are benefiting from executing multiple workflows, with or without dependencies amongst them, to achieve scientific insight.
-These applications span from biomolecular sciences, enabling drug discovery~\cite{dakka2018concurrent}, to large scale experiments~\cite{atlas} or remote sensing~\cite{goncalves2020sealnet} data analysis.
-Furthermore, the characteristics of the workflows that comprise such applications are different.
+Computational sciences such as biomolecular sciences~\cite{cheatham2015impact, dakka2018concurrent}, ecological sciences~\cite{goncalves2020sealnet, paraskevakos2019workflow} and physics depending on large scale experiments~\cite{atlas} are benefiting from executing multiple workflows, with or without dependencies amongst them, to achieve scientific insight.
+The user submits workflows for execution, monitors their execution, while managing data transfers and analysis.
+Furthermore, the user may need to adapt workflows that will be executed in the future.
+%Furthermore, the characteristics of the workflows that comprise such applications are different.
 %Others gather data either from simulators, such as the ATLAS experiment~\cite{atlas}, or remote sensing, such as satellites~\cite{goncalves2020sealnet}, and require to analyze those data.
-Last but not least are the applications that execute workflows that are simulating systems, analyze produced data and then steer further simulations~\cite{dakka2018concurrent}.
+%Last but not least are the applications that execute workflows that are simulating systems, analyze produced data and then steer further simulations~\cite{dakka2018concurrent}.
 This way of execution is called computational campaign.
 
 Some drug discovery applications, for example, screen millions of compounds to identify good drug candidates~\cite{dakka2018concurrent}.
 Usually, each compound screening is implemented as a workflow which computes the binding affinity of the compound.
-In addition, such applications utilize High Performance Computing (HPC) resources and consume millions of core-hours of compute time.
+In addition, such applications usually utilize High Performance Computing (HPC) resources and consume millions of core-hours of compute time~\cite{cheatham2015impact}.
 In order to maximize the number of good candidates a large number of such workflows should be executed.
-Another example of computational campaigns is quantum chemistry campaigns supported by QCFractal~\cite{qcfractal}.
-These campaigns usually have hundreds of workflows as members and can be executed on different platforms, such as workstations, campus and HPC clusters, based on workflow requirements.
+Another example of computational campaigns is quantum chemistry campaigns~\cite{smith2020molssi}.
+These campaigns usually have hundreds of workflows as members, executing for months and on different platforms, such as workstations, campus and HPC clusters, based on workflow requirements~\cite{smith2020molssi}.
 Moreover, users want to have the ability to prioritize some workflows over others and remove or add workflows or resources.
 
 Ecological sciences that utilize very high resolution satellite imagery~\cite{goncalves2020sealnet}, require the analysis of terabyte (TB) of data from different calendar years to derive time series of ecological changes.

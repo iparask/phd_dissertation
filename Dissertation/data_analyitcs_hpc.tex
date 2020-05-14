@@ -20,13 +20,6 @@ Big Data applications exploit task parallelism for data-parallel operations (e.\
 The MapReduce~\cite{dean2004mapreduce} abstraction popularized this execution pattern.
 Typically, a reduce operation includes shuffling intermediate data from a set of nodes to node(s) where the reduce executes.
 
-Spark~\cite{zaharia2010spark} and Dask~\cite{rocklin2015dask} are two Big Data frameworks.
-Both provide MapReduce abstractions and are optimized for parallel processing of large data volumes, interactive analytics and machine learning.
-Their runtime engines can automatically partition data, generate parallel tasks, and execute them on a cluster.
-In addition, Spark offers in-memory capabilities allowing caching data that are read multiple times, making it suited for interactive analytics and iterative machine learning algorithms.
-Dask also provides a MapReduce API (Dask Bags).
-Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
-
 In \S~\ref{sec:pilot-data-hadoop}, we explore the integration between Hadoop~\cite{hadoop}, and Spark~\cite{zaharia2010spark} and HPC resources.
 We utilize the Pilot-Abstraction~\cite{luckow2012pstar} allowing the application to manage HPC and data-intensive application stages in a uniform way.
 We explore two extensions to RADICAL-Pilot~\cite{merzky2018design}, a Pilot-Job~\cite{luckow2012pstar} runtime system designed for implementing task-parallel applications on HPC: 
@@ -53,5 +46,5 @@ The section makes the following contributions:
 \input{pilot_data_hadoop}
 
 
-\section{Modeling the task-parallel execution of data intensive workflows}
+\section{Understanding the task-parallel requirements of data intensive workflows}
 \input{task_par}

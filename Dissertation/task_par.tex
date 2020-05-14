@@ -1,42 +1,18 @@
 \label{sec:task-par}
-The paper makes the following contributions: 
-\begin{inparaenum}[i)]
-    \item it characterizes and explains the behavior of different MDAnalysis algorithms on these frameworks, and
-    \item provides a conceptual basis for comparing the abstraction, capabilities and performance of these frameworks.
-\end{inparaenum}
 
-MD analysis algorithms were until recently executed serially and parallelization was not straightforward.
-During the last years several frameworks emerged providing parallel algorithms for analyzing MD trajectories.
-Some of those frameworks are HiMach~\cite{tiankai2008scalable}, Pteros 2.0~\cite{yesylevskyy2015pteros}, MDTraj~\cite{mcgibbon2015mdtraj}, and nMoldyn-3~\cite{hinsen2012nmoldyn}.
-We compare these frameworks with our approach over the parallelization techniques used.
+Data based workflow engines exploit task-parallelism by partitioning the data and generating stages of independent tasks.
+These stages then ordered and implement data dependencies by shuffling, aggregating or coupling intermediate results.
+The MapReduce~\cite{dean2004mapreduce} abstraction, along with its implementations, popularized this method of processing.
 
-HiMach~\cite{tiankai2008scalable} was developed by D. E. Shaw Research group to provide a parallel analysis framework for MD simulations, and extends Google's MapReduce.
-HiMach API defines trajectories, does per frame data acquisition (Map) and cross-frame analysis (Reduce).
-HiMach's runtime is responsible to parallelize and distribute Map and Reduce phases to resources.
-Data transfers are done through a communication protocol created specifically for HiMach.
+Spark~\cite{zaharia2010spark} and Dask~\cite{rocklin2015dask} are two Big Data frameworks.
+Both provide MapReduce abstractions and are optimized for parallel processing of large data volumes, interactive analytics and machine learning.
+Their runtime engines can automatically partition data, generate parallel tasks, and execute them on a cluster.
+In addition, Spark offers in-memory capabilities allowing caching data that are read multiple times, making it suited for interactive analytics and iterative machine learning algorithms.
+Dask also provides a MapReduce API (Dask Bags).
+Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
 
-Pteros-2.0~\cite{yesylevskyy2015pteros} is a open-source library that is used for modeling and analyzing MD trajectories, providing a plugin for each supported algorithm.
-The execution is done by a user defined driver application, which setups trajectory  I/O and frame dispatch for analysis.
-It offers a C++ and Python API.
-Pteros 2.0 parallelizes computational intensive algorithms via OpenMP and Multithreading.
-As a result, it is bounded to execute on a single node, making any analysis execution highly dependent on memory size.
-Through RADICAL-Pilot, Spark and Dask, we avoided recompiling every time there is a change to the underlying resource, ensuring the application's execution.
-
-MDTraj~\cite{mcgibbon2015mdtraj} is a Python package for analyzing MD trajectories.
-It links MD data and Python statistical and visualization software.
-MDTraj proposes parallelizing the execution by using the parallel package of IPython as a wrapper along with an out-of-core trajectory reading method.
-Our approach allows data parallelization on any level of the execution, not only in data read.
-
-nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
-The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
-In addition, it provides adaptability, allowing on-the-fly addition of resources, and execution fault tolerance when worker processes disconnect.
-
-In contrast, our approach utilizes more general purpose frameworks for parallelization.
-These frameworks provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
-In addition,  resource acquisition and management is done transparently.
-
-\subsection{Molecular Dynamics Analysis Applications}
-\label{use_cases}
+%\subsection{Molecular Dynamics Analysis Applications}
+%\label{ssec:use_cases}
 Some commonly used algorithms for analyzing MD trajectories are Root Mean Square Deviation (RMSD), Pairwise Distances (PD), and Sub-setting~\cite{mura2014biomolecules}.
 Two more advanced algorithms are Path Similarity Analysis (PSA)~\cite{seyler2015path} and Leaflet Identification~\cite{michaud2011mdanalysis}.
 RMSD is used to identify the deviation of atom positions between frames.
@@ -47,23 +23,24 @@ All these methods, in some way, read and process the whole physical system gener
 The analysis reduces the data to either a number or a matrix.
 
 We discuss two of these methods, a Path Similarity Analysis (PSA) algorithm using the Hausdorff distance and a Leaflet Identification method, and their implementations in MDAnalysis~\cite{michaud2011mdanalysis,gowers2016mdanalysis}.
-In addition, we implemented the PSA algorithm using CPPTraj~\cite{roe2013ptraj}.
-Furthermore, we explore the applications' Ogres Facets and Views~\cite{fox2014towards}, which provide a more systematic characterization.
+Section~\ref{ssec:mda} discusses the reasons for selecting these two algorithms in more detail.
+%In addition, we implemented the PSA algorithm using CPPTraj~\cite{roe2013ptraj}.
+%Furthermore, we explore the applications' Ogres Facets and Views~\cite{fox2014towards}, which provide a more systematic characterization.
 
-Big Data Ogres~\cite{fox2014towards} are organized into four classes, called \emph{views}. 
-The possible features of a view are called \emph{facets}.
-A combination of facets from all views defines an Ogre.
-The Views are: 
-\begin{inparaenum}[1)]
-    \item execution - describes aspects, such as I/O, memory, compute ratios, whether computations are iterative, and the 5 V's of Big Data (Volume, Velocity, Value, Variety and Veracity),
-    \item data source \& style - discusses input data collection, storage and access,
-    \item processing - describes algorithms and kernels used for computation, and
-    \item problem architecture - describes the application architecture.
-\end{inparaenum}
+%Big Data Ogres~\cite{fox2014towards} are organized into four classes, called \emph{views}.
+%The possible features of a view are called \emph{facets}.
+%A combination of facets from all views defines an Ogre.
+%The Views are: 
+%\begin{inparaenum}[1)]
+%    \item execution - describes aspects, such as I/O, memory, compute ratios, whether computations are iterative, and the 5 V's of Big Data (Volume, Velocity, Value, Variety and Veracity),
+%    \item data source \& style - discusses input data collection, storage and access,
+%    \item processing - describes algorithms and kernels used for computation, and
+%    \item problem architecture - describes the application architecture.
+%\end{inparaenum}
 
 
-\subsubsection{MDAnalysis}
-\label{sec:mda}
+\subsection{MDAnalysis}
+\label{ssec:mda}
 MDAnalysis is a Python library~\cite{michaud2011mdanalysis,gowers2016mdanalysis} that provides a comprehensive environment for filtering, transforming and analyzing MD trajectories in all commonly used file formats.
 It provides a common object-oriented API to trajectory data and leverages existing libraries in the scientific Python software stack, such as NumPy~\cite{numpy} and Scipy~\cite{scipy}.
 
@@ -73,7 +50,7 @@ The basic idea is to compute pair-wise distances (for instance, using the Hausdo
 Each trajectory is represented as a two dimensional array.
 The first dimension corresponds to time frames of the trajectory, the second to the $N$ atom positions, in 3-dimensional space.
 
-\begin{algorithm}[ht]
+\begin{algorithm}[t]
     \scriptsize
     \caption{Path Similarity Algorithm: Hausdorff Distance}
     \label{alg:hausdorff}
@@ -112,7 +89,7 @@ We apply a 2-dimensional data partitioning over the output matrix to parallelize
 Our Hausdorff metric calculation is based on a naive algorithm.
 Recently, an algorithm was introduced that uses early break to speedup execution~\cite{taha2015efficient}, although we are not aware of a parallel implementation of this algorithm.
 
-\begin{algorithm}[ht]
+\begin{algorithm}[t]
     \scriptsize
     \caption{Two Dimensional Partitioning}
     \label{alg:partition}
@@ -132,6 +109,13 @@ Input data volume is medium to large while the output is small.
 Specific execution environments, such as HPC nodes, and Python arithmetic libraries, e.g., NumPy, are used (execution view).
 Input data are produced by HPC simulations, and are stored on HPC storage systems, such as parallel filesystem like Lustre (data source \& style view).
 
+Embarrassingly parallel algorithms are good candidates to utilize task parallelization.
+The data are partitioned to independent parts and each part is assigned to a task.
+These tasks can then execute as a bag of tasks.
+As a result, they are ideally suited for task-management and MapReduce APIs.
+They can be expressed as a bag of tasks using a task management API or a map-only application in a MapReduce-style API.
+All three selected frameworks support the execution of bag of tasks, with RADICAL~-Pilot and Dask offering specific abstractions (as discussed in \S~\ref{ssec:frameworks}).
+
 \subsubsection*{Leaflet Finder}Algorithm~\ref{alg:leafletfinder} describes the Leaflet Finder (LF) algorithm as presented in Ref.~\cite{michaud2011mdanalysis}.
 LF assigns particles to one of two curved but locally approximately parallel sheets, provided that the inter-particle distance is smaller than the distance between sheets.
 In biomolecular simulations of lipid membranes, consisting of a double layer of lipid molecules, LF is used to identify the lipids in the outer and inner leaflets (sheets).
@@ -141,7 +125,7 @@ The algorithm consists of two stages:
     \item computing the connected components of the graph, determining the lipids located on the outer and inner leaflets.
 \end{inparaenum}
 
-\begin{algorithm}[ht]
+\begin{algorithm}[t]
     \scriptsize
     \caption{Leaflet Finder Algorithm}
     \label{alg:leafletfinder}
@@ -177,26 +161,80 @@ Leaflet Finder can be efficiently implemented using the MapReduce abstraction (p
 It uses graph algorithms and linear algebra kernels (processing view facets).
 The data source \& style view facets are the same as the PSA algorithm.
 
-\subsubsection{CPPTraj}
-CPPTraj~\cite{roe2013ptraj,roe2018parallelization} is a C++ MD trajectory analysis tool.
-It is parallelized via MPI and OpenMP.
-CPPtraj reads in parallel frames from a single trajectory file or ensemble members of the same trajectory from different files.
-The frames are equally distributed to the MPI processes.
-Computational intensive algorithms are further parallelized using OpenMP.
-It requires at least one MPI process per ensemble member, where each member is a single trajectory file.
+Leaflet Finder is more complex as it requires two stages.
+It is possible to implement Leaflet Finder with a simple task-management API, although the MapReduce programming model allows more efficient implementation with a \texttt{map} for computing and filtering distances and a \texttt{reduce} for finding the components.
+The shuffling required between map and reduce is medium as the number of edges is a fraction of the input data.
+Spark and Dask natively support MapReduce and implementinf the Leaflet Finder algorithm is relatively straightforward.
+RADICAL-Pilot, on the other hand, does not support natively MapReduce.
+As a result, it is required by the application developer to define the data shuffling between the \emph{map} and \emph{reduce} phase of the algorithm.
+
+%\subsubsection{CPPTraj}
+%CPPTraj~\cite{roe2013ptraj,roe2018parallelization} is a C++ MD trajectory analysis tool.
+%It is parallelized via MPI and OpenMP.
+%CPPtraj reads in parallel frames from a single trajectory file or ensemble members of the same trajectory from different files.
+%The frames are equally distributed to the MPI processes.
+%Computational intensive algorithms are further parallelized using OpenMP.
+%It requires at least one MPI process per ensemble member, where each member is a single trajectory file.
+
+
+\subsection{Molecular dynamics analysis algorithms parallelization}
+\label{ssec:related_work}
+MD analysis algorithms were until recently executed serially and parallelization was not straightforward.
+During the last years several frameworks emerged providing parallel algorithms for analyzing MD trajectories.
+Some of those frameworks are CPPTraj~\cite{roe2013ptraj,roe2018parallelization}, HiMach~\cite{tiankai2008scalable}, PMDA~\cite{fan2019pmda}, Pteros 2.0~\cite{yesylevskyy2015pteros} and nMoldyn-3~\cite{hinsen2012nmoldyn}.
+%We compare these frameworks with our approach over the parallelization techniques used.
+
+Several different techniques are used for parallelizing these algorithms.
+CPPTraj~\cite{roe2018parallelization} utilizes MPI and OpenMP to exeucte large scale analysis on HPC.
+OpenMP is also utilized by Pteros~\cite{yesylevskyy2015pteros} to parallelize the compute intensive parts of the analysis.
+HiMach~~\cite{tiankai2008scalable} extends Google's MapReduce and defines Map and Reduce methods.
+nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
+The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
+
+%HiMach~\cite{tiankai2008scalable} was developed by D. E. Shaw Research group to provide a parallel analysis framework for MD simulations, and extends Google's MapReduce.
+%HiMach API defines trajectories, does per frame data acquisition (Map) and cross-frame analysis (Reduce).
+%HiMach's runtime is responsible to parallelize and distribute Map and Reduce phases to resources.
+%Data transfers are done through a communication protocol created specifically for HiMach.
+
+%Pteros-2.0~\cite{yesylevskyy2015pteros} is a open-source library that is used for modeling and analyzing MD trajectories, providing a plugin for each supported algorithm.
+%The execution is done by a user defined driver application, which setups trajectory  I/O and frame dispatch for analysis.
+%It offers a C++ and Python API.
+%Pteros 2.0 parallelizes computational intensive algorithms via OpenMP and Multithreading.
+%As a result, it is bounded to execute on a single node, making any analysis execution highly dependent on memory size.
+%Through RADICAL-Pilot, Spark and Dask, we avoided recompiling every time there is a change to the underlying resource, ensuring the application's execution.
+
+%MDTraj~\cite{mcgibbon2015mdtraj} is a Python package for analyzing MD trajectories.
+%It links MD data and Python statistical and visualization software.
+%MDTraj proposes parallelizing the execution by using the parallel package of IPython as a wrapper along with an out-of-core trajectory reading method.
+%Our approach allows data parallelization on any level of the execution, not only in data read.
+
+%nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
+%The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
+%In addition, it provides adaptability, allowing on-the-fly addition of resources, and execution fault tolerance when worker processes disconnect.
+
+A common denominator of most approaches is that they do not use general purpose frameworks for parallelizing the execution.
+Although, they are optimized to get as much performance as possible from the environments they are developed for, their portability is limited.
+CPPTraj~\cite{roe2018parallelization} and Pteros~\cite{yesylevskyy2015pteros}, for example, are highly dependent on the underlying low level libraries of the resource they use.
+HiMach~\cite{tiankai2008scalable} is build specifically for the Antons Supercomputer.
+
+In contrast, our approach and PMDA~\cite{fan2019pmda} utilize more general purpose frameworks for parallelization.
+Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
+The frameworks used provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
+In addition, resource acquisition and management is done transparently.
 
 \subsection{Background of Evaluated Frameworks}
-\label{frameworks}
-The landscape of frameworks for data-intensive applications is manifold~\cite{jha2014tale,kamburugamuve2017anatomy} and has been extensively studied in the context of scientific~\cite{jha2017introducing} applications.
-In this section, we investigate the suitability of frameworks such as Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and RADICAL~-Pilot~\cite{merzky2019using}, for MD data analytics.
+\label{ssec:frameworks}
+%The landscape of frameworks for data-intensive applications is manifold~\cite{jha2014tale,kamburugamuve2017anatomy} and has been extensively studied in the context of scientific~\cite{jha2017introducing} applications.
+%In this section, we discuss the suitability of frameworks such as Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and RADICAL~-Pilot~\cite{merzky2019using}, for MD data analytics.
 
-MapReduce~\cite{dean2004mapreduce} and its open source Hadoop implementation combined a simple functional API with a powerful distributed computing engine that exploits data locality to allow optimized I/O performance.
-However, MapReduce is inefficient for interactive workloads and iterative machine learning algorithms~\cite{zaharia2010spark,ekanayake2010twister}.
-Spark and Dask provide richer APIs, caching and other capabilities critical for analytics applications.
+%MapReduce~\cite{dean2004mapreduce} and its open source Hadoop implementation combined a simple functional API with a powerful distributed computing engine that exploits data locality to allow optimized I/O performance.
+%However, MapReduce is inefficient for interactive workloads and iterative machine learning algorithms~\cite{zaharia2010spark,ekanayake2010twister}.
+Spark and Dask provide rich APIs, caching and other capabilities critical for analytics applications.
 Spark is considered the standard solution for iterative data-parallel applications.
 Dask is quickly gaining support in the scientific community, since it offers a fully python environment.
-RADICAL~-Pilot is a Pilot-Job framework~\cite{luckow2012pstar} that supports task-level parallelism on HPC resources.
-It successfully adds a parallelization level on top of HPC MPI-based applications.
+RADICAL~-Pilot is a Pilot-Job framework~\cite{luckow2012pstar} that supports task-level parallelism on HPC resources and adds a parallelization level on top of HPC MPI-based applications.
+%RADICAL~-Pilot is a Pilot-Job framework~\cite{luckow2012pstar} that supports task-level parallelism on HPC resources.
+%It successfully adds a parallelization level on top of HPC MPI-based applications.
 
 As described in~\cite{jha2014tale}, these frameworks typically comprise of distinct layers, e.\,g.,cluster scheduler access, framework-level scheduling, and higher-level abstractions.
 On top of low-level resource management capabilities various higher-level abstractions can be provided, e.\,g., MapReduce-inspired APIs.
@@ -207,11 +245,30 @@ The following describes each framework in detail.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/bigdata_framework_stack.pdf}
-    \caption{\textbf{Architecture of RADICAL~-Pilot, Spark and Dask:}
-    The frameworks share common architectural components for managing cluster resource, and tasks.
-    Spark, Dask offer several high-level abstractions inspired by MapReduce.}
+    \caption{Architecture of RADICAL~-Pilot, Spark and Dask.}
+    %\caption{\textbf{Architecture of RADICAL~-Pilot, Spark and Dask:}
+    %The frameworks share common architectural components for managing cluster resource, and tasks.
+    %Spark, Dask offer several high-level abstractions inspired by MapReduce.}
     \label{fig:figures_bigdata_framework_stack}
 \end{figure}
+
+\subsubsection*{RADICAL-Pilot}
+%RADICAL~-Pilot~\cite{merzky2019using} is a Pilot system that implements the pilot paradigm as outlined in Ref.~\cite{turilli2018comprehensive}.
+%RADICAL~-Pilot (RP) is implemented in Python and provides a well defined API and usage modes.
+%Although RP is vehicle for research in scalable computing, it also supports production grade science.
+%Currently, it is being used by applications drawn from diverse domains, ranging from earth and biomolecular sciences to high-energy physics.
+%RP can be used as a runtime system by workflow or workload management systems~\cite{turilli2019middleware,treikalis2016repex,balasubramanian2018harnessing,dakka2018high,turilli2017evaluating}.
+%In 2017, RP was used to support more than 100M core-hours on US DOE, NSF resources (BlueWaters and XSEDE), and European supercomputers (Archer and SuperMUC).
+
+As discussed in \S~\ref{sec:pilot-data-hadoop}, RADICAL~-Pilot allows concurrent task execution on HPC resources.
+The user defines a set of Compute~-Units (CU)~- the abstraction that defines a task along with its dependencies - which are submitted to RADICAL~-Pilot.
+RADICAL~-Pilot schedules these CUs to be executed under the acquired resources.
+It uses the existing environment of the resource to execute tasks.
+Any data communication between tasks is done via an underlying shared filesystem, e.g., Lustre.
+Task execution coordination and communication is done through a database (MongoDB).
+
+%RADICAL~-Pilot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
+%Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop new algorithms.
 
 \subsubsection*{Spark}
 Spark~\cite{zaharia2010spark} extends MapReduce~\cite{dean2004mapreduce} providing a rich set of operations on top of the Resilient Distributed Dataset (RDD) abstraction~\cite{zaharia2012resilient}.
@@ -254,23 +311,23 @@ In addition, familiarity with Spark or MapReduce helps to minimize the learning 
 As a result, implementing MD analysis algorithms on Dask did not require significant engineering time.
 In addition, setting up a Dask cluster on a set of resources was relatively straightforward, since it provides all the binaries, e.g. \texttt(dask-ssh).
 
-\subsubsection*{RADICAL-Pilot}
-RADICAL~-Pilot~\cite{merzky2019using} is a Pilot system that implements the pilot paradigm as outlined in Ref.~\cite{turilli2018comprehensive}.
-RADICAL~-Pilot (RP) is implemented in Python and provides a well defined API and usage modes.
-Although RP is vehicle for research in scalable computing, it also supports production grade science.
-Currently, it is being used by applications drawn from diverse domains, ranging from earth and biomolecular sciences to high-energy physics.
-RP can be used as a runtime system by workflow or workload management systems~\cite{turilli2019middleware,treikalis2016repex,balasubramanian2018harnessing,dakka2018high,turilli2017evaluating}.
-In 2017, RP was used to support more than 100M core-hours on US DOE, NSF resources (BlueWaters and XSEDE), and European supercomputers (Archer and SuperMUC).
+%\subsubsection*{RADICAL-Pilot}
+%RADICAL~-Pilot~\cite{merzky2019using} is a Pilot system that implements the pilot paradigm as outlined in Ref.~\cite{turilli2018comprehensive}.
+%RADICAL~-Pilot (RP) is implemented in Python and provides a well defined API and usage modes.
+%Although RP is vehicle for research in scalable computing, it also supports production grade science.
+%Currently, it is being used by applications drawn from diverse domains, ranging from earth and biomolecular sciences to high-energy physics.
+%RP can be used as a runtime system by workflow or workload management systems~\cite{turilli2019middleware,treikalis2016repex,balasubramanian2018harnessing,dakka2018high,turilli2017evaluating}.
+%In 2017, RP was used to support more than 100M core-hours on US DOE, NSF resources (BlueWaters and XSEDE), and European supercomputers (Archer and SuperMUC).
 
-RADICAL~-Pilot allows concurrent task execution on HPC resources.
-The user defines a set of Compute~-Units (CU)~- the abstraction that defines a task along with its dependencies - which are submitted to RADICAL~-Pilot.
-RADICAL~-Pilot schedules these CUs to be executed under the acquired resources.
-It uses the existing environment of the resource to execute tasks.
-Any data communication between tasks is done via an underlying shared filesystem, e.g., Lustre.
-Task execution coordination and communication is done through a database (MongoDB).
+%RADICAL~-Pilot allows concurrent task execution on HPC resources.
+%The user defines a set of Compute~-Units (CU)~- the abstraction that defines a task along with its dependencies - which are submitted to RADICAL~-Pilot.
+%RADICAL~-Pilot schedules these CUs to be executed under the acquired resources.
+%It uses the existing environment of the resource to execute tasks.
+%Any data communication between tasks is done via an underlying shared filesystem, e.g., Lustre.
+%Task execution coordination and communication is done through a database (MongoDB).
 
-RADICAL~-Pilot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
-Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop new algorithms.
+%RADICAL~-Pilot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
+%Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop new algorithms.
 
 \subsubsection{Comparison of Frameworks}
 \begin{table}[t]
@@ -326,7 +383,8 @@ Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop n
         Dask Array can not deal with dynamic output shapes\\
         \bottomrule
     \end{tabular}
-    \caption{\textbf{Frameworks Comparison:} Dask and Spark are designed for data-related task, while RADICAL~-Pilot focuses on compute-intensive tasks.\label{tab:frameworks}}
+    \caption{Task-parallel Frameworks Comparison.\label{tab:frameworks}}
+    %\caption{\textbf{Task-parallel Frameworks Comparison:} Dask and Spark are designed for data-related task, while RADICAL~-Pilot focuses on compute-intensive tasks.\label{tab:frameworks}}
 \end{table}
 
 Table~\ref{tab:frameworks} summarizes the properties of these frameworks with respect to abstractions and runtime provided to create and execute parallel data applications. 
@@ -354,19 +412,19 @@ When a task is reached with unsatisfied dependencies, the scheduler executes the
 Dask's scheduler does not rely on synchronization points that Spark's stage-oriented scheduler introduces.
 RADICAL~-Pilot does not provide a DAG and requires the execution order and synchronization to be specified by the user.
 
-\subsubsection*{Suitability for MDAnalysis Algorithms}
-Trajectory analysis methods are often embarrassingly parallel.
-So, they are ideally suited for task management and MapReduce APIs.
-PSA-like methods typically require a single pass over the data and return a set of values that correspond to a relationship between frames or trajectories.
-They can be expressed as a bag of tasks using a task management API or a map-only application in a MapReduce-style API.
+%\subsubsection*{Suitability for MDAnalysis Algorithms}
+%Trajectory analysis methods are often embarrassingly parallel.
+%So, they are ideally suited for task management and MapReduce APIs.
+%PSA-like methods typically require a single pass over the data and return a set of values that correspond to a relationship between frames or trajectories.
+%They can be expressed as a bag of tasks using a task management API or a map-only application in a MapReduce-style API.
 
-Leaflet Finder is more complex and requires two stages:
-\begin{inparaenum}[a)]
-    \item the edge discovery stage, and
-    \item the connected components stage.
-\end{inparaenum}
-It is possible to implement Leaflet Finder with a simple task-management API, although the MapReduce programming model allows more efficient implementation with a \texttt{map} for computing and filtering distances and a \texttt{reduce} for finding the components.
-The shuffling required between map and reduce is medium as the number of edges is a fraction of the input data.
+%Leaflet Finder is more complex and requires two stages:
+%\begin{inparaenum}[a)]
+%    \item the edge discovery stage, and
+%    \item the connected components stage.
+%\end{inparaenum}
+%It is possible to implement Leaflet Finder with a simple task-management API, although the MapReduce programming model allows more efficient implementation with a \texttt{map} for computing and filtering distances and a \texttt{reduce} for finding the components.
+%The shuffling required between map and reduce is medium as the number of edges is a fraction of the input data.
 
 \subsection{Experiments and Discussion}
 \label{impl_exp}
@@ -383,7 +441,7 @@ We investigate:
 The experiments were executed on the XSEDE Supercomputers: Comet and Wrangler.
 SDSC Comet is a 2.7 PFlop/s cluster with 24\, Haswell cores/node and 128\,GB memory/node (6,400 nodes).
 TACC Wrangler has 24\, Haswell hyper-threading enabled cores/node and 128\,GB memory/node (120 nodes).
-Experiments were carried using RADICAL~-Pilot and Pilot-Spark~\cite{luckow2016hadoop} extension, which allows to efficiently manage Spark on HPC resources through a common resource management API.
+Experiments were carried using RADICAL~-Pilot and Pilot-Spark (as discusses on \S~\ref{sec:pilot-data-hadoop}) extension, which allows to efficiently manage Spark on HPC resources through a common resource management API.
 We utilize a set of custom scripts to start the Dask cluster.
 We used RADICAL~-Pilot 0.46.3, Spark 2.2.0, Dask 0.14.1 and Distributed 1.16.3.
 The data presented are means over multiple runs; error bars represent the standard deviation of the sample.
@@ -392,26 +450,27 @@ We employed up to $10$ nodes in Comet and Wrangler.
 \subsubsection{Frameworks Evaluation}
 \label{sec:framework_eval}
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/dask_spark_rp_wrangler.pdf}
-    \caption{\textbf{Task Throughput by Framework (Single Node):} 
-        Time/Throughput executing a given number of zero-workload tasks on Wrangler.
-        Dask performs best; Dask and Spark have very small delays for few tasks.
-        RADICAL~-Pilot offers the smallest throughput.}
-    \label{fig:dask_spark_rp_wrangler}
-\end{figure}
-
 As data-parallelism often involves a large number of short-running tasks, task throughput is a critical metric to assess the different frameworks.
 To evaluate the throughput we use zero workload tasks (\texttt{/bin/hostname}).
-We submit an increasing number of such tasks to RADICAL~-Pilot, Spark and Dask and measure the execution time.
+We submit an increasing number of such tasks to RADICAL~-Pilot, Spark and Dask and measure the execution time on a single node.
 
 For RADICAL~-Pilot, all tasks were submitted simultaneously. RADICAL~-Pilot's backend database was running on the same node to avoid large communication latencies.
 For Spark, we created an RDD with as many partitions as the number of tasks -- each partition is mapped to a task by Spark.
 For Dask, we created tasks using \texttt{delayed} functions that were executed by the Distributed scheduler.
 We used Wrangler and Comet for this experiment.
 
-Figure~\ref{fig:dask_spark_rp_wrangler} shows the results.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/dask_spark_rp_wrangler.pdf}
+    \caption{Total time to completion and task throughput by framework on a single node for an increasing number of tasks.}
+    %\caption{\textbf{Task Throughput by Framework (Single Node):} 
+    %    Time/Throughput executing a given number of zero-workload tasks on Wrangler.
+    %    Dask performs best; Dask and Spark have very small delays for few tasks.
+    %    RADICAL~-Pilot offers the smallest throughput.}
+    \label{fig:dask_spark_rp_wrangler}
+\end{figure}
+
+Figure~\ref{fig:dask_spark_rp_wrangler} shows the total time to completion and task throughput.
 Dask needed the least time to schedule and execute the assigned tasks, followed by Spark and RADICAL~-Pilot.
 Dask and Spark quickly reach their maximum throughput, which is sustained as the number of tasks increased.
 RADICAL~-Pilot showed the worst throughput and scalability mainly due to some architectural limitations.
@@ -419,16 +478,16 @@ It relies on a MongoDB to communicate between Client and Agent, as well as sever
 Thus, we were not able to scale RADICAL~-Pilot to 32k or more tasks.
 
 \begin{figure}[t]
-    \centering
     \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/daskVSsparkVSRpThroughput.pdf}
-    \caption{\textbf{Task Throughput by Framework (Multiple Nodes):}
-        Task throughput for $100k$ zero-workload tasks on different numbers of nodes for each framework. 
-        Dask has the largest throughput, followed by Spark and RADICAL~-Pilot.}
+    \caption{Task throughput by framewrork for $100k$ tasks on different number of nodes.}
+    %\caption{\textbf{Task Throughput by Framework (Multiple Nodes):}
+    %    Task throughput for $100k$ zero-workload tasks on different numbers of nodes for each framework. 
+    %    Dask has the largest throughput, followed by Spark and RADICAL~-Pilot.}
     \label{fig:RP_Dask_Spark_throughput}
 \end{figure}
 
 Figure~\ref{fig:RP_Dask_Spark_throughput} illustrates the throughput when scaling to multiple nodes measured by submitting $100k$ tasks.
-Dask's throughput on all three resources increases almost linearly to the number of nodes.
+Dask's throughput on both resources increases almost linearly to the number of nodes.
 Spark's throughput is an order of magnitude lower than Dask's.
 RADICAL~-Pilot's throughput plateaus at below $100 task/sec$.
 Wrangler and Comet show a comparable performance with Comet slightly outperforming Wrangler.
@@ -440,13 +499,14 @@ The input data, i.\,e. a set of trajectory files, is equally distributed over th
 Each task reads its respective input files in parallel, executes and writes the result to a file.
 
 For RADICAL~-Pilot we define a Compute~-Unit for each task and execute them using a Pilot-Job. 
-For  Spark, we create an RDD with one partition per task. The tasks are executed 
-in a \texttt{map} function. In Dask, the tasks are defined as \texttt{delayed} 
-functions. In MPI, each task is executed by a process.
+For Spark, we create an RDD with one partition per task.
+The tasks are executed in a \texttt{map} function.
+In Dask, the tasks are defined as \texttt{delayed} functions.
+In MPI, each task is executed by a process.
 
 The experiments were executed on Comet and Wrangler. 
 The dataset used consists of three different atom count trajectories: 
-\begin{inparaenum}
+\begin{inparaenum}[1)]
     \item small ($3341$ atoms/frame), 
     \item medium ($6682$ atoms/frame) and 
     \item large ($13364$ atoms/frame).
@@ -459,49 +519,49 @@ We see that the frameworks have similar performance on both systems.
 Furthermore, we see that Wrangler gives smaller speedup than Comet.
 Although, we used the same number of cores, we see that utilizing half the nodes due to hyperthreading results to smaller speedup.
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/data_analytics_hpc/task_par/HausdorffSingleFig.pdf}
-    \caption{\textbf{Hausdorff Distance on Wrangler using RADICAL~-Pilot, Spark and Dask:}
-            Runtimes over different number of cores, trajectory sizes, and number of trajectories.
-            All frameworks scaled by a factor of 6 from 16 to 256 cores.}
+    \caption{Time to completion of Hausdorff Distance on Wrangler using RADICAL~-Pilot, Spark and Dask over different number of cores, trajectory sizes, and number of trajectories.}
+%    \caption{\textbf{Hausdorff Distance on Wrangler using RADICAL~-Pilot, Spark and Dask:}
+%            Runtimes over different number of cores, trajectory sizes, and number of trajectories.
+%            All frameworks scaled by a factor of 6 from 16 to 256 cores.}
             \label{fig:HausdorffWrangler}
 \end{figure}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/comet_wrangler_haus.pdf}
-    \caption{\textbf{Hausdorff Distance on Comet and Wrangler:}
-    Runtime and Speedup for 128 large trajectories.} 
+    \caption{Time to completion and speedup of Hausdorff Distance execution on Comet and Wrangler for 128 large trajectories.} 
     \label{fig:comet_wrangler_haus}
 \end{figure}
 
 MPI4py, RADICAL~-Pilot, Spark and Dask have similar performance when used to execute embarrassingly parallel algorithms.
-All frameworks achieved similar speedups as the number of cores increased, which are lower than MPI4py.
+All frameworks achieved similar speedups as the number of cores increased, scaling by a factor of 6 from 16 to 256 cores, which are lower than MPI4py.
 Although, the frameworks' overheads are comparably low in relation to the overall runtime, they were significant to impact their speedup.
 RADICAL~-Pilot's large deviation is due to sensitivity to communication delays with the database.
 In summary, all three frameworks provide appropriate abstractions and runtime performance, compared to MPI, for embarrassingly parallel algorithms. 
-In this case aspects such as programmability and integrate-ability are more important considerations,e.\,g., both RADICAL~-Pilot and Dask are native Python frameworks making the integration with MDAnalysis easier and more efficient than with other frameworks, which are based on other languages.
+In this case aspects such as programmability and integrate-ability are more important considerations,e.\,g., both RADICAL~-Pilot and Dask are native Python frameworks making the integration with python native frameworks easier and more efficient than with other frameworks, which are based on other languages.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/cpptrajHausdorff.pdf}
-    \caption{\label{fig:cpptraj_resutls}\textbf{Hausdorff Distance using CPPTraj:}
-    Runtimes and Speedup over different number of cores.} 
-\end{figure}
+%\begin{figure}[ht]
+%    \centering
+%    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/cpptrajHausdorff.pdf}
+%    \caption{\label{fig:cpptraj_resutls}\textbf{Hausdorff Distance using CPPTraj:}
+%    Runtimes and Speedup over different number of cores.} 
+%\end{figure}
 
-CPPTraj~\cite{roe2018parallelization} provides an optimized C++ implementation of the 2D-RMSD, which is Algorithm~\ref{alg:hausdorff} with no $\min-\max$ operations.
-The 2D-RMSD between trajectories was executed in parallel.
-The results were gathered and the Hausdorff distance was calculated.
-CPPTraj~\cite{roe2018parallelization} was compiled with GNU C++ compiler and no optimizations, and with Intel's compiler O3 optimization enabled.
-An experiment was run with 20-core Haswell nodes and 128 small trajectories; number of cores ranging from 1 up to 240.
-Figure~\ref{fig:cpptraj_resutls} shows the runtimes and speedup.
-MPI C++ provides lower execution times.
-However, we are interested in scalable solutions, that may offer worse performance in absolute numbers, but allows easier integration, i.e., less lines of code, and/or less engineering time.
+%CPPTraj~\cite{roe2018parallelization} provides an optimized C++ implementation of the 2D-RMSD, which is Algorithm~\ref{alg:hausdorff} with no $\min-\max$ operations.
+%The 2D-RMSD between trajectories was executed in parallel.
+%The results were gathered and the Hausdorff distance was calculated.
+%CPPTraj~\cite{roe2018parallelization} was compiled with GNU C++ compiler and no optimizations, and with Intel's compiler O3 optimization enabled.
+%An experiment was run with 20-core Haswell nodes and 128 small trajectories; number of cores ranging from 1 up to 240.
+%Figure~\ref{fig:cpptraj_resutls} shows the runtimes and speedup.
+%MPI C++ provides lower execution times.
+%However, we are interested in scalable solutions, that may offer worse performance in absolute numbers, but allows easier integration, i.e., less lines of code, and/or less engineering time.
 
 \subsubsection{Leaflet Finder}
 \label{sec:leaflet}
-\begin{table*}[ht]
+\begin{table*}[t]
     \centering
     \begin{tabular}{@{}p{2cm}|p{2.8cm}p{2.8cm}p{2.8cm}p{2.8cm}@{}}
         \toprule
@@ -540,7 +600,13 @@ However, we are interested in scalable solutions, that may offer worse performan
     \caption{MapReduce Operations used by Leaflet Finder\label{tab:app_operators}}
 \end{table*}
 
-In this section, we investigate four different approaches for implementing the Leaflet Finder algorithm using RADICAL~-Pilot, Spark, Dask, and MPI4py (see Table~\ref{tab:app_operators}):
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=.98\textwidth]{Dissertation/figures/data_analytics_hpc/task_par/lf_approaches.pdf}
+    \caption{Architectural approaches for implementing the Leaflet finder algorithm\label{fig:lf_approaches}} 
+\end{figure*}
+
+We developed four different approaches for implementing the Leaflet Finder algorithm using RADICAL~-Pilot, Spark, Dask, and MPI4py (see Fig~\ref{fig:lf_approaches} and Table~\ref{tab:app_operators}):
 \begin{enumerate}[1)]
     \item \textbf{Broadcast and 1-D Partitioning:}
     The physical system is broadcast and partitioned through a data abstraction.
@@ -570,26 +636,26 @@ Figure \ref{fig:All4approachesNoRp} shows the runtimes for all datasets for Spar
 RADICAL~-Pilot's performance is illustrated in Figure~\ref{fig:rpLF}.
 We continue by analyzing the performance of each architectural approach and used framework in detail.
 
-\begin{figure}[ht]
-    \begin{subfigure}{.48\textwidth}
+\begin{figure}[t]
+    \begin{subfigure}{.95\textwidth}
         \centering
         \includegraphics[width=1\linewidth]{figures/data_analytics_hpc/task_par/All4approachesWith4M_logscaleline.pdf}
-    \end{subfigure}%
-    \begin{subfigure}{.48\textwidth}
+    \end{subfigure}\\
+    \begin{subfigure}{.95\textwidth}
         \centering
         \includegraphics[width=.95\linewidth]{figures/data_analytics_hpc/task_par/All4approachesWith4MSpeedup.pdf}
     \end{subfigure}
-    \caption{\textbf{Leaflet Finder: Performance of Different Architectural Approaches for Spark \& Dask:}
+    \caption{Leaflet Finder Performance of Different Architectural Approaches for Spark \& Dask.
             Runtimes and Speedups for different system sizes over different number of cores for all approaches and frameworks.}
     \label{fig:All4approachesNoRp}
 \end{figure}
 
 %%%%%%%%%%%%%%% APPROACH 1 %%%%%%%%%%%%%%%%%%
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/spark_dask_lf_approach1.pdf}
-    \caption{\textbf{Broadcast and 1-D Partitioned Leaflet Finder (Approach 1):}
+    \caption{Broadcast and 1-D Partitioned Leaflet Finder (Approach 1).
     Runtime for multiple system sizes on different number of cores for Spark, Dask and MPI4py.}
     \label{fig:WranglerLeafLetFinderApp1}
 \end{figure}
@@ -617,12 +683,12 @@ Dask is at least two times slower than our MPI implementation.
 %%%%%%%%%%%%%%% APPROACH 2 %%%%%%%%%%%%%%%%%%
 
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/rpLF.pdf}
-    \caption{\textbf{RADICAL~-Pilot Task API and 2-D Partitioned Leaflet Finder (Approach 2):}
-    Runtime for multiple system sizes over different number of cores.
-    Overheads dominate since execution times are similar despite the system size.}
+    \caption{RADICAL~-Pilot Task API and 2-D Partitioned Leaflet Finder (Approach 2).
+    Runtime for multiple system sizes over different number of cores.}
+    %Overheads dominate since execution times are similar despite the system size.}
     \label{fig:rpLF}
 \end{figure}
 
@@ -652,7 +718,7 @@ Despite this fact, both frameworks had similar performance on $32$ cores for the
 
 \subsubsection*{Parallel Connected Components}
 Communication between the edge discovery and connected components stages is another important aspect.
-The edge discovery phase output for the $524k$ atoms dataset is $\approx$$100\,\textup{MB}$.
+The edge discovery phase output for the $524k$ atoms dataset is $\approx$ $100\,\textup{MB}$.
 To reduce the amount of data that need to be shuffled, we refined the algorithm to compute the graph components on the partial dataset in the \texttt{map} phase.
 The partial components are then merged in a \texttt{reduce} phase.
 This reduces the amount of shuffle data by more than $50\%$ (e.\,g., to $12\textup{MB}$ for Spark and $48\textup{MB}$ for Dask).
@@ -717,7 +783,7 @@ Table~\ref{tab:framework} illustrates the criteria of this conceptual framework 
         Caching                  &- &++ &o\\
         \bottomrule
     \end{tabular}
-    \caption{\textbf{Decision Framework:} Criteria and Ranking for Framework Selection. -~: Unsupported or low performance
+    \caption{Task-parallel framework selection decision methodology: Criteria and Ranking for Framework Selection. -~: Unsupported or low performance
         +~: Supported, ++~: Major Support, and o~:Minor support.\label{tab:framework}}
 \end{table}
 %  application perspective
