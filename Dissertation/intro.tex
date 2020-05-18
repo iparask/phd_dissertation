@@ -7,14 +7,17 @@ This way of execution is called computational campaign.
 
 Some drug discovery applications, for example, screen millions of compounds to identify good drug candidates~\cite{dakka2018concurrent}.
 Usually, each compound screening is implemented as a workflow which computes the binding affinity of the compound.
-In addition, such applications usually utilize High Performance Computing (HPC) resources and consume millions of core-hours of compute time~\cite{cheatham2015impact}.
-In order to maximize the number of good candidates a large number of such workflows should be executed.
+In addition, such applications benefit from utilizing High Performance Computing (HPC) resources and consume millions of core-hours of compute time~\cite{cheatham2015impact}.
+In order for scientists to achieve their objective they execute a large number of workflows.
 Another example of computational campaigns is quantum chemistry campaigns~\cite{smith2020molssi}.
 These campaigns usually have hundreds of workflows as members, executing for months and on different platforms, such as workstations, campus and HPC clusters, based on workflow requirements~\cite{smith2020molssi}.
 Moreover, users want to have the ability to prioritize some workflows over others and remove or add workflows or resources.
 
 Ecological sciences that utilize very high resolution satellite imagery~\cite{goncalves2020sealnet}, require the analysis of terabyte (TB) of data from different calendar years to derive time series of ecological changes.
-To achieve this, ecological scientist would like to analyze data as they are becoming available by satellite imagery providers.
+These sciences define define workflows with simple or complex pipelines~\cite{paraskevakos2019workflow} to analyze imagery.
+These workflows can be to analyze imagery from different seasons, calendar years or as new imagery becomes available by providers.
+As a result, users frequently define and execute new workflows to achieve their scientific objective.
+
 Experiments, like the Large Hadron Collider experiment ATLAS~\cite{atlas}, gather data from sensors.
 Eventually, scientists execute workflows to analyze their data repository and decide the next experiment.
 
