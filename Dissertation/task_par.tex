@@ -11,7 +11,7 @@ In addition, Spark offers in-memory capabilities allowing caching data that are 
 Dask also provides a MapReduce API (Dask Bags).
 Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
 
-%\subsection{Molecular Dynamics Analysis Applications}
+\section{Task-parallel molecular dynamics data analysis applications}
 %\label{ssec:use_cases}
 Some commonly used algorithms for analyzing MD trajectories are Root Mean Square Deviation (RMSD), Pairwise Distances (PD), and Sub-setting~\cite{mura2014biomolecules}.
 Two more advanced algorithms are Path Similarity Analysis (PSA)~\cite{seyler2015path} and Leaflet Identification~\cite{michaud2011mdanalysis}.
@@ -222,7 +222,7 @@ Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
 The frameworks used provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
 In addition, resource acquisition and management is done transparently.
 
-\subsection{Background of Evaluated Frameworks}
+\section{Background of Evaluated Frameworks}
 \label{ssec:frameworks}
 %The landscape of frameworks for data-intensive applications is manifold~\cite{jha2014tale,kamburugamuve2017anatomy} and has been extensively studied in the context of scientific~\cite{jha2017introducing} applications.
 %In this section, we discuss the suitability of frameworks such as Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and RADICAL~-Pilot~\cite{merzky2019using}, for MD data analytics.
@@ -329,7 +329,7 @@ In addition, setting up a Dask cluster on a set of resources was relatively stra
 %RADICAL~-Pilot's learning curve can be quite steep at the beginning, at least until the user becomes familiar with the concept and usability of Pilots and CUs.
 %Once the user is comfortable with RADICAL~-Pilot's API, she can easily develop new algorithms.
 
-\subsubsection{Comparison of Frameworks}
+\subsection{Comparison of Frameworks}
 \begin{table}[t]
     \begin{tabular}{@{}p{2.75cm}|p{3.25cm}p{3.25cm}p{3.25cm}@{}}
         \toprule
@@ -426,7 +426,7 @@ RADICAL~-Pilot does not provide a DAG and requires the execution order and synch
 %It is possible to implement Leaflet Finder with a simple task-management API, although the MapReduce programming model allows more efficient implementation with a \texttt{map} for computing and filtering distances and a \texttt{reduce} for finding the components.
 %The shuffling required between map and reduce is medium as the number of edges is a fraction of the input data.
 
-\subsection{Experiments and Discussion}
+\section{Experiments}
 \label{impl_exp}
 In this section, we characterize the performance of RADICAL~-Pilot, Spark and Dask compared to MPI4py.
 In section~\ref{sec:framework_eval} we evaluate the task throughput using a synthetic workload.
@@ -447,7 +447,7 @@ We used RADICAL~-Pilot 0.46.3, Spark 2.2.0, Dask 0.14.1 and Distributed 1.16.3.
 The data presented are means over multiple runs; error bars represent the standard deviation of the sample.
 We employed up to $10$ nodes in Comet and Wrangler. 
 
-\subsubsection{Frameworks Evaluation}
+\subsection{Frameworks Evaluation}
 \label{sec:framework_eval}
 
 As data-parallelism often involves a large number of short-running tasks, task throughput is a critical metric to assess the different frameworks.
@@ -492,7 +492,7 @@ Spark's throughput is an order of magnitude lower than Dask's.
 RADICAL~-Pilot's throughput plateaus at below $100 task/sec$.
 Wrangler and Comet show a comparable performance with Comet slightly outperforming Wrangler.
 
-\subsubsection{Path Similarity Analysis: Hausdorff Distance}
+\subsection{Path Similarity Analysis: Hausdorff Distance}
 \label{sec:psa}
 The PSA algorithm is embarrassingly parallel and can be implemented using simple task-level parallelism or a map only MapReduce application.
 The input data, i.\,e. a set of trajectory files, is equally distributed over the cores, generating one task per core.
@@ -559,7 +559,7 @@ In this case aspects such as programmability and integrate-ability are more impo
 %MPI C++ provides lower execution times.
 %However, we are interested in scalable solutions, that may offer worse performance in absolute numbers, but allows easier integration, i.e., less lines of code, and/or less engineering time.
 
-\subsubsection{Leaflet Finder}
+\subsection{Leaflet Finder}
 \label{sec:leaflet}
 \begin{table*}[t]
     \centering
@@ -757,7 +757,7 @@ This is not true for $4M$ atoms, indicating that Dask's communication layer is n
 Spark shows similar performance with MPI4py for the largest dataset due to minimal shuffle traffic.
 Thus, MPI's efficient communication does not become relevant.
 
-\subsubsection{Conceptual Framework and Discussion}
+\section{Conceptual Framework and Discussion}
 In this section we provide a conceptual framework that allows application developers to carefully select a framework according to their requirements (e.\,g., compute and I/O).
 It is important to understand both the properties of the application and Big Data frameworks.
 Table~\ref{tab:framework} illustrates the criteria of this conceptual framework and ranks the three frameworks.
