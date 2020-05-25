@@ -1,6 +1,18 @@
 \label{sec:task-par}
+%Frameworks for parallel data analysis have been created by the High Performance Computing (HPC) and Big Data communities~\cite{kamburugamuve2017anatomy}.
+%Until now MPI is the most used programming model.
+%It assumes a SPMD execution model where each process executes the same program.
+%It is highly optimized for high-performance computing and communication, which along with synchronization need explicit implementation.
+%Big Data frameworks utilize higher-level MapReduce~\cite{dean2004mapreduce} programming models avoiding explicit implementations of communication.
+%In addition, the MapReduce~\cite{dean2004mapreduce} abstraction makes it easy to exploit data-parallelism as required by many analysis workflows.
 
-Data based workflow engines exploit task-parallelism by partitioning the data and generating stages of independent tasks.
+Task-parallel applications involve partitioning a workload into a set of self-contained units of work.
+Based on the application, these tasks can be independent, have no inter-task communication, or coupled with varying degrees of data dependencies.
+Big Data applications exploit task parallelism for data-parallel operations (e.\,g., \texttt{map}), but also require coupling, for computing aggregates (\texttt{reduce}).
+The MapReduce~\cite{dean2004mapreduce} abstraction popularized this execution pattern.
+Typically, a reduce operation includes shuffling intermediate data from a set of nodes to node(s) where the reduce executes.
+
+Data analytics workflow engines exploit task-parallelism by partitioning the data and generating stages of independent tasks.
 These stages then ordered and implement data dependencies by shuffling, aggregating or coupling intermediate results.
 The MapReduce~\cite{dean2004mapreduce} abstraction, along with its implementations, popularized this method of processing.
 
@@ -11,8 +23,21 @@ In addition, Spark offers in-memory capabilities allowing caching data that are 
 Dask also provides a MapReduce API (Dask Bags).
 Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
 
+In this chapter, we investigate three task-parallel frameworks and their suitability for implementing MD trajectory analysis algorithms.
+In addition to Spark and Dask, we investigate RADICAL~-Pilot~\cite{merzky2019using}.
+We utilize MPI4py~\cite{dalcin2005mpi} to provide MPI equivalent implementations of the algorithms.
+The task-parallel implementations performance and scalability compared to MPI is the basis of our analysis. 
+MD trajectories are time series of atoms/particles positions and velocities, which are analyzed using different statistical methods to infer certain properties, e.\,g. the relationship between distinct trajectories, snapshots of a trajectory etc.
+As a result, they can be considered as a representative set of scientific datasets that are organized as time series and their analysis algorithms. 
+
+The chapter is organized as follows: Section~\ref{sec:md_use_cases} discusses the MD analysis algorithms investigated and reviews different MD analysis frameworks with respect to their ability to support scalable analytics of large volume MD trajectories. 
+Section~\ref{sec:frameworks} describes the different frameworks that were used for evaluation. 
+Section~\ref{sec:impl_exp} provides a description of the implementation of the MD algorithms on top of RADICAL~-Pilot, Spark and  Dask, as well as a performance evaluation and a discussion of findings. 
+The chapter concludes with a conceptual framework that allows application developers to carefully select a framework according to their requirements, in  \S~\ref{sec:task_sel_model}.
+%
+
 \section{Molecular Dynamics (MD) Data Analysis}
-%\label{ssec:use_cases}
+\label{sec:md_use_cases}
 Some commonly used algorithms for analyzing MD trajectories are Root Mean Square Deviation (RMSD), Pairwise Distances (PD), and Sub-setting~\cite{mura2014biomolecules}.
 Two more advanced algorithms are Path Similarity Analysis (PSA)~\cite{seyler2015path} and Leaflet Identification~\cite{michaud2011mdanalysis}.
 RMSD is used to identify the deviation of atom positions between frames.
@@ -22,7 +47,7 @@ Leaflet Identification provides information about groups of lipids by identifyin
 All these methods, in some way, read and process the whole physical system generated via simulations.
 The analysis reduces the data to either a number or a matrix.
 
-We discuss two of these methods, a Path Similarity Analysis (PSA) algorithm using the Hausdorff distance and a Leaflet Identification method, and their implementations in MDAnalysis~\cite{michaud2011mdanalysis,gowers2016mdanalysis}.
+We discuss two of these methods, a Path Similarity Analysis (PSA) algorithm using the Hausdorff distance and a Leaflet identification method, and their implementations in MDAnalysis~\cite{michaud2011mdanalysis,gowers2016mdanalysis}.
 Section~\ref{ssec:mda} discusses the reasons for selecting these two algorithms in more detail.
 %In addition, we implemented the PSA algorithm using CPPTraj~\cite{roe2013ptraj}.
 %Furthermore, we explore the applications' Ogres Facets and Views~\cite{fox2014towards}, which provide a more systematic characterization.
@@ -114,7 +139,7 @@ The data are partitioned to independent parts and each part is assigned to a tas
 These tasks can then execute as a bag of tasks.
 As a result, they are ideally suited for task-management and MapReduce APIs.
 They can be expressed as a bag of tasks using a task management API or a map-only application in a MapReduce-style API.
-All three selected frameworks support the execution of bag of tasks, with RADICAL~-Pilot and Dask offering specific abstractions (as discussed in \S~\ref{ssec:frameworks}).
+All three selected frameworks support the execution of bag of tasks, with RADICAL~-Pilot and Dask offering specific abstractions (as discussed in \S~\ref{sec:frameworks}).
 
 \subsubsection*{Leaflet Finder}Algorithm~\ref{alg:leafletfinder} describes the Leaflet Finder (LF) algorithm as presented in Ref.~\cite{michaud2011mdanalysis}.
 LF assigns particles to one of two curved but locally approximately parallel sheets, provided that the inter-particle distance is smaller than the distance between sheets.
@@ -168,21 +193,11 @@ Spark and Dask natively support MapReduce and implementinf the Leaflet Finder al
 RADICAL-Pilot, on the other hand, does not support natively MapReduce.
 As a result, it is required by the application developer to define the data shuffling between the \emph{map} and \emph{reduce} phase of the algorithm.
 
-%\subsubsection{CPPTraj}
-%CPPTraj~\cite{roe2013ptraj,roe2018parallelization} is a C++ MD trajectory analysis tool.
-%It is parallelized via MPI and OpenMP.
-%CPPtraj reads in parallel frames from a single trajectory file or ensemble members of the same trajectory from different files.
-%The frames are equally distributed to the MPI processes.
-%Computational intensive algorithms are further parallelized using OpenMP.
-%It requires at least one MPI process per ensemble member, where each member is a single trajectory file.
-
-
 \subsection{Current Solutions for Parallel MD Data Analysis}
 \label{ssec:related_work}
 MD analysis algorithms were until recently executed serially and parallelization was not straightforward.
 During the last years several frameworks emerged providing parallel algorithms for analyzing MD trajectories.
 Some of those frameworks are CPPTraj~\cite{roe2013ptraj,roe2018parallelization}, HiMach~\cite{tiankai2008scalable}, PMDA~\cite{fan2019pmda}, Pteros 2.0~\cite{yesylevskyy2015pteros} and nMoldyn-3~\cite{hinsen2012nmoldyn}.
-%We compare these frameworks with our approach over the parallelization techniques used.
 
 Several different techniques are used for parallelizing these algorithms.
 CPPTraj~\cite{roe2018parallelization} utilizes MPI and OpenMP to exeucte large scale analysis on HPC.
@@ -219,20 +234,20 @@ HiMach~\cite{tiankai2008scalable} is build specifically for the Antons Supercomp
 
 In contrast, our approach and PMDA~\cite{fan2019pmda} utilize more general purpose frameworks for parallelization.
 Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
-The frameworks used provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
+In our approach, the frameworks used provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
 In addition, resource acquisition and management is done transparently.
 
 \section{Task-Parallel Frameworks: RADICAL-Pilot, Spark, Dask}
-\label{ssec:frameworks}
+\label{sec:frameworks}
 The landscape of frameworks for data-intensive applications is manifold~\cite{jha2014tale,kamburugamuve2017anatomy} and has been extensively studied in the context of scientific~\cite{jha2017introducing} applications.
-In this section, we discuss the suitability of frameworks such as Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and RADICAL~-Pilot~\cite{merzky2019using}, for MD data analytics.
+In this section, we discuss the suitability of task-parallel frameworks such as Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and RADICAL~-Pilot~\cite{merzky2019using}, for MD data analytics.
 
 \subsection{Background}
 %MapReduce~\cite{dean2004mapreduce} and its open source Hadoop implementation combined a simple functional API with a powerful distributed computing engine that exploits data locality to allow optimized I/O performance.
 %However, MapReduce is inefficient for interactive workloads and iterative machine learning algorithms~\cite{zaharia2010spark,ekanayake2010twister}.
 Spark and Dask provide rich APIs, caching and other capabilities critical for analytics applications.
 Spark is considered the standard solution for iterative data-parallel applications.
-Dask is quickly gaining support in the scientific community, since it offers a fully python environment.
+Dask is quickly gaining support in the scientific community, since it offers only a python environment.
 RADICAL~-Pilot is a Pilot-Job framework~\cite{luckow2012pstar} that supports task-level parallelism on HPC resources and adds a parallelization level on top of HPC MPI-based applications.
 %RADICAL~-Pilot is a Pilot-Job framework~\cite{luckow2012pstar} that supports task-level parallelism on HPC resources.
 %It successfully adds a parallelization level on top of HPC MPI-based applications.
@@ -473,7 +488,7 @@ Wrangler and Comet show a comparable performance with Comet slightly outperformi
 %The shuffling required between map and reduce is medium as the number of edges is a fraction of the input data.
 
 \section{Task-Parallel MD Trajectory Data Analysis: Implementation \& Characterization}
-\label{impl_exp}
+\label{sec:impl_exp}
 In this section, we characterize the performance of RADICAL~-Pilot, Spark and Dask compared to MPI4py.
 In section~\ref{sec:framework_eval} we evaluate the task throughput using a synthetic workload.
 In sections~\ref{sec:psa} and~\ref{sec:leaflet} we evaluate the performance of two algorithms from MDAnalysis: PSA and Leaflet Finder using different real-world datasets.
@@ -759,6 +774,7 @@ Spark shows similar performance with MPI4py for the largest dataset due to minim
 Thus, MPI's efficient communication does not become relevant.
 
 \section{Task-Parallel Framework Selection Conceptual Model and Discussion}
+\label{sec:task_sel_model}
 In this section we provide a conceptual model that allows application developers to carefully select a framework according to their requirements (e.\,g., compute and I/O).
 It is important to understand both the properties of the application and Big Data frameworks.
 Table~\ref{tab:framework} illustrates the criteria of this conceptual model and ranks the three frameworks.

@@ -7,18 +7,6 @@
 %Big Data frameworks utilize higher-level MapReduce~\cite{dean2004mapreduce} programming models avoiding explicit implementations of communication.
 %In addition, the MapReduce~\cite{dean2004mapreduce} abstraction makes it easy to exploit data-parallelism as required by many analysis workflows.
 
-Frameworks for parallel data analysis have been created by the High Performance Computing (HPC) and Big Data communities~\cite{kamburugamuve2017anatomy}.
-Until now MPI is the most used programming model.
-It assumes a SPMD execution model where each process executes the same program.
-It is highly optimized for high-performance computing and communication, which along with synchronization need explicit implementation.
-Big Data frameworks utilize higher-level MapReduce~\cite{dean2004mapreduce} programming models avoiding explicit implementations of communication.
-In addition, the MapReduce~\cite{dean2004mapreduce} abstraction makes it easy to exploit data-parallelism as required by many analysis workflows.
-
-Task-parallel applications involve partitioning a workload into a set of self-contained units of work.
-Based on the application, these tasks can be independent, have no inter-task communication, or coupled with varying degrees of data dependencies.
-Big Data applications exploit task parallelism for data-parallel operations (e.\,g., \texttt{map}), but also require coupling, for computing aggregates (\texttt{reduce}).
-The MapReduce~\cite{dean2004mapreduce} abstraction popularized this execution pattern.
-Typically, a reduce operation includes shuffling intermediate data from a set of nodes to node(s) where the reduce executes.
 
 In \S~\ref{sec:pilot-data-hadoop}, we explore the integration between Hadoop~\cite{hadoop}, and Spark~\cite{zaharia2010spark} and HPC resources.
 We utilize the Pilot-Abstraction~\cite{luckow2012pstar} allowing the application to manage HPC and data-intensive application stages in a uniform way.

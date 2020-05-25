@@ -137,9 +137,6 @@ While SAGA-Hadoop provides the interoperability between YARN and HPC resources b
 As a consequence, we explored the usage of the Pilot~-Abstraction~\cite{luckow2012pstar}, through RADICAL~-Pilot~\cite{merzky2019using}, to enable the integration between these different application types.
 \subsection{Mode I -- II: RADICAL-Pilot and YARN/ Spark Integration}
 \label{ssec:rp-impl}
-
-\subsubsection{RADICAL~-Pilot and YARN Overview}
-\label{sssec:rp_yarn}
 With the introduction of YARN, a broader set of applications can be executed within Hadoop clusters than earlier.
 However, developing and deploying YARN applications potentially side-by-side with HPC applications remains a difficult task.
 Established abstractions that are easy-to-use while enabling the user to reason about compute and data resources across infrastructure types (i.\,e.\ Hadoop, HPC and clouds) are missing. 
@@ -157,6 +154,8 @@ Integrating YARN and RADICAL~-Pilot (RP) allows applications to run HPC and YARN
 %In the following, we explore the integration of YARN into the RADICAL~-Pilot (RP) framework.
 %This approach allows applications to run HPC and YARN application parts side-by-side.
 
+\subsubsection{RADICAL~-Pilot and YARN Overview}
+\label{sssec:rp_yarn}
 % RADICAL-Pilot Overview
 Figure~\ref{fig:comp_rp_arch} illustrates the architecture of RADICAL~-Pilot and the components that were extended for YARN.
 The figure on the left shows the macro architecture of RADICAL~-Pilot; the figure on the right shows the architecture of the Pilot-Agent which is a critical functional component.
@@ -269,8 +268,8 @@ Similarly, the Spark specific methods for launching and managing Compute Units o
 \section{Experiments and Evaluation}
 \label{sec:rph-exps}
 
-To evaluate the RADICAL~-Pilot YARN and Spark extension, we conduct two experiments: in Section~\ref{sssec:startup_pilot_unit}, we analyze and compare RADICAL~-Pilot and RADICAL~-Pilot-YARN with respect to startup times of both the Pilot and the Compute Units.
-We use the well-known K-Means algorithm to investigate the performance and runtime trade-offs of a typical data-intensive application.
+To evaluate the RADICAL~-Pilot YARN and Spark extension, we conduct two experiments: in \S~\ref{ssec:startup_pilot_unit}, we analyze and compare RADICAL~-Pilot and RADICAL~-Pilot-YARN with respect to startup times of both the Pilot and the Compute Units.
+We use the well-known K-Means algorithm to investigate the performance and runtime trade-offs of a typical data-intensive application, in \S~\ref{ssec:kmeans}.
 Experiments are performed on two different XSEDE allocated machines: Wrangler~\cite{wrangler} and Stampede~\cite{stampede}.
 On Stampede every node has 16 cores and 32 GB of memory; on Wrangler 48\,cores and 128\,GB of memory.
 For our experiments we used RADICAL~-Pilot v0.45, Hadoop v2.6 and Spark v2.0.2.
@@ -306,7 +305,7 @@ In summary, while there are overheads associated with execution inside of YARN, 
 The novel capabilities of executing HPC tasks and YARN tasks within the same application has significant benefits for which measured overheads are likely acceptable.
 
 \subsection{K-Means Performance Characterization}
-\label{sssec:kmeans}
+\label{ssec:kmeans}
 We compare the time to completion of the K-Means algorithm using two configurations: RADICAL~-Pilot on HPC and RADICAL~-Pilot in HPC/YARN mode. 
 
 We use three different scenarios: 10,000 points and 5,000 clusters, 100,000 points / 500 clusters and 1,000,000 points / 50 clusters.
@@ -345,3 +344,17 @@ This is attributed to the better hardware (CPUs, memory).
 In particular for RADICAL~-Pilot-YARN we observed on average higher speedups on Wrangler, indicating that we saturated the 32 GB of memory available on each Stampede node.
 
 In summary, despite the overheads of RADICAL~-Pilot-YARN with respect to Pilot and Compute Unit startup time, we were able to observe performance improvements (on average 13\,\% better time to completion) mainly due to the better performance of the local disks.
+
+
+\section{Conclusions}
+\label{sec:hpc_hadoop_concl}
+In this chapter, we motivated the use of the Pilot-Abstraction as an integrating concept between HPC and data analytics.
+We discussed the design and implementation of RADICAL~-Pilot extensions for Hadoop and Spark, and validated them with scalability analysis on two supercomputers.
+We demonstrated that the Pilot-Abstraction strengthens the state of practice in utilizing HPC resources in conjunction with emerging data analytics frameworks by allowing the user to combine a diverse set of best-of-breed tools running on heterogeneous infrastructure consisting of HPC.
+Using these capabilities, complex data applications utilizing a diverse set of Hadoop and HPC frameworks can be composed enabling scalable data ingests, feature engineering \& extractions and analytics stages.
+Each of these steps has its own I/O, memory and CPU characteristics. 
+Providing a unifying and powerful abstraction that enables all parts of such a data analytics workflow to co-exist is critical.
+
+We continue with work with biophysical and molecular scientists to integrate molecular dynamics data trajectory analysis capabilities.
+%These include principal component based analysis~\cite{doi:10.1021/ct400341p}, as well as graph-based algorithms~\cite{mdanalysis}.
+While we demonstrated the importance of integrated capabilities, we want to understand their performance impact on scientific task-based data analytics scientifc application.
