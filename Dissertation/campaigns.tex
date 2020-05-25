@@ -64,7 +64,7 @@ TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \end{equation}
 
 % -------------------------------------------------------------------
-\section{Makespan calculating algorithms}
+\section{Execution Planning Algorithms}
 \label{sec:algo}
 
 There is a plethora of methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
@@ -142,7 +142,7 @@ Although the extension may be small, it is crucial to allow to reuse HEFT based 
 \end{algorithm}
 
 % -------------------------------------------------------------------
-\subsection{Genetic algorithm}
+\subsection{Genetic Algorithm}
 \label{algo:gen}
 Genetic algorithms are represent another family of algorithms that are been used to minimize the makespan of an execution~\cite{dong2006scheduling}.
 Genetic algorithms are evolving to the final answer as they iterate and improve possible answers.
@@ -196,7 +196,7 @@ Another point of extension would be the fitness function.
 However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
 
 % -------------------------------------------------------------------
-\subsection{Largest to fastest algorithm}
+\subsection{Longest to Fastest First Available Resource Algorithm}
 \label{algo:l2ff}
 The last algorithm places workflows based on the rule largest workflows to fastest resource~\cite{balasubramanian2019programming}.
 This algorithm sorts the workflows based on the number of operations and resources based on their performance.
@@ -221,7 +221,7 @@ This algorithm does not specify in any way when resources are either becoming or
 As a consequence, there is no need to extend it when dynamic resources are used, as long as the resource performance is updated accordingly.
 
 % -------------------------------------------------------------------
-\section{Makespan algorithm performance comparison}
+\section{Planning Algorithm Performance Evaluation}
 \label{sec:algo_perf_comp}
 
 We executed two experiments in order to analyze the performance of the selected planners in terms of the makespan they produce.
@@ -295,11 +295,9 @@ The genetic algorithm provides worse makespan compared to HEFT mainly because of
 
 \subsection{Experiment 2: Measuring makespan on dynamic resources}
 
-\subsubsection{No replanning}
-
 - Analysis of homogeneous/homogeneous cases: Resource dynamism is drawn by a normal distribution.
 
-Since there is no replanning, we just calculate the final makespan based on the plan that was offered initially.
+We calculate the final makespan based on the plan that was offered initially.
  I expect that HEFT will be better than other planners, with the genetic and the L2FF being very close to random.
 \begin{figure*}[ht!]
     \centering
@@ -341,32 +339,8 @@ I think that the final makespan will be similar for all planners and the will no
     \label{fig:no_replan_hetero_analysis}
 \end{figure*}
 
-\subsubsection{Replanning}
 
-Replanning will allow for adjustments of the plan during runtime.
-In this case I expect HEFT to provide the better makespan, but I think it is going to be marginally better than the genetic algorithm. 
-L2FF will provide a makespan that fluctuates significantly between different cases.
-Finally, the random planner will show erratic behavior, depending on the run.
-
-\begin{figure*}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DyHeteroResources.pdf}
-        \caption{}
-        \label{fig:StHeteroCampaigns_4DyHeteroResourcesRP}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/campaign/DyHeteroResources_StHeteroCampaigns.pdf}
-        \caption{}
-        \label{fig:DyHeteroResources_StHeteroCampaignsRP}
-    \end{subfigure}
-    \caption{~\ref{fig:StHeteroCampaigns_4DyHeteroResourcesRP}) Makespan of increasing number of homogeneous workflows on homogeneous resources;
-        ~\ref{fig:DyHeteroResources_StHeteroCampaignsRP}) Makespan of homogeneous campaign on different number of homogeneous resources.}
-    \label{fig:erplan_homog_analysis}
-\end{figure*}
-
-\subsubsection{Resource availability}
+\subsection{Experiment 3: Workflow Execution Time Accuracy}
 
 Explore how HEFT and GA behave for different resource initial availability if there is time
 \begin{figure*}[ht!]
@@ -387,13 +361,13 @@ Explore how HEFT and GA behave for different resource initial availability if th
     \label{fig:resource_avail}
 \end{figure*}
 
-\subsubsection{Time to calculate a plan}
+%\subsubsection{Time to calculate a plan}
+%
+%Based on experiments HEFT and L2FF will have the smallest overhead for calculating the makespan.
+%This is due to their deterministic behavior.
+%GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
 
-Based on experiments HEFT and L2FF will have the smallest overhead for calculating the makespan.
-This is due to their deterministic behavior.
-GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
-
-\section{Conclusions}
+\section{Planning Algorithm Selection Model}
 
 Based on our analysis, we conclude that selecting algorithm1 over algorithm2 provides the better makespan in most cases. 
 But due to the time scales at which the execution of a campaign runs, the computation complexity of the algorithm, as long as, it remains in the order of minutes is not significant.
