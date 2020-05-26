@@ -1,21 +1,31 @@
 \label{ch:designs}
+A growing number of scientific domains are adopting workflows that use multiple analysis algorithms to perform data-analytics.
+In addition, there is a set of workflows that do not necessarily conform to the MapReduce abstraction.
+Their tasks can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
+Furthermore, the volume and scale of data justifies the use to parallelism and HPC resources.
+From a middleware perspective, the design and architectural space is large and the lack of performance analysis make it difficult to select among equivalent implementations.
 
-This chapter will include the work of the eScience paper.
+From a design perspective, a promising approach is isolating tasks from execution management.
+Tasks are assumed to be self-contained programs which are executed in the operating system (OS) environment of HPC compute nodes.
+Compared to approaches in which tasks are functions or methods, a program-based approach offers several benefits as, for example, simplified implementation of execution management, support of general purpose programming models, and separate programming of management and domain-specific functionalities.
+Nonetheless, program-based designs also impose performance limitations, including OS-mediated intertask communication and task spawning overheads, as programs execute as OS processes and do not share a memory space.
 
-We use a paradigmatic use case from the polar science domain to evaluate three alternative program-based designs, and experimentally characterize and compare their performance.
+Due to their performance limitations, program-based designs of computing frameworks are best suited to execute compute-intense workflows in which each task requires a certain amount of parallelism and runs from several minutes to hours.
+The emergence of workflows that require heterogeneous, compute-intense tasks to process large amount of data is pushing the boundaries of program-based designs, especially when scale requirements suggest the use of modern HPC infrastructures with large number of CPUs/GPUs and dedicated data facilities.
+
+We use a paradigmatic use case from the polar science domain to evaluate three alternative task-based designs, and experimentally characterize and compare their performance.
 Our use case requires us to analyze satellite images of Antarctica to detect pack-ice seals taken across a whole calendar year.
 The resulting dataset consists of $3,097$ images for a total of $\approx4$~TB.
 The use case requires us to repeatedly process these images, running both CPUs and GPUs code that exchange several GB of data.
 The first design uses a pipeline to independently process each image, while the second and third designs use the same pipeline to process a series of images with differences in how images are bound to available compute nodes.
 
-This paper offers three main contributions: 
-\begin{inparaenum}[(1)]
-    \item a precise indication of how to further the implementation of our workflow engine so as to support the class of use cases we considered while minimizing workflow time to completion and maximizing resource utilization;
-    \item specific design guidelines for supporting data-driven, compute-intense workflows on high-performance computing resources with a task-based computing framework; and
-    \item an experiment-based methodology to compare design performance of alternative designs that does not depend on the considered use case and computing framework.
-\end{inparaenum}
+The chapter is organized as follows.
+Section~\ref{sec:ucase} presents the use case and discusses it computational requirements as well as its task-based workflow.
+In \S~\ref{sec:design}, we discuss the three architecturally equivalent design to support task-based workflows.
+ \S\ref{sec:des_experiments} presents a performance evaluation of the designs and discusses the lessons learned.
 
-\section{Satellite Imagery Analysis Application}\label{sec:ucase}
+\section{Satellite Imagery Analysis Application}
+\label{sec:ucase}
 Imagery employed by ecologists as a tool to survey populations and ecosystems come from a wide range of sensors, e.g., camera-trap surveys~\cite{karanth1995estimating} and aerial imagery transects~\cite{western2009impact}.
 However, most traditional methods can be prohibitively labor-intensive when employed at large scales or in remote regions.
 Very High Resolution (VHR) satellite imagery provides an effective alternative to perform large scale surveys at locations with poor accessibility such as surveying Antarctic fauna~\cite{lynch2012detection}.
@@ -76,20 +86,20 @@ Consistent with HPC resources currently available for research and our use case,
 \end{inparaenum}
 As a result, at any given point in time there are $C = n\times c$ CPUs and $G = n\times g$ GPUs available, where $n$ is the number of compute nodes.
 
-\begin{figure*}[ht!]
+\begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign1.pdf}
         \caption{}
         \label{fig:seals_design1}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign2.pdf}
         \caption{}\label{fig:seals_design2}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign3.pdf}
         \caption{}\label{fig:seals_design3}
     \end{subfigure}
@@ -97,7 +107,7 @@ As a result, at any given point in time there are $C = n\times c$ CPUs and $G = 
         --\textbf{Design 1}: Pipeline, stage and task based design.~\ref{fig:seals_design2}
         --\textbf{Design 2}: Queue based design with a single queue for all the tiling tasks.~\ref{fig:seals_design3}
         --\textbf{Design 2.A}: Queue based design with multiple queues for the tiling tasks.}\label{fig:designs}
-\end{figure*}
+\end{figure}
 
 % ---------------------------------------------------------------------------
 \subsection{Design 1: One Image per Pipeline}
@@ -242,7 +252,7 @@ The box-plots show some positive skew of the data with a number of data points  
 There are also large standard  deviations ($STD$, blue line) in most of the bins.
 Thus, there is a weak correlation between task execution time and image size with a large spread  across all the image sizes.
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -255,7 +265,7 @@ We observe that $STD$ drops with increased concurrency but remains relatively st
 We attribute the initial dropping to how Lustre's caching improves the performance of an increasing number of concurrent requests.
 Further, we observe that as the type of task and the compute node are the same across all our measures, the relatively stable and consistent $STD$ observed across degrees of task concurrency depends on fluctuations in the node performance.
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \includegraphics[width=.95\textwidth]{figures/designs/concerrency_std.pdf}
     \caption{$STD$ of $T_{1}$ execution time based on image size bin and number of concurrent tasks.
@@ -271,7 +281,7 @@ T(x) = \alpha \times x+\beta
 \end{equation} where $x$ is the image size.
 
 
-\begin{table*}[ht]
+\begin{table*}[t]
     \centering
     \begin{tabular}{@{}cclrcl@{}}
         \toprule
@@ -343,7 +353,7 @@ Fig.~\ref{fig:stage_1_execution} shows the execution time of the seals counting 
 Defined as $T_{2}$ in~\S\ref{des1}, this task presents a different behavior than $T_{1}$, as the code executed is different.
 Note the slightly stronger positive skew of the data compared to that of Fig.~\ref{fig:stage_0_execution} but still consistent with our conclusion that deviations are mostly due to fluctuations in the compute node performance (i.e., different code but similar fluctuations).
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -369,7 +379,7 @@ In this type of middleware, task code is independent from that of the middleware
 Nonetheless, in real scenarios with concurrency and heterogeneous tasks, the middleware may perform operations on multiple tasks while waiting for others to return.
 Accordingly, in Design~2 we observe an execution time variation comparable to that observed with Design~1 but Fig.~\ref{fig:stage_1_execution_des2} shows a stronger positive skew of the data in Design~2 than Fig.~\ref{fig:stage_0_execution} in Design~1.
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -397,7 +407,7 @@ $T_{2}$ executes on GPU and $T_{1}$ on CPU but their execution times produce com
 This further supports our hypothesis that the long tail of the distribution of $T_{1}$ and especially $T_{2}$ execution times depends on the competition for main memory and I/O between the middleware implementing Design~2 and the executing tasks.
 
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -427,7 +437,7 @@ The four distributions in Fig.~\ref{fig:design2_timeline} also show that this ba
 Thus, Design~2 can create imbalances in the time to completion of $T_{2}$, as shown by the red bars in Fig.~\ref{fig:design2_timeline}.
 
 
-\begin{figure*}[ht!]
+\begin{figure*}[t]
     \centering
     \begin{subfigure}[b]{0.95\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/design2_timelines.pdf}
@@ -457,8 +467,7 @@ Fig.~\ref{fig:design2a_timeline} shows also an abnormal behavior of one compute 
 Different from Design~2, Design~2.A can balance these fluctuations in $T_{1}$ as far as they don't starve $T_{2}$ tasks.
 
 % ---------------------------------------------------------------------------
-\subsection{Experiment~2: Resource Utilization Across
-    Designs}\label{ssec:exp2}
+\subsection{Experiment~2: Resource Utilization Across Designs}\label{ssec:exp2}
 
 Resource utilization varies across Design~1, 2 and 2.A. In Design~1, the RTS (RADICAL-Pilot) is responsible for scheduling and executing tasks.
 $T_{1}$ is memory intensive and, as a consequence, we were able to concurrently execute 3 $T_{1}$ on each compute node, using only 3 of the 32 available cores.
@@ -474,7 +483,7 @@ This points to an implementation issue and not to an inherent property of Design
 The drop in GPU utilization is instead explained by noticing that, as explained in~\S\ref{sec:design}, GPU tasks where pinned to specific compute nodes so to avoid I/O bottlenecks.
 Our experiments confirm that this indeed reduces utilization as some of the GPU tasks on some nodes take longer time to process than those on other nodes.
 
-\begin{figure*}[ht!]
+\begin{figure*}[t]
     \centering
     \begin{subfigure}[b]{0.33\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/Design1Utilization.pdf}
@@ -527,7 +536,7 @@ In all designs, there is no significant fluctuations in GPU utilization, althoug
 This experiment studies how the total execution time of our use case workflow varies across Design~1, 2 and 2.A. Fig.~\ref{fig:ttx} shows that Design~1 and 2 have similar total time to execution within error bars, while Design~2.A improves on Design~2 and both are substantially faster than Design~1.
 The discussion of Experiment~1 and 2 results explains how these differences relate to the differences in the execution time of $T_{1}$ and $T_{2}$ tasks, and execution concurrency respectively.
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.95\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/ttx.pdf}
@@ -570,3 +579,24 @@ Although Design~2 has similar overheads, even assuming minimization of Setup Ove
 Design 1 separates the execution in independent pipelines that are independently executed by the runtime system on any available resource.
 Based on the results of our analysis, both EnTK and RADICAL-Pilot can be configured to implement early binding of images to each compute node as done in Design~2.A.
 Nonetheless, Design~1 would still require executing a task for each image, imposing bootstrap and tear down overheads for each task.
+
+\section{Discussion and Conclusions}
+\label{sec:des_concl}
+
+While design 1, 2 and 2.A can successfully support the execution of the paradigmatic use case described in~\S\ref{sec:ucase}, our experiments show that for the metrics considered, Design~2.A is the one offering the better overall performance.
+Generalizing this result, use cases that are both data-driven and compute-intense benefit from early binding of data to compute node so to maximize data and compute affinity and equally balance input across nodes.
+This approach minimizes the overall time to completion of this type of workflows while maximizing resource utilization.
+
+Our analysis also shows the limits of an approach where pipelines, i.e., compute tasks, are late bound to compute nodes.
+In program-based designs, the overhead of bootstrapping programs needs to be minimized insuring that each pipeline processes as much input as possible (e.g. images).
+In presence of large amount of data, late binding implies copying, replicating or accessing data over network and at runtime.
+We showed that, in contemporary HPC infrastructures, this is too costly both for resource utilization and total time to completion.
+
+%Infrastructure-wise, our experiments show the limits imposed by an unbalance between number of CPU cores and available memory.
+%Given data-driven computation where multi GB images need processing, we were able to use just $10\%$ of the available cores due to the amount of RAM required.
+%This applies also to the unbalance between CPUs and GPUs: use cases with heterogeneous tasks would benefit from a n higher GPU/CPU ratio.
+
+%These results apply to the evaluation of the design of existing and future computing frameworks. 
+%For example, we are extending both EnTK and RADICAL-Pilot to implement Design~2.A.
+%We will use our overheads characterization as a baseline to evaluate our production-grade implementation and further improve the efficiency of our middleware. 
+%Further, we will apply the presented experimental methodology to other use cases and infrastructures, measuring the trade offs imposed by other types of task heterogeneity, including multi-core or multi-GPU tasks that extends beyond a single compute node.
