@@ -86,7 +86,7 @@ Consistent with HPC resources currently available for research and our use case,
 \end{inparaenum}
 As a result, at any given point in time there are $C = n\times c$ CPUs and $G = n\times g$ GPUs available, where $n$ is the number of compute nodes.
 
-\begin{figure}[ht!]
+\begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign1.pdf}
@@ -252,7 +252,7 @@ The box-plots show some positive skew of the data with a number of data points  
 There are also large standard  deviations ($STD$, blue line) in most of the bins.
 Thus, there is a weak correlation between task execution time and image size with a large spread  across all the image sizes.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -265,7 +265,7 @@ We observe that $STD$ drops with increased concurrency but remains relatively st
 We attribute the initial dropping to how Lustre's caching improves the performance of an increasing number of concurrent requests.
 Further, we observe that as the type of task and the compute node are the same across all our measures, the relatively stable and consistent $STD$ observed across degrees of task concurrency depends on fluctuations in the node performance.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
     \includegraphics[width=.95\textwidth]{figures/designs/concerrency_std.pdf}
     \caption{$STD$ of $T_{1}$ execution time based on image size bin and number of concurrent tasks.
@@ -353,7 +353,7 @@ Fig.~\ref{fig:stage_1_execution} shows the execution time of the seals counting 
 Defined as $T_{2}$ in~\S\ref{des1}, this task presents a different behavior than $T_{1}$, as the code executed is different.
 Note the slightly stronger positive skew of the data compared to that of Fig.~\ref{fig:stage_0_execution} but still consistent with our conclusion that deviations are mostly due to fluctuations in the compute node performance (i.e., different code but similar fluctuations).
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -379,7 +379,7 @@ In this type of middleware, task code is independent from that of the middleware
 Nonetheless, in real scenarios with concurrency and heterogeneous tasks, the middleware may perform operations on multiple tasks while waiting for others to return.
 Accordingly, in Design~2 we observe an execution time variation comparable to that observed with Design~1 but Fig.~\ref{fig:stage_1_execution_des2} shows a stronger positive skew of the data in Design~2 than Fig.~\ref{fig:stage_0_execution} in Design~1.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -407,7 +407,7 @@ $T_{2}$ executes on GPU and $T_{1}$ on CPU but their execution times produce com
 This further supports our hypothesis that the long tail of the distribution of $T_{1}$ and especially $T_{2}$ execution times depends on the competition for main memory and I/O between the middleware implementing Design~2 and the executing tasks.
 
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
@@ -436,8 +436,7 @@ As discussed in~\S\ref{ssec:approach2}, balancing of workflow execution differs 
 The four distributions in Fig.~\ref{fig:design2_timeline} also show that this balancing can result in different input distributions for each compute node, affecting the total execution time of $T_{2}$ tasks on each node.
 Thus, Design~2 can create imbalances in the time to completion of $T_{2}$, as shown by the red bars in Fig.~\ref{fig:design2_timeline}.
 
-
-\begin{figure*}[t]
+\begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.95\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/design2_timelines.pdf}
@@ -454,7 +453,7 @@ Thus, Design~2 can create imbalances in the time to completion of $T_{2}$, as sh
         and distributions of image size per node for (a) Design~2 and (b)
         Design~2.A.}
     \label{fig:design_balancing}
-\end{figure*}
+\end{figure}
 
 
 Design~2.A addresses these imbalances by early binding images to compute nodes.
@@ -483,29 +482,29 @@ This points to an implementation issue and not to an inherent property of Design
 The drop in GPU utilization is instead explained by noticing that, as explained in~\S\ref{sec:design}, GPU tasks where pinned to specific compute nodes so to avoid I/O bottlenecks.
 Our experiments confirm that this indeed reduces utilization as some of the GPU tasks on some nodes take longer time to process than those on other nodes.
 
-\begin{figure*}[t]
+\begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.33\textwidth}
-        \includegraphics[width=\linewidth]{figures/designs/Design1Utilization.pdf}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=\textwidth]{figures/designs/Design1Utilization.pdf}
         \caption{}
         \label{fig:design1util}
-    \end{subfigure}%
+    \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.33\textwidth}
-        \includegraphics[width=\linewidth]{figures/designs/Design2Utilization.pdf}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=\textwidth]{figures/designs/Design2Utilization.pdf}
         \caption{}
         \label{fig:design2util}
-    \end{subfigure}%
+    \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.33\textwidth}
-        \includegraphics[width=\linewidth]{figures/designs/Design2AUtilization.pdf}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=\textwidth]{figures/designs/Design2AUtilization.pdf}
         \caption{}
         \label{fig:design2autil}
     \end{subfigure}
     \caption{Percentage of CPU and GPU utilization for: (a) Design~1; (b)
         Design~2, and (3) Design~2.A.}
     \label{fig:Utilization}
-\end{figure*}
+\end{figure}
 
 
 Fig.~\ref{fig:design2util} shows resource utilization for a specific run of Design~2.
@@ -536,16 +535,16 @@ In all designs, there is no significant fluctuations in GPU utilization, althoug
 This experiment studies how the total execution time of our use case workflow varies across Design~1, 2 and 2.A. Fig.~\ref{fig:ttx} shows that Design~1 and 2 have similar total time to execution within error bars, while Design~2.A improves on Design~2 and both are substantially faster than Design~1.
 The discussion of Experiment~1 and 2 results explains how these differences relate to the differences in the execution time of $T_{1}$ and $T_{2}$ tasks, and execution concurrency respectively.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
-    \begin{subfigure}{0.95\textwidth}
-        \includegraphics[width=\linewidth]{figures/designs/ttx.pdf}
+    \begin{subfigure}{0.7\textwidth}
+        \includegraphics[width=\textwidth]{figures/designs/ttx.pdf}
         \caption{}
         \label{fig:ttx}
     \end{subfigure}\\
     ~
-    \begin{subfigure}{0.95\textwidth}
-        \includegraphics[width=\linewidth]{figures/designs/overheads.pdf}
+    \begin{subfigure}{0.7\textwidth}
+        \includegraphics[width=\textwidth]{figures/designs/overheads.pdf}
         \caption{}
         \label{fig:overheads}
     \end{subfigure}
