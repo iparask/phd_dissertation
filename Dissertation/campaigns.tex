@@ -13,7 +13,7 @@ The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the ca
 Section \S~\ref{sec:algo} discusses three selected makespan calculation algorithms and \S~\ref{sec:algo_perf_comp} compares their performance, i.e the derived makespan.
 
 % -------------------------------------------------------------------
-\section{Calculating campaign's makespan}
+\section{Calculating the Makespan of a Campaign}
 \label{sec:makespan_calc}
 The way workflows of a given campaign are mapped to resources can affect the makespan calculation. 
 Figure~\ref{fig:example_makespan} shows an example of a campaign with workflows of different size and execution times, and the makespans that two different mappings produce.
@@ -64,7 +64,7 @@ TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \end{equation}
 
 % -------------------------------------------------------------------
-\section{Execution Planning Algorithms}
+\section{Planning Algorithms}
 \label{sec:algo}
 
 There is a plethora of methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
@@ -221,7 +221,7 @@ This algorithm does not specify in any way when resources are either becoming or
 As a consequence, there is no need to extend it when dynamic resources are used, as long as the resource performance is updated accordingly.
 
 % -------------------------------------------------------------------
-\section{Planning Algorithm Performance Evaluation}
+\section{Performance Evaluation of Planning Algorithms}
 \label{sec:algo_perf_comp}
 
 We executed two experiments in order to analyze the performance of the selected planners in terms of the makespan they produce.
@@ -367,7 +367,7 @@ Explore how HEFT and GA behave for different resource initial availability if th
 %This is due to their deterministic behavior.
 %GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
 
-\section{Planning Algorithm Selection Model}
+\section{Conceptual Framework for Selecting Planning Algorithms}
 
 Based on our analysis, we conclude that selecting algorithm1 over algorithm2 provides the better makespan in most cases. 
 But due to the time scales at which the execution of a campaign runs, the computation complexity of the algorithm, as long as, it remains in the order of minutes is not significant.

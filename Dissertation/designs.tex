@@ -223,7 +223,8 @@ The early binding of images to compute nodes introduces an overhead compared to 
 Nonetheless, depending on the strength of the correlation between image properties and execution time, design 2.A offers the opportunity to improve resource utilization.
 While in Design 2 some node may end up waiting for another node to process a much larger Queue 2, in design 2.A this is avoided by guaranteeing that each compute node has an analogous payload to process.
 
-\section{Experiments and Discussion}\label{sec:des_experiments}
+\section{Experiments: Task Execution Time, Resource Utilization and Overheads}\label{sec:des_experiments}
+%See if comparing performance is better.
 We executed three experiments using GPU compute nodes of the XSEDE Bridges supercomputer.
 These nodes offer 32 cores, 128 GB of RAM and two P100 Tesla GPUs.
 We stored the dataset of the experiments and the output files on XSEDE Pylon5 Lustre filesystem.

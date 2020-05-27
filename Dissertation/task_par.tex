@@ -64,7 +64,7 @@ Section~\ref{ssec:mda} discusses the reasons for selecting these two algorithms 
 %\end{inparaenum}
 
 
-\subsection{Applications and Algorithms: MDAnalysis}
+\subsection{Applications and Algorithms}
 \label{ssec:mda}
 MDAnalysis is a Python library~\cite{michaud2011mdanalysis,gowers2016mdanalysis} that provides a comprehensive environment for filtering, transforming and analyzing MD trajectories in all commonly used file formats.
 It provides a common object-oriented API to trajectory data and leverages existing libraries in the scientific Python software stack, such as NumPy~\cite{numpy} and Scipy~\cite{scipy}.
@@ -773,9 +773,9 @@ This is not true for $4M$ atoms, indicating that Dask's communication layer is n
 Spark shows similar performance with MPI4py for the largest dataset due to minimal shuffle traffic.
 Thus, MPI's efficient communication does not become relevant.
 
-\section{Task-Parallel Framework Selection Conceptual Model and Discussion}
+\section{Conceptual Framework for Selecting Task-Parallel Frameworks}
 \label{sec:task_sel_model}
-In this section we provide a conceptual model that allows application developers to carefully select a framework according to their requirements (e.\,g., compute and I/O).
+In this section we provide a conceptual framework that allows application developers to carefully select a framework according to their requirements (e.\,g., compute and I/O).
 It is important to understand both the properties of the application and Big Data frameworks.
 Table~\ref{tab:framework} illustrates the criteria of this conceptual model and ranks the three frameworks.
 
