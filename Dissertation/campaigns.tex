@@ -1,16 +1,38 @@
 % !TEX root = main.tex
 \label{ch:campaigns}
-As the capabilities of workflow and workload management frameworks~\cite{balasubramanian2018harnessing,deelman2015pegasus,maeno2008panda} increase, along with the capabilities of HPC resources, scientists started executing mulitple workflows to achieve scientific insight.
-In the case of COVID-19, for example, related research, users are running the same molecular dynamics simulation and drug discovery workflows continuously with different initial parameters.
-This type of execution, where multiple workflows are executed on resources with a given objective, is called scientific campaigns~\cite{maeno2008panda}, often for long periods of time~\cite{casajus2010dirac}.
+Computational campaigns enact an execution to achieve a computation objective under given requirements and constraints.
+The computational objective is a set of values selected by the user for a set of metrics.
+Some of these metrics are time to completion and throughtput.
+Furthermore, the objective can be represented as an objective function.
+Requirements describe the minimum amount and type of resources needed to execute each workflow of the campaign, while the constrains are the conditions that bound the the execution, such as resource availability, resource capacity or costs.
 
 The objective of a campaign can be translated to a computational objective function that would either minimize or maximize a metric.
-Among the many metrics that could be considered, the most common one is the total time taken by a campaign to execute.
+Among the many metrics that could be considered, the most common one is the total time taken by a campaign to execute, also known as makespan.
 An execution plan of a campaign is a mapping between workflows and resource to execute upon.
 Calculating the makespan of a campaign means finding an execution plan that satisfies the computational objective function.
 
+A computational campaign execute on several HPC resources.
+These resources are heterogeneous as they offer different type of resources.
+One aspect of this heterogeneity is the performance each HPC resources has in terms of Peta-Flops.
+In addition, these resources are dynamic as their availability and performance can change over time.
+
+Users have deep knowledge of their workflows and their requirements when they prototype them.
+As a result, they may not know accurately the total number of operations of each workflow that comprise their campaign.
+This, in turn, makes it even harder to derive an execution plan that will satisfy the objective of the campaign.
+
+We use a campaign from a campaign from a polar science use case to evaluate three classes of planning algorithms.
+These classes differ on how they approach the planning problem and in the amount of knowledge they produce to derive a plan.
+We experimentally measure and characterize the performance of these classes.
+
+The chapter offers the following contributions:
+\begin{inparaenum}[i)]
+    \item an experiment-based methodology to compare planning algorithms performance that does not depend on the considered use case and computing framework;
+    \item a conceptual framework for selecting planning algorithms based on the algorithm, campaign and resources characteristics
+\end{inparaenum}
+
 The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the calculation of the makespan of a campaign given a set of assumptions that are progressively relaxed.
 Section \S~\ref{sec:algo} discusses three selected makespan calculation algorithms and \S~\ref{sec:algo_perf_comp} compares their performance, i.e the derived makespan.
+Finally, section \S~\ref{sec:cf_algo_sel} presents a conceptual framework that will allow users to best select a planning algorithm.
 
 % -------------------------------------------------------------------
 \section{Calculating the Makespan of a Campaign}
@@ -69,7 +91,31 @@ TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 
 There is a plethora of methods and algorithms to calculate and optimize the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 From this plethora of selections, we selected to investigate three algorithms, each one representative of a larger family of algorithms.
-These are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a .... algorithm.
+These are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a simple heuristic algorithm.
+
+The following sections present the selected algorithms in more detail.
+In addition to the algorithmic details, we discuss the knowledge and the information each algorithm produces to derive a plan.
+A summary of the algorithms characteristics are shown in Table~\ref{tab:sched_algo}.
+
+\begin{table}[t]
+    \centering
+    \scriptsize
+    \begin{tabular}{@{}ccccc@{}}
+        \toprule
+        &\textbf{HEFT}     &\textbf{Genetic Algorithm} &\textbf{L2FF} & \textbf{Random} \\
+        \midrule
+        Decision Policy   &Deterministic &Convergence Criteria &Deterministic& Deterministic\\
+        Initial State    &Blank &Semi-random &Blank & Blank\\
+        \midrule
+        \multicolumn{5}{l}{\textbf{Initial Knowledge}}\\\midrule
+        Workflow Operations &Yes & Yes & Yes & No\\
+        Resource Performance &Yes &Yes &Yes & No\\
+        \midrule
+        Produced Knowledge& Resource availability& Resource availability&None&None\\
+        \bottomrule
+    \end{tabular}
+    \caption{Basic characteristics of selected planning algorithms.\label{tab:sched_algo}}
+\end{table}
 
 % -------------------------------------------------------------------
 \subsection{Heterogeneous Earlier Finish Time (HEFT) algorithm}
@@ -368,7 +414,7 @@ Explore how HEFT and GA behave for different resource initial availability if th
 %GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
 
 \section{Conceptual Framework for Selecting Planning Algorithms}
-
-Based on our analysis, we conclude that selecting algorithm1 over algorithm2 provides the better makespan in most cases. 
+\label{sec:cf_algo_sel}
+Based on our analysis, we conclude that selecting algorithm 1 over algorithm 2 provides the better makespan in most cases. 
 But due to the time scales at which the execution of a campaign runs, the computation complexity of the algorithm, as long as, it remains in the order of minutes is not significant.
 In addition, selecting an algorithm that can encode resource availability is beneficial, since resources can become unavailable either due to performance dynamism, or due to unforeseen events
