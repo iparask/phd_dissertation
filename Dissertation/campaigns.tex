@@ -2,7 +2,7 @@
 \label{ch:campaigns}
 Computational campaigns enact an execution to achieve a computation objective under given requirements and constraints.
 The computational objective is a set of values selected by the user for a set of metrics.
-Some of these metrics are time to completion and throughtput.
+Some of these metrics are time to completion and throughput.
 Furthermore, the objective can be represented as an objective function.
 Requirements describe the minimum amount and type of resources needed to execute each workflow of the campaign, while the constrains are the conditions that bound the the execution, such as resource availability, resource capacity or costs.
 
@@ -30,7 +30,7 @@ The chapter offers the following contributions:
     \item a conceptual framework for selecting planning algorithms based on the algorithm, campaign and resources characteristics
 \end{inparaenum}
 
-The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the calculation of the makespan of a campaign given a set of assumptions that are progressively relaxed.
+The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the calculation of the makespan of a campaign given the set of assumptions of this work.
 Section \S~\ref{sec:algo} discusses three selected makespan calculation algorithms and \S~\ref{sec:algo_perf_comp} compares their performance, i.e the derived makespan.
 Finally, section \S~\ref{sec:cf_algo_sel} presents a conceptual framework that will allow users to best select a planning algorithm.
 
@@ -48,23 +48,22 @@ In addition, the size of the workflows, i.e., the number of resources they requi
     \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
 \end{figure*}
 
-We are making a set of assumptions which we do not relax during the initial analysis of a model that calculates the makespan of a campaign.
+We are making a set of assumptions which we do not relax during the analysis of a model that calculates the makespan of a campaign.
 These are:
 \begin{inparaenum}[(1)]
     \item a workflow is an atomic unit and cannot be decomposed;
     \item workflow resource request is sufficient to execute the workflow;
     \item a resource is an aggregate of computing capabilities;
-    \item resources are homogeneous;
     \item every workflow of a given campaign can be executed on the given resources;
-    \item a random resource selection is based on a uniform distribution;
+    \item random resource selection is based on a uniform distribution;
     \item only one workflow can be executed on a resource at any point in time; and
-    \item a workflows can be homogeneous or heterogeneous in space---maximum number of resources they need, and time---the amount of time they are executing.
+    \item workflows can be homogeneous or heterogeneous in space---maximum number of resources they need, and time---the amount of time they are executing.
 \end{inparaenum}
 
 We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{C}]$, where $w_{i}$ is a workflow and $N_{C}$ is the total number of workflows, $R = [ r_{j}: 1 \leq j \leq N_{R}]$ is a set of available resources, where $r_{j}$ is a resource and $N_{R}$ is the total number of available resources, and $ M(C,R) = [(w_i, r_j): 1 \leq i \leq N_{C}, r_j \in R] $ is a mapping function of workflows onto resources.
 In addition, we denote the execution time of a workflow as $Tx_{w_{i}}$, the makespan of campaign $C$ as $TTX_{C}$, and the makespan of campaign $C$ for a given mapping function $ M $ as $TTX_{C}(M)$.
 Assumption~\#3 allows to abstract the resource implementation details, as workflows can be executed on different resources such as HPCs, Clouds, pilots and more. 
-Lastly, we will assume homogeneous resources as it simplifies the formalization of the problem.
+%Lastly, we will assume initially homogeneous resources as it simplifies the formalization of the problem.
 
 With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be executed sequentially, regardless the execution order or if the workflows are homogeneous or heterogeneous.
 As a result the makespan of the campaign is:
@@ -72,9 +71,9 @@ As a result the makespan of the campaign is:
    TTX_{C} = \sum_{i=1}^{N_{C}}Tx_{w_{i}} 
 \end{equation}
 
-With multiple homogeneous resources, i.e., $1 < N_{R} < N_{C}$, the workflows of a campaign can be executed concurrently.
-Furthermore, this is semantically equivalent to executing on a single resource large enough to allow concurrent workflow execution, where each workflow executes on a resource partition. 
-Because of assumptions~\#5 and~\#7, executing homogeneous or heterogeneous in space workflows has the same makespan.
+With multiple resources, i.e., $1 < N_{R} < N_{C}$, the workflows of a campaign can be executed concurrently.
+With homogeneous resources, this is semantically equivalent to executing on a single resource large enough to allow concurrent workflow execution, where each workflow executes on a resource partition. 
+Because of assumptions~\#4 and~\#7, executing homogeneous or heterogeneous in space workflows has the same makespan.
 A random mapping of workflows onto resource will have a makespan:
 \begin{equation}
    TTX_{C}(Random) \geq \frac{1}{N_{R}}\sum_{i=1}^{N_{C}} Tx_{w_{i}} 
@@ -84,6 +83,17 @@ Given multiple homogeneous resources, when executing workflows that are heteroge
 TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \label{eq:makespan}
 \end{equation}
+Relaxing the assumption that resources are heterogeneous, in the performance they offer, affects the result of the mapping function $ M $.
+As a result, Eq.~\ref{eq:makespan} holds in calculating the makespan of the campaign.
+
+Computational campaigns execute to achieve an objective.
+We consider as objective the total time of completion of the campaign.
+As a result, the objective function of a plan is translating in minimizing the value of eq;~\ref{eq:makespan}.
+As objective function is:
+\begin{equation}
+    \min(\max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\})
+\end{equation}
+In the next section, we discuss a set of algorithms that try to satisfy this objective function.
 
 % -------------------------------------------------------------------
 \section{Planning Algorithms}
@@ -270,28 +280,57 @@ As a consequence, there is no need to extend it when dynamic resources are used,
 \section{Performance Evaluation of Planning Algorithms}
 \label{sec:algo_perf_comp}
 
-We executed two experiments in order to analyze the performance of the selected planners in terms of the makespan they produce.
-In addition to these two experiments, we also executed an experiment to measure the time each planner took to provide a plan.
-These sets of experiments allows us to a methodology to compare planning algorithms and decide which algorithm is more suited based on a campaign's computation requirements, i.e. workflow size and resource performance/availability.
+We executed three experiments in order to analyze the performance of the selected planners in terms of the makespan they produce.
+These sets of experiments allows us to a methodology to compare planning algorithms and decide which algorithm is more suited based on the campaign computation requirements, i.e. workflow size, resource performance/availability and initial information accuracy.
 
-\subsection{Experiment 1: Measuring  makespan on static resources}
+As mention before, resources can be homogeneous or heterogeneous and static or dynamic.
+They are homogeneous when the performance, in terms of operations per second, is the same between resources, otherwise they are heterogeneous.
+Further, static resources are those whose performance does not change over time and dynamic when the resource performance changes over time.
+
+We use four existing HPC resources as the basis for generating heterogeneous resources.
+These resources are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera.
+Each resource performance, as published in the resource documentation, defines the mean value of the distribution.
+Figure~\ref{fig:heter_res} shows the generated resources.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/campaign/hetero_res.pdf}
+    \caption{Heterogeneous resource distributions.}
+    \label{fig:heter_res}
+\end{figure}
+
+
+We assume that the dynamic performance is drawn by a normal distribution where the mean performance is defined by the performance of the specific resource when it is considered static.
+The variance is such that $3\sigma$ from the mean almost 20\% away from the mean.
+Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equals to 1 and sigma equals to 0.06.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/campaign/DynRes.pdf}
+    \caption{Resource performance distribution of a dynamic resource with 1 Peta-Flops average performance.}
+    \label{fig:dynamic_res}
+\end{figure}
+
+
+
+\subsection{Experiment 1: Measuring makespan on static resources}
 
 - Analysis of homogeneous/homogeneous cases:
 
 \begin{figure*}[ht!]
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.95\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHomoResources.pdf}
         \caption{}
         \label{fig:StHomoCampaigns_4StHomoResources}
-    \end{subfigure}%
+    \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/campaign/StHomoResources_StHomoCampaigns.pdf}
+    \begin{subfigure}[b]{0.95\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoResources_StHomoCampaigns.pdf}
         \caption{}
         \label{fig:StHomoResources_StHomoCampaigns}
     \end{subfigure}
-    \caption{~\ref{fig:StHomoCampaigns_4StHomoResources} Makespan of increasing number of homogeneous worklfows on homogeneous resources.
+    \caption{~\ref{fig:StHomoCampaigns_4StHomoResources} Makespan of increasing number of homogeneous workflows on homogeneous resources.
     ~\ref{fig:StHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
     \label{fig:dyn_homog_analysis}
 \end{figure*}
@@ -348,13 +387,13 @@ We calculate the final makespan based on the plan that was offered initially.
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4DyHomoResources.pdf}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4DynHomoResources.pdf}
         \caption{}
         \label{fig:StHomoCampaigns_4DyHomoResources}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/campaign/DyHomoResources_StHomoCampaigns.pdf}
+        \includegraphics[width=\linewidth]{figures/campaign/DynHomoResources_StHomoCampaigns.pdf}
         \caption{}
         \label{fig:DyHomoResources_StHomoCampaigns}
     \end{subfigure}
@@ -370,13 +409,13 @@ I think that the final makespan will be similar for all planners and the will no
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DyHeteroResources.pdf}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHeteroResources.pdf}
         \caption{}
         \label{fig:StHeteroCampaigns_4DyHeteroResources}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/campaign/DyHeteroResources_StHeteroCampaigns.pdf}
+        \includegraphics[width=\linewidth]{figures/campaign/DynHeteroResources_StHeteroCampaigns.pdf}
         \caption{}
         \label{fig:DyHeteroResources_StHeteroCampaigns}
     \end{subfigure}
