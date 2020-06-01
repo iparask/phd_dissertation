@@ -443,6 +443,12 @@ This allows to conclude that deterministic planning algorithms that produce or h
 
 \subsection{Experiment 2: Measuring makespan on dynamic resources}
 
+High performance computing resource performance is affected by a number of factors.
+The shared filesystem and network performance, for example, changes based on I/O patterns and network congestion~\cite{brown2018interference}.
+The performance of the CPUs and GPU of individual nodes are subject to policies that may allow multiple users on the same node, change CPU clock frequencies based on temperature and more.
+As a result, the performance of a resource during the execution of a workflow can be different from the one a planning algorithm is expecting and thus dynamic.
+
+The second experiments measures how sensitive is the plan produced by each algorithm to resource dynamicity.
 We assume that the dynamic performance is drawn by a normal distribution where the mean performance is defined by the performance of the specific resource when it is considered static.
 The variance is such that $3\sigma$ from the mean almost 20\% away from the mean.
 Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equals to 1 and sigma equals to 0.06.
@@ -454,11 +460,10 @@ Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equal
     \label{fig:dynamic_res}
 \end{figure}
 
+We executed with the same configurations as in Experiment~1. 
+Figures~\ref{fig:dyn_homog_analysis}, ~\ref{fig:dyn_hetero_homog_analysis} and~\ref{fig:dyn_hetero_analysis} show the results of our experiments for homogeneous workflows/ homogeneous resources, heterogeneous workflows/homogeneous resources and heterogeneous workflows/ heterogeneous resources.
+In all configurations, we varied the number of workflows and the number of resources in the same way as experiment 1.
 
-- Analysis of homogeneous/homogeneous cases: Resource dynamism is drawn by a normal distribution.
-
-We calculate the final makespan based on the plan that was offered initially.
- I expect that HEFT will be better than other planners, with the genetic and the L2FF being very close to random.
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.85\textwidth}
@@ -474,11 +479,9 @@ We calculate the final makespan based on the plan that was offered initially.
     \end{subfigure}
     \caption{~\ref{fig:StHomoCampaigns_4DyHomoResources} Makespan of increasing number of homogeneous workflows on homogeneous resources;
         ~\ref{fig:DyHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
-    \label{fig:no_replan_homog_analysis}
+    \label{fig:dyn_homog_analysis}
 \end{figure*}
 
-We calculate the final makespan based on the plan that was offered initially.
-I expect that HEFT will be better than other planners, with the genetic and the L2FF being very close to random.
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.85\textwidth}
@@ -497,10 +500,6 @@ I expect that HEFT will be better than other planners, with the genetic and the 
     \label{fig:dyn_hetero_homog_analysis}
 \end{figure*}
 
-
-- Analysis of heterogeneous/heterogeneous cases:
-I do not expect significant differences between planners.
-I think that the final makespan will be similar for all planners and the will not be distinguishable within error bars.
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.85\textwidth}
@@ -516,8 +515,16 @@ I think that the final makespan will be similar for all planners and the will no
     \end{subfigure}
     \caption{~\ref{fig:StHeteroCampaigns_4DyHeteroResources} Makespan of increasing number of homogeneous workflows on homogeneous resources;
     ~\ref{fig:DyHeteroResources_StHeteroCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
-    \label{fig:no_replan_hetero_analysis}
+    \label{fig:dyn_hetero_analysis}
 \end{figure*}
+
+The experiment shows that comparison between the algorithms is not affected by the level of dynamicity we introduced.
+There are occasions though that one algorithm performed better than another in the case of homogeneous workflows and homogeneous resources, but this difference was well in the range of resource dynamicity.
+As a result, we do not consider it a difference that can affect the general comparison of the algorithms.
+Based on the two experiments we can conclude that resource heterogeneity and internal knowledge of the algorithms are the factors that define their performance.
+
+
+
 
 
 \subsection{Experiment 3: Workflow Execution Time Accuracy}
