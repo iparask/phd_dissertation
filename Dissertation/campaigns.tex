@@ -290,7 +290,9 @@ Further, static resources are those whose performance does not change over time 
 We use four existing HPC resources as the basis for generating heterogeneous resources.
 These resources are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera.
 Each resource performance, as published in the resource documentation, defines the mean value of the distribution.
-Figure~\ref{fig:heter_res} shows the generated resources.
+Figure~\ref{fig:heter_res} shows such resources.
+As seen from the figure, the resources are distinct  based on their performance.
+As a result, the algorithm that utilizes the faster resources more should provide the better makespan.
 
 \begin{figure}[ht!]
     \centering
@@ -300,24 +302,19 @@ Figure~\ref{fig:heter_res} shows the generated resources.
 \end{figure}
 
 
-We assume that the dynamic performance is drawn by a normal distribution where the mean performance is defined by the performance of the specific resource when it is considered static.
-The variance is such that $3\sigma$ from the mean almost 20\% away from the mean.
-Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equals to 1 and sigma equals to 0.06.
-
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/campaign/DynRes.pdf}
-    \caption{Resource performance distribution of a dynamic resource with 1 Peta-Flops average performance.}
-    \label{fig:dynamic_res}
-\end{figure}
-
-
-
 \subsection{Experiment 1: Measuring makespan on static resources}
 
-- Analysis of homogeneous/homogeneous cases:
+In our first experiment, we measure the makespan produced by the selected algorithms for static resources and different configurations of campaign and resource homogeneity/heterogeneity.
+In all cases, we either varied the campaign size while keeping the resource number constant or the number of resources while keeping the campaign size constant.
 
-\begin{figure*}[ht!]
+Figure~\ref{fig:st_homog_analysis} shows the results for homogeneous campaigns and homogeneous resources.
+Figure~\ref{fig:StHomoCampaigns_4StHomoResources} compares the makespan produced from HEFT, the genetic algorithm (GA in the figure), L2FF and the Random placement when the campaign size varies from 4 workflows up to 1024.
+Figure~\ref{fig:StHomoResources_StHomoCampaigns} makes the same comparison with varying the number of resources for a campaign of 1024 workflows.
+The genetic algorithm allows us to select the percentage of the workflows assigned non-randomly for each individual of the population.
+We used 0~\% (GA in the figure), 25~\% (GA-25) and 50~\% (GA-50).
+In addition, the genetic algorithm stopped evolving its population if it converged, i.e., an individual plan had the ideal makespan, or after 100 iterations and returned the individual in the current population with the best makespan.
+
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}[b]{0.95\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHomoResources.pdf}
@@ -332,21 +329,28 @@ Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equal
     \end{subfigure}
     \caption{~\ref{fig:StHomoCampaigns_4StHomoResources} Makespan of increasing number of homogeneous workflows on homogeneous resources.
     ~\ref{fig:StHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
-    \label{fig:dyn_homog_analysis}
-\end{figure*}
+    \label{fig:st_homog_analysis}
+\end{figure}
 
-
+As both figures show, any kind of planning offers better makespan than random placement with a significant margin.
+The genetic algorithm that used only random initialization of the population produced the worst out of the three different configurations.
+The other two genetic algorithm configuration do not provide significant different performance as the workflows increased, but they show the effect of the random placement when the number of resources increase.
+As a result, the percentage of non-random placement has a significant effect in how able is the algorithm to produce the ideal makespan.
+This is also supported by figure~\ref{fig:conv_rate} which shows the convergence rate of the three configurations.
+The full random initial placement did not produce consistently the ideal makespan even for four workflows and four resources.
+The other two configurations did consistently produce the ideal makespan when the number of workflows varied.
+The small drop in the GA-25 (max of 3 out of 100 iterations) shows that there is still a small probability (max of 3~\%) to not produce the ideal makespan.
 
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/GAconv_StHomoCampaigns_4StHomoResources.pdf}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHomoResourcesGAconv.pdf}
         \caption{}
         \label{fig:ga_conv1}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\linewidth]{figures/campaign/GAconv_StHomoResources_StHomoCampaigns.pdf}
+        \includegraphics[width=\linewidth]{figures/campaign/HomogeResources_StHomogeCampaignsGAconv.pdf}
         \caption{}
         \label{fig:ga_conv2}
     \end{subfigure}
@@ -379,6 +383,18 @@ This is because: 1) its deterministic behavior, as it produce always the same pl
 The genetic algorithm provides worse makespan compared to HEFT mainly because of the randomness introduced during the population initialization.
 
 \subsection{Experiment 2: Measuring makespan on dynamic resources}
+
+We assume that the dynamic performance is drawn by a normal distribution where the mean performance is defined by the performance of the specific resource when it is considered static.
+The variance is such that $3\sigma$ from the mean almost 20\% away from the mean.
+Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equals to 1 and sigma equals to 0.06.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/campaign/DynRes.pdf}
+    \caption{Resource performance distribution of a dynamic resource with 1 Peta-Flops average performance.}
+    \label{fig:dynamic_res}
+\end{figure}
+
 
 - Analysis of homogeneous/homogeneous cases: Resource dynamism is drawn by a normal distribution.
 
