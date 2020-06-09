@@ -280,8 +280,11 @@ As a consequence, there is no need to extend it when dynamic resources are used,
 \section{Performance Evaluation of Planning Algorithms}
 \label{sec:algo_perf_comp}
 
-We executed three experiments in order to analyze the performance of the selected planners in terms of the makespan they produce.
-These sets of experiments allows us to a methodology to compare planning algorithms and decide which algorithm is more suited based on the campaign computation requirements, i.e. workflow size, resource performance/availability and initial information accuracy.
+We executed three experiments to evaluate and analyze the performance of the selected algorithms.
+The first experiment measures the makespan of the plans these algorithms in ideal conditions, providing us with information to rank them.
+The second experiment measure the sensitivity of the algorithms when resource performance changes over time.
+Last, we measure the sensitivity of the algorithms when there is uncertainty in the total number of operations of the workflows.
+These sets of experiments provide a methodology to compare planning algorithms and decide which algorithm is more suited based on the campaign computation requirements, i.e. workflow size, resource performance/availability and initial information uncertainty.
 
 As mention before, resources can be homogeneous or heterogeneous and static or dynamic.
 They are homogeneous when the performance, in terms of operations per second, is the same between resources, otherwise they are heterogeneous.
@@ -441,7 +444,7 @@ As the number of resources increase non-deterministic algorithms will eventually
 This allows to conclude that deterministic planning algorithms that produce or have the most knowledge about a campaign and the available resources are the ones that should be used on static resources..
 
 
-\subsection{Experiment 2: Measuring makespan on dynamic resources}
+\subsection{Experiment 2: Measuring makespan sensitivity on dynamic resources}
 
 High performance computing resource performance is affected by a number of factors.
 The shared filesystem and network performance, for example, changes based on I/O patterns and network congestion~\cite{brown2018interference}.
@@ -461,46 +464,12 @@ Figure~\ref{fig:dynamic_res} shows an example of the distribution for mean equal
 \end{figure}
 
 We executed with the same configurations as in Experiment~1. 
-Figures~\ref{fig:dyn_homog_analysis}, ~\ref{fig:dyn_hetero_homog_analysis} and~\ref{fig:dyn_hetero_analysis} show the results of our experiments for homogeneous workflows/ homogeneous resources, heterogeneous workflows/homogeneous resources and heterogeneous workflows/ heterogeneous resources.
-In all configurations, we varied the number of workflows and the number of resources in the same way as experiment 1.
+Figure~\ref{fig:dyn_hetero_analysis} shows the performance of each algorithm when workflows are heterogeneous and resources are heterogeneous and dynamic.
+Comparing with Figure~\ref{fig:het_het_analysis} we understand that all makespans are affected by resource dynamicity.
+One important note is that HEFT due to its deterministic behavior and knowledge about resource availability still offers the better makespan compared to the other two algorithms.
+A random plan provides still the worst makespan.
 
-\begin{figure*}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4DynHomoResources.pdf}
-        \caption{}
-        \label{fig:StHomoCampaigns_4DyHomoResources}
-    \end{subfigure}\\
-    ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=0.95\textwidth]{figures/campaign/DynHomoResources_StHomoCampaigns.pdf}
-        \caption{}
-        \label{fig:DyHomoResources_StHomoCampaigns}
-    \end{subfigure}
-    \caption{~\ref{fig:StHomoCampaigns_4DyHomoResources} Makespan of increasing number of homogeneous workflows on homogeneous resources;
-        ~\ref{fig:DyHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
-    \label{fig:dyn_homog_analysis}
-\end{figure*}
-
-\begin{figure*}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHomoResources.pdf}
-        \caption{}
-        \label{fig:StHeteroCampaigns_4DynHomoResources}
-    \end{subfigure}\\
-    ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=0.95\textwidth]{figures/campaign/DynHomoResources_StHeteroCampaigns.pdf}
-        \caption{}
-        \label{fig:DynHomoResources_StHeteroCampaigns}
-    \end{subfigure}
-    \caption{~\ref{fig:StHeteroCampaigns_4DynHomoResources} Makespan of increasing number of homogeneous workflows on homogeneous resources;
-        ~\ref{fig:DynHomoResources_StHeteroCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
-    \label{fig:dyn_hetero_homog_analysis}
-\end{figure*}
-
-\begin{figure*}[ht!]
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHeteroResources.pdf}
@@ -514,16 +483,99 @@ In all configurations, we varied the number of workflows and the number of resou
         \label{fig:DyHeteroResources_StHeteroCampaigns}
     \end{subfigure}
     \caption{~\ref{fig:StHeteroCampaigns_4DyHeteroResources} Makespan of increasing number of homogeneous workflows on homogeneous resources;
-    ~\ref{fig:DyHeteroResources_StHeteroCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
+        ~\ref{fig:DyHeteroResources_StHeteroCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
     \label{fig:dyn_hetero_analysis}
-\end{figure*}
+\end{figure}
 
-The experiment shows that comparison between the algorithms is not affected by the level of dynamicity we introduced.
-There are occasions though that one algorithm performed better than another in the case of homogeneous workflows and homogeneous resources, but this difference was well in the range of resource dynamicity.
-As a result, we do not consider it a difference that can affect the general comparison of the algorithms.
-Based on the two experiments we can conclude that resource heterogeneity and internal knowledge of the algorithms are the factors that define their performance.
+Figures~\ref{fig:dyn_homog_sens_analysis}, ~\ref{fig:dyn_hetero_homog_sens_analysis} and~\ref{fig:dyn_hetero_sens_analysis} show the results of our experiments for homogeneous workflows/ homogeneous resources, heterogeneous workflows/homogeneous resources and heterogeneous workflows/ heterogeneous resources.
+In all configurations, we varied the number of workflows and the number of resources in the same way as experiment 1.
 
+Figures~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} and~\ref{fig:DyHomoResources_StHomoCampaignsSens} show how sensitive are the algorithms when workflows and resources are homogeneous.
+The random plan shows the least sensitivity as for both cases, varying the varying the number of workflows (Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} and varying the number of resources (Fig.~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
+All three algorithms are affected the same way by the introduced dynamicity.
+One important note is that the variability of the makespan is not more than 10\% in all cases.
+The algorithmic sensitivity decreases as the number of workflows increase when the number of resources is constant.
+In addition, it increases as the number of resources increase when the number of workflows remains constant.
+This points us to the conclusion that the sensitivity of the algorithms is proportional to the ratio of workflows over resources.
 
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.85\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4DynHomoResourcesSens.pdf}
+        \caption{}
+        \label{fig:StHomoCampaigns_4DyHomoResourcesSens}
+    \end{subfigure}\\
+    ~ 
+    \begin{subfigure}[b]{0.85\textwidth}
+        \includegraphics[width=0.95\textwidth]{figures/campaign/DynHomoResources_StHomoCampaignsSens.pdf}
+        \caption{}
+        \label{fig:DyHomoResources_StHomoCampaignsSens}
+    \end{subfigure}
+    \caption{~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} Normalized makespan sensitivity of increasing number of homogeneous workflows on homogeneous resources;
+        ~\ref{fig:DyHomoResources_StHomoCampaignsSens} Normalized makespan sensitivity  of homogeneous campaign on different number of homogeneous resources.}
+    \label{fig:dyn_homog_sens_analysis}
+\end{figure}
+
+In figure~\ref{fig:dyn_hetero_homog_sens_analysis} we introduce workflow heterogeneity.
+The algorithms makespan performance behavior is similar to the one shown in Fig.~\ref{fig:het_het_analysis}.
+Despite the fact, HEFT show the largest sensitivity when varying the number of workflows and when varying the number of resources.
+The genetic algorithm shows similar sensitivity with HEFT when the number of workflows but tends to be less sensitive when the number of resources increase.
+The genetic algorithm assigns a percentage of workflows to resources randomly which in turn makes it less sensitive to resource dynamicity, especially when the number of resources is large.
+
+L2FF shows a similar behavior with HEFT, especially when the number of resources changes, despite being less sensitive.
+In addition, the genetic algorithm sensitivity gets closer to that of random when the number of resources increases.
+Both L2FF and HEFT are deterministic and they produce always the same plan for a given campaign and set of resources.
+This in turn results to an increasing sensitivity as the ratio of number of campaign size to number of resources is small.
+In contrast, the random initial placement of GA allows it to create a plan that is less sensitive to dynamicity with the cost of slightly makespan, 725K seconds versus 643K and 649K seconds from HEFT and L2FF respectively.
+
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.85\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHomoResourcesSens.pdf}
+        \caption{}
+        \label{fig:StHeteroCampaigns_4DynHomoResourcesSens}
+    \end{subfigure}\\
+    ~ 
+    \begin{subfigure}[b]{0.85\textwidth}
+        \includegraphics[width=0.95\textwidth]{figures/campaign/DynHomoResources_StHeteroCampaignsSens.pdf}
+        \caption{}
+        \label{fig:DynHomoResources_StHeteroCampaignsSens}
+    \end{subfigure}
+    \caption{~\ref{fig:StHeteroCampaigns_4DynHomoResourcesSens} Normalized makespan sensitivity  of increasing number of heterogenous workflows on homogeneous resources;
+        ~\ref{fig:DynHomoResources_StHeteroCampaignsSens} Normalized makespan sensitivity  of a heterogenous campaign on different number of homogeneous resources.}
+    \label{fig:dyn_hetero_homog_sens_analysis}
+\end{figure}
+
+Resource heterogeneity has a significant impact in the makespan as seen Experiment 1.
+We expect resource dynamicity to reduce this impact.
+As shown in Figure~\ref{fig:dyn_hetero_sens_analysis} this is not true.
+The makespan is affected less than 10~\% despite the algorithm used.
+HEFT shows the largest effect in the makespan.
+GA and L2FF show similar impact with the random placement, however GA has produces a better plan than both (see Fig.~\ref{fig:dyn_hetero_analysis}), with significant difference when the ratio of campaign size to number of resources is large.
+
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.85\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHeteroResourcesSens.pdf}
+        \caption{}
+        \label{fig:StHeteroCampaigns_4DyHeteroResourcesSens}
+    \end{subfigure}\\
+    ~ 
+    \begin{subfigure}[b]{0.85\textwidth}
+        \includegraphics[width=0.95\textwidth]{figures/campaign/DynHeteroResources_StHeteroCampaignsSens.pdf}
+        \caption{}
+        \label{fig:DyHeteroResources_StHeteroCampaignsSens}
+    \end{subfigure}
+    \caption{~\ref{fig:StHeteroCampaigns_4DyHeteroResourcesSens} Normalized makespan sensitivity  of increasing number of heterogemeous workflows on heterogemeous resources;
+    ~\ref{fig:DyHeteroResources_StHeteroCampaignsSens} Normalized makespan sensitivity  of heterogemeous campaign on different number of heterogemeous resources.}
+    \label{fig:dyn_hetero_sens_analysis}
+\end{figure}
+
+This experiment measured the impact of resource dynamicity on the makespan produced by the selected algorithms.
+Although resource dynamicity did not change the ranking of the algorithms, it shows that algorithms with strong assumptions about workflow number of operations, resource performance and resource availability are affected the most.
+Furthermore, the impact of resource dynamicity is inverse proportional to the ratio of campaign size over number of resources.
+Based on the assumptions an algorithm makes, resource heterogeneity can affect the impact dynamic resource may have on the makespan of the produced plan.
+This experiment together with experiment 1 allow us to conclude that resource heterogeneity is the factors that affects the most the performance of the algorithms.
 
 
 
