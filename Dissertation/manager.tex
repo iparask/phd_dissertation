@@ -120,6 +120,66 @@ A summary of the functional requirements is shown in Table~\ref{tab:fun_reqs}.
 
 
 \section{Campaign Manager Design}
+This section discusses the design principles and the architecture of the campaign manager.
+The design principles the campaign manager follows are presented in ~\S~\ref{ssec:building_blocks}.
+The architecture and API of the campaign manager is described in \S~\ref{ssec:cm_arch}.
 \subsection{Building Blocks Design Approach}
+\label{ssec:building_blocks}
+The building blocks approach, as descirbed in~\cite{turilli2019middleware}, defines four design principles for software systems.
+Those are self-sufficiency, interoperability, composability, and extensibility.
+Adhering to those principles during the design and implementation phase of a software system allows for greater software sustainability.
+In addition, it allows users to not tailor their solutions to a specific software ecosystem and take full advantage of the plethora of software that supports scientific computing.
+
+Self-sufficiency and interoperability describe the characteristics of software entities and functionalities.
+The entities are enough to stand alone and can be reduced to a specific abstraction.
+The functionalities of each building block are specific to the block and do not overlap with other blocks.
+As a result, the campaign manager design defines a set of components and that allow it to execute a campaign to HPC resources without providing capabilities to execute the individual workflows of the campaign or acquire the necessary resources.
+
+Composability and extensibility describe the communication and coordination between building blocks and the generality of the generality of the blocks components respectively.
+Blocks communicate information about their state, events and errors.
+Based on this information alone building blocks are coordinating with each other.
+As a result, the campaign manager uses only the state of the workflow execution to create the campaign state.
+Furthermore, its components are designed to be general enough so that they can extended and interface with different workflow execution engines as well as software systems that execute computational campaigns.
+
 \subsection{Campaign Manager Components}
+\label{ssec:cm_arch}
+
+Figure~\ref{fig:refarch} shows a reference architecture where the CM has three components:
+\begin{inparaenum}[(1)]
+    \item a Planner;
+    \item an Enactor; and
+    \item a Bookkeeper. 
+\end{inparaenum}
+Workflow execution will be managed by an existing workflow management framework (WMF) on HPC resources.
+Plan updates will be based on workflows execution metrics provided by the selected WMF such as tasks execution time, overheads calculation and time to completion.
+These metrics will be aggregated across workflows, resulting in campaign-wide execution metrics.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/manager/CEM_design.pdf}
+    \caption{Reference Architecture of a Campaign Manager. Basic 
+        components of Campaign Manager (CM): 1) Planner, 2) Enactor and 3) Bookkeeper. 
+        CM communicates decisions to Workflows Management Framework. CM communicates with HPCs to 
+        execute parts of the campaign.}\label{fig:refarch}
+\end{figure*}
+
+The planner derives an execution plan based on a planning algorithm, calculates the makespan of a campaign based on the set of available resources and the given objective. 
+The planner receives information about the state of resources as well as the state of the workflows of the campaign from the bookkeeper component.
+In addition, based on information from the other components, the planner might be able to update the plan during the campaign runtime. 
+
+The Bookkeeper component is responsible for monitoring the execution of the campaign.
+This component knows the state of the campaign, the execution plan, the availability of the resources, and the campaign's objective.
+The state of the campaign will be based on information that the bookkeeper receives from the enactor component.
+In addition, the bookkeeper knows the state of the resources the campaign is utilizing at runtime and the state of the resources that are planned to be used.
+Based on this set of information, the bookkeeper checks whether the campaign's objective can be achieved.
+The bookkeeper will inform the planner to update the plan when changes in the campaign happens that affect the effectiveness of a current plan or make the stated objective not achievable. 
+For example, workflows could be removed or added to the campaign, or the availability of one or more resources could change requiring a revision of the mapping of workflows to resources or making such mapping impossible.
+
+The enactor is responsible to execute the planner's plan by interfacing with the WMF.
+Based on the plan, the enactor is responsible to execute workflows on the assigned resources.
+To achieve that, the enactor informs the WMF to acquire resources, translates the workflow from the user's specification to the API provided by the WMF, and submits the workflow for execution.
+Furthermore, the enactor informs the bookkeeper about which workflows were submitted for execution and their state.
+%In the case where a group of workflows is to be executed as a single workflow, the enactor will be responsible to group them as well.
+
 \section{Implementation and Overhead Evaluation}
+\label{sec:cm_impl}
