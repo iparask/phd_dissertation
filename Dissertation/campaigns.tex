@@ -575,7 +575,7 @@ This experiment measured the impact of resource dynamicity on the makespan produ
 Although resource dynamicity did not change the ranking of the algorithms, it shows that algorithms with strong assumptions about workflow number of operations, resource performance and resource availability are affected the most.
 Furthermore, the impact of resource dynamicity is inverse proportional to the ratio of campaign size over number of resources.
 Based on the assumptions an algorithm makes, resource heterogeneity can affect the impact dynamic resource may have on the makespan of the produced plan.
-This experiment together with experiment 1 allow us to conclude that resource heterogeneity is the factors that affects the most the performance of the algorithms.
+This experiment together with experiment 1 allow us to conclude that resource heterogeneity is the factor that affects the most the performance of the algorithms.
 
 
 \subsection{Experiment 3: Measuring makespan sensitivity based workflow length uncertainty}
@@ -616,7 +616,7 @@ Figure~\ref{fig:inaccur_st} shows the results for static resources with figure~\
 The ratio of number of workflows over the number of resources remains inverse proportional to the sensitivity.
 In addition, specifically for HEFT the impact of uncertainty increases significantly as the number of resources increase, reaching 55~\%.
 Since HEFT places one or two workflows on these resources, any change affects significantly its expected makespan.
-This verifies our conclusion from experiment 2, that HEFT's strong assumptions about workflow length and resource availability makes it very sensitive to changes.
+This verifies our conclusion from experiment 2, that algorithms with strong assumptions about workflow runtime and resource availability are very sensitive to changes.
 
 \begin{figure}[ht!]
     \centering
@@ -653,8 +653,56 @@ The less number of workflows placed on resources higher the significance of a ch
 %This is due to their deterministic behavior.
 %GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
 
-\section{Conceptual Framework for Selecting Planning Algorithms}
+\subsection{Experiment 4: Performance Gain using Plan Adaptation}
+
+An adaptive plan is a new plan derived from the previous one on the base of information acquired at runtime.
+Plan adaptation can happen either via running the planning algorithm again with the new information or via submitting a workflow to the selected resource when it becomes available.
+In this experiment, we focus on the second type of adaptation since L2FF does not know when exactly a resource becomes available.
+Specifically, when a resource becomes available earlier than expected, the bookkeeping component pushes the next workflow to the selected resource, otherwise the workflow is queued and executes as soon the resource becomes available.
+
+We measure the performance gain of adaptive plans for executing a campaign with heterogeneous workflows and different level of uncertainty on heterogeneous dynamic resources.
+Figure~\ref{fig:gain_dyn} shows the normalized performance gain as a function of the workflow runtime uncertainty and either the number of workflows, fig.~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain}, or the number of resources, fig.~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsGain}.
+As we can see the performance gain is not significant.
+L2FF adaptive plan shows a maximum of 16~\% for 4 workflows and 4 resources, GA and HEFT around 12~\%, while when the number of resources vary none of the plans exceeds 6~\%.
+
+
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.95\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4DynHeteroResourcesGain.pdf}
+        \caption{}
+        \label{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain}
+    \end{subfigure}\\
+    ~ 
+    \begin{subfigure}[b]{0.95\textwidth}
+        \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurDynHeteroResources_StHeteroCampaignsGain.pdf}
+        \caption{}
+        \label{fig:InaccurDynHeteroResources_StHeteroCampaignsGain}
+    \end{subfigure}
+    \caption{~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain} Normalized performance gain for different levels of uncertainty and different number of workflows on static resources;
+    ~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsGain} Normalized performance gain for different levels of uncertainty and different number of resources on static resources.}
+    \label{fig:gain_dyn}
+\end{figure}
+
+Since adaptive plans try to mitigate the effects of resource dynamism and workflow runtime uncertainty, we expect that the performance gain would be proportional to the ratio of number of workflows over the number of resources.
+Although this is generally true for L2FF and GA, it is not for HEFT.
+This is due to the fact that HEFT is placing a small number, 1 or 2, of workflows on slow resources.
+As a result, adaptive plans have no or very little effect.
+Contrary, L2FF and GA place more workflows on the slow resources allowing the adaptation to provide some gains.
+
+\section{Selecting Planning Algorithms and Campaign Budgeting Framework}
 \label{sec:cf_algo_sel}
-Based on our analysis, we conclude that selecting algorithm 1 over algorithm 2 provides the better makespan in most cases. 
-But due to the time scales at which the execution of a campaign runs, the computation complexity of the algorithm, as long as, it remains in the order of minutes is not significant.
-In addition, selecting an algorithm that can encode resource availability is beneficial, since resources can become unavailable either due to performance dynamism, or due to unforeseen events
+Based on our analysis, we conclude two things.
+First, that any type of planning will offer a better makespan than random placement.
+Only L2FF had the same makespan as the random plan when heterogeneous resources were introduced.
+Second, that algorithms which create knowledge about when in time a resource is available and are deterministic in nature produce better makespan.
+Both HEFT and GA produce such knowledge and consistently produced better makespan from L2FF or random.
+Further, GA introduces random placement of workflows on resource to initialize its learning procedure and a result it either underutilized or did not use at some resources.
+
+Through the above experimental analysis we can derive a empirical framework to calculate the budget, in terms of time or core hours, required to successfully execute a computation campaign.
+This is especially important for campaigns whose objective is to finish in a given amount of time or with a specific budget, as well as when users plan to execute a campaign and want to calculate their budget.
+Based on this experimental methodology, users can perform a best (certain workflow runtime/ static resources), worst (high workflow runtime uncertainty/ dynamic resources) and average (workflow runtime uncertainty/ dynamic resources) case analysis.
+Assuming that the makespan produced by an offline planning algorithm in the best case scenario is $TTX_{C}(M)$, the makespan sensitivity due to workflow runtime uncertainty and resource dynamism is $TTX_{S}(M)$ and performance gains from adapting the plan is $TTX_{G}(M)$.
+Calculating the value of $TTX'_{C}(M) = TTX_{C}(M) \times (1 + TTX_{S}(M))\times ( 1 - TTX_{G}(M))$ provides an estimate of the necessary amount of time to safely execute a campaign.
+Such information can then easily change to a monetary value of cost of resource usage and allow users to either request enough resources to execute their campaign or verify whether they have enough resources.
+
