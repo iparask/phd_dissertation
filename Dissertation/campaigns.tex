@@ -117,7 +117,7 @@ A summary of the algorithms characteristics are shown in Table~\ref{tab:sched_al
         Decision Policy   &Deterministic &Convergence Criteria &Deterministic& Deterministic\\
         Initial State    &Blank &Semi-random &Blank & Blank\\
         \midrule
-        \multicolumn{5}{l}{\textbf{Initial Knowledge}}\\\midrule
+        \multicolumn{5}{l}{\textbf{Initial Information}}\\\midrule
         Workflow Operations &Yes & Yes & Yes & No\\
         Resource Performance &Yes &Yes &Yes & No\\
         \midrule
@@ -139,14 +139,14 @@ HEFT is an offline scheduling algorithm which calculates the makespan of a workf
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
 HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}. 
 
-HEFT makes two important assumptions when used on multiple workflows, i.e., a campaign: 
+HEFT makes two important assumptions when used on workflows: 
 \begin{inparaenum}[(1)] 
     \item any task in a workflow can be executed on all available resources; and 
-    \item all resources are always available.
+    \item all resources are initially available.
 \end{inparaenum}
 HEFT is mainly used to derive an execution plan for workflows, i.e., the execution order and resource placement of the tasks that comprise the workflow.
-HEFT uses a matrix to represent execution time of tasks on resources, assigning tasks to the resource that minimizes the finish time of the task, and has complexity proportional to the number of dependencies between tasks and the number of resources offered. 
-Because we are interested in campaigns, our HEFT extension will provide an execution plan based on workflows as atomic units instead of tasks.
+HEFT complexity is proportional to the number of dependencies between tasks and the number of resources offered. 
+Since we are interested in campaigns, our HEFT extension provides an execution plan based on workflows as atomic units instead of tasks.
 Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}. 
 Algorithm~\ref{alg:heft} shows HEFT for placing independent heterogeneous workflows on heterogeneous resources.
 
@@ -169,54 +169,38 @@ Algorithm~\ref{alg:heft} shows HEFT for placing independent heterogeneous workfl
     \end{algorithmic}
 \end{algorithm}
 
-As mentioned above HEFT makes the assumption that all resources are always available and static.
-Based on this assumption, HEFT makes the implicit assumption that resources are available based on the times it internally computes.
-As a result, it has no external knowledge or representation of when a resource becomes available.
-HPC resources may become unavailable for multiple reasons, including but not limited to maintenance, a random failure, executing a workflows over the expected time., etc.
-In order to be able to utilize HEFT for dynamic resources, we had to extend Algorithm~\ref{alg:heft} to take as input the time that a resource is initially available.
-This input can be represented as a dictionary where the keys are the available resources and the values are the time a resource becomes available.
-The extended algorithm is shown in Algorithm~\ref{alg:ext_heft}.
-Although the extension may be small, it is crucial to allow to reuse HEFT based on the state of the execution at a given point in time.
+HEFT has three main algorithmic characteristics:
+\begin{inparaenum}[1)]
+    \item creates a priority list of workflows,
+    \item produces an expectation when resources are available and
+    \item uses a deterministic heuristic
+\end{inparaenum}
+HEFT initially calculates the average execution time of a workflow on all resources and creates a priority list with the longest workflow first.
+In addition, HEFT initializes a vector where each element is when the respective resource is available.
+Then, it pulls the first workflow from the priority list and calculates when it will finish at each resource.
+Finally, it places the workflow on the resource that will finish it earlier and updates the resource availability.
+HEFT ends when all workflows are placed on a resource.
 
-\begin{algorithm}[ht]
-    \caption{Extended Heterogeneous Earliest Finish Time (EHEFT) algorithm}
-    \label{alg:ext_heft}
-    \begin{algorithmic}[1]
-        \Procedure{EHEFT}{$W$, $R$, $T$}\Comment{$W$ and $R$ are a set of workflow and resources respectively. $T$ is a dictionary of when a resource becomes available.}
-        \State \texttt{Calculate the computation cost $w_{tx}^{ij}$ of each workflow for all resources}
-        \State \texttt{Assign $rank_i = \overline{w_{i}} = \nicefrac{\sum_{j=1}^{|R|}w_{tx}^{ij}}{|R|}$}
-        \State \texttt{Sort workflows by non-increasing order of $rank_i$}
-        \While{unscheduled workflows}
-        \State \texttt{Select the first workflow $\tilde{w}$ from the sorted list}
-        \For{$\forall r_{j}$ in $R$}
-        \State\texttt{Compute earliest finish time for $\tilde{w}$ on $r_{j}$ based on $T(r_j)$, $eft_{\tilde{w},r_j}$ }
-        \EndFor
-        \State \texttt{Assign  $\tilde{w}$ on $r_k$ with $\min{(eft_{\tilde{w},r_j})}$}
-        \EndWhile
-        \EndProcedure
-    \end{algorithmic}
-\end{algorithm}
-
+   
 % -------------------------------------------------------------------
 \subsection{Genetic Algorithm}
 \label{algo:gen}
-Genetic algorithms are represent another family of algorithms that are been used to minimize the makespan of an execution~\cite{dong2006scheduling}.
+Genetic algorithms are represent another family of algorithms that are been used to minimize the makespan of workflows~\cite{dong2006scheduling}.
 Genetic algorithms are evolving to the final answer as they iterate and improve possible answers.
 In general, genetic algorithms are working based on the following procedure:
 \begin{inparaenum}[(i)]
-    \item create an initial population, where the population is a set of chromosomes. 
-          Chromosomes, in the context of planning the execution workflows on resources, is a potential placement of workflows on resources;
-    \item evaluate the chromosomes based on a fitness value, which represents the makespan on the campaign;
+    \item create an initial population, where the population is a set of possible plans, called chromosomes;
+    \item evaluate the chromosomes based on a fitness function, which calculates the makespan on the workflow;
     \item reproduce by selecting chromosomes, either randomly or based on their fitness value, and generate a new set of chromosomes (called children);
     \item mutate randomly, where randomly selected workflows from a random chromosome are reassigned to resources; and
     \item re-evaluate chromosomes in the population to check convergence.
 \end{inparaenum}
 
-The selected genetic algorithm~\cite{page2005algorithm} is developed to support the placement of independent task on heterogeneous resources.
+The selected genetic algorithm~\cite{page2005algorithm} is developed to support the placement of independent tasks on heterogeneous resources.
 It assumes that all tasks can be executed on all available resources, are independent and indivisible.
 These assumptions are in accordance with the assumptions made for workflows in a campaign.
 As a result, this algorithm can be extended to support scientific campaigns.
-The pseudocode of this algorithm is shown in Algorithm~\ref{alg:gen_algo}.
+The pseudocode of the selected genetic algorithm is shown in Algorithm~\ref{alg:gen_algo}.
 
 \begin{algorithm}[ht]
     \caption{Genetic Algorithm}
@@ -234,7 +218,7 @@ The pseudocode of this algorithm is shown in Algorithm~\ref{alg:gen_algo}.
     \end{algorithmic}
 \end{algorithm}
 
-The chromosomes of the initial population are constructed semi-random.
+The chromosomes of the initial population are constructed either randomly or semi-randomly.
 Specifically, a specific percentage of the workflows are assigned randomly to resources, where the assignment is drawn by uniform distribution.
 The rest of the workflows are assigned based on an earlier finish time (EFT) heuristic, similar to the one used by HEFT.
 The population size is relatively small to 20 chromosomes, i.e., potential plans, called micro-GA.
@@ -245,11 +229,6 @@ Each chromosome is assigned a fitness value, which then defines the probability 
 Reproduction uses cyclic rotation to generate the new population members.
 Mutation randomly selects an individual from the population and randomly swaps workflows.
 Finally, a rebalancing heuristic tries to rebalance and create fitter individuals in the population.
-
-We extend this algorithm in the population initialization to support replanning..
-The initialization method takes into account the times resources will be available during for the EFT heuristic.
-Another point of extension would be the fitness function.
-However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
 
 % -------------------------------------------------------------------
 \subsection{Longest to Fastest First Available Resource Algorithm}
@@ -273,29 +252,36 @@ Algorithm~\ref{alg:l2ff} show the pseudocode for this algorithm.
     \end{algorithmic}
 \end{algorithm}
 
-This algorithm does not specify in any way when resources are either becoming or are available.
-As a consequence, there is no need to extend it when dynamic resources are used, as long as the resource performance is updated accordingly.
-
 % -------------------------------------------------------------------
 \section{Performance Evaluation of Planning Algorithms}
 \label{sec:algo_perf_comp}
 
 We executed three experiments to evaluate and analyze the performance of the selected algorithms.
-The first experiment measures the makespan of the plans these algorithms in ideal conditions, providing us with information to rank them.
-The second experiment measure the sensitivity of the algorithms when resource performance changes over time.
-Last, we measure the sensitivity of the algorithms when there is uncertainty in the total number of operations of the workflows.
-These sets of experiments provide a methodology to compare planning algorithms and decide which algorithm is more suited based on the campaign computation requirements, i.e. workflow size, resource performance/availability and initial information uncertainty.
+The first experiment measures the makespan with a plan that uses HEFT, GA, L2FF and Random for different campaign and resource sizes in static resources.
+The second experiment measures the sensitivity of the makespan to resource dynamism, i.e. resource performance changes over time.
+We define sensitivity as the difference between the makespan measured via executing a campaign and the planned makespan.
+Last, we measure the sensitivity of the makespan to workflow runtime uncertainty.
+These sets of experiments provide a methodology to compare planning algorithms and decide which algorithm is more suited based on a campaign's computational requirements, i.e. workflow size, resource performance/availability and initial information uncertainty.
 
-As mention before, resources can be homogeneous or heterogeneous and static or dynamic.
-They are homogeneous when the performance, in terms of operations per second, is the same between resources, otherwise they are heterogeneous.
-Further, static resources are those whose performance does not change over time and dynamic when the resource performance changes over time.
+During the execution of our experiments, we are making a set of assumptions.
+These assumptions are based on the supported use cases requirements and high performance computing resources we have access to.
+During our experiments we either vary the campaign size and keep the number of resources constant or vary the number of resources and keep the campaign size constant.
+The campaign size varies from 4 to 1024 workflows which satisfies requirement 1 from Table~\ref{tab:fun_reqs}.
+The number of resources vary from 4 up to 128 resources as per requirement 3 from Table~\ref{tab:fun_reqs}.
+
+Resources can be homogeneous or heterogeneous and static or dynamic.
+Resources are considered homogeneous when they have the same performance in terms of operations per second, otherwise they are heterogeneous.
+Further, static resources are those whose performance does not change over runtime and dynamic when the resource performance changes over runtime.
+When resources are homogeneous we assume that their performance is equal to 1 Peta-flop.
 
 We use four existing HPC resources as the basis for generating heterogeneous resources.
 These resources are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera.
-Each resource performance, as published in the resource documentation, defines the mean value of the distribution.
+We utilize each resource performance, as published in the resource documentation, to generate heterogeneous resources for our experiments.
+Specifically, we use the published performance of each resource as the mean of a normal distirbution.
+When defining heterogeneous resources we draw samples from these distributions.
 Figure~\ref{fig:heter_res} shows such resources.
-As seen from the figure, the resources are distinct  based on their performance.
-As a result, the algorithm that utilizes the faster resources more should provide the better makespan.
+The first 4 heterogeneous resources have performance equal to the mean values of each distribution.
+We create additional resources by taking one sample by each resource.
 
 \begin{figure}[ht!]
     \centering
@@ -304,11 +290,14 @@ As a result, the algorithm that utilizes the faster resources more should provid
     \label{fig:heter_res}
 \end{figure}
 
+Workflow execution runtime is based on an ecological use case and specifically the one described in \S~\ref{ch:designs}.
+The runtime of the use case is defined by a mean value of 75000 seconds and a variance of 6000 seconds.
+For the purpose of our experiments, we assume that workflow runtimes are drawn by a normal distribution with a mean and variance based on this use case.
 
 \subsection{Experiment 1: Measuring makespan on static resources}
 
-In our first experiment, we measure the makespan produced by the selected algorithms for static resources and different configurations of campaign and resource homogeneity/heterogeneity.
-In all cases, we either varied the campaign size while keeping the resource number constant or the number of resources while keeping the campaign size constant.
+In our first experiment, we measure the makespan using HEFT, GA, L2FF and random for different campaign and resource sizes for static resources.
+We either vary the campaign size from 4 to 1024 workflows while keeping the number of resources constant to 4, or vary the number of resources from 4 to 128 while keeping the number of workflows equal to 1024.
 
 Figure~\ref{fig:st_homog_analysis} shows the results for a campaign with homogeneous workflows and homogeneous resources.
 Figure~\ref{fig:StHomoCampaigns_4StHomoResources} compares the makespan produced from HEFT, the genetic algorithm (GA in the figure), L2FF and the Random placement when the campaign size varies from 4 workflows up to 1024.
@@ -334,6 +323,10 @@ In addition, the genetic algorithm stopped evolving its population if it converg
     ~\ref{fig:StHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of static homogeneous resources.}
     \label{fig:st_homog_analysis}
 \end{figure}
+
+HEFT and L2FF provide the same makespan.
+This is because both them are equally distributing the workflows on resources.
+The genetic algorithm provides different makespans based on the percentage of workflows that are assigned non-randomly.
 
 As both figures show, any kind of planning offers better makespan than random placement with a significant margin.
 The genetic algorithm that used only random initialization of the population produced the worst out of the three different configurations.
@@ -706,3 +699,37 @@ Assuming that the makespan produced by an offline planning algorithm in the best
 Calculating the value of $TTX'_{C}(M) = TTX_{C}(M) \times (1 + TTX_{S}(M))\times ( 1 - TTX_{G}(M))$ provides an estimate of the necessary amount of time to safely execute a campaign.
 Such information can then easily change to a monetary value of cost of resource usage and allow users to either request enough resources to execute their campaign or verify whether they have enough resources.
 
+%% --------------------------------- OLD TEXT ----------------------------------
+
+%% ---------------------------- HEFT EXTENSION ---------------------------------
+%HPC resources may become unavailable for multiple reasons, including but not limited to maintenance, a random failure, executing a workflows over the expected time., etc.
+%In order to be able to utilize HEFT for dynamic resources, we had to extend Algorithm~\ref{alg:heft} to take as input the time that a resource is initially available.
+%This input can be represented as a dictionary where the keys are the available resources and the values are the time a resource becomes available.
+%The extended algorithm is shown in Algorithm~\ref{alg:ext_heft}.
+%Although the extension may be small, it is crucial to allow to reuse HEFT based on the state of the execution at a given point in time.
+%
+%\begin{algorithm}[ht]
+%    \caption{Extended Heterogeneous Earliest Finish Time (EHEFT) algorithm}
+%    \label{alg:ext_heft}
+%    \begin{algorithmic}[1]
+%        \Procedure{EHEFT}{$W$, $R$, $T$}\Comment{$W$ and $R$ are a set of workflow and resources respectively. $T$ is a dictionary of when a resource becomes available.}
+%        \State \texttt{Calculate the computation cost $w_{tx}^{ij}$ of each workflow for all resources}
+%        \State \texttt{Assign $rank_i = \overline{w_{i}} = \nicefrac{\sum_{j=1}^{|R|}w_{tx}^{ij}}{|R|}$}
+%        \State \texttt{Sort workflows by non-increasing order of $rank_i$}
+%        \While{unscheduled workflows}
+%        \State \texttt{Select the first workflow $\tilde{w}$ from the sorted list}
+%        \For{$\forall r_{j}$ in $R$}
+%        \State\texttt{Compute earliest finish time for $\tilde{w}$ on $r_{j}$ based on $T(r_j)$, $eft_{\tilde{w},r_j}$ }
+%        \EndFor
+%        \State \texttt{Assign  $\tilde{w}$ on $r_k$ with $\min{(eft_{\tilde{w},r_j})}$}
+%        \EndWhile
+%        \EndProcedure
+%    \end{algorithmic}
+%\end{algorithm}
+%
+
+%% -------------------- GA EXTENSION -------------------------------------------
+%We extend this algorithm in the population initialization to support replanning..
+%The initialization method takes into account the times resources will be available during for the EFT heuristic.
+%Another point of extension would be the fitness function.
+%However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
