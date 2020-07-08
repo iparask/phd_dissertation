@@ -88,7 +88,7 @@ As a result, Eq.~\ref{eq:makespan} holds in calculating the makespan of the camp
 
 Computational campaigns execute to achieve an objective.
 We consider as objective the total time of completion of the campaign.
-As a result, the objective function of a plan is translating in minimizing the value of eq;~\ref{eq:makespan}.
+As a result, the objective function of a plan is translating in minimizing the value of eq~\ref{eq:makespan}.
 As objective function is:
 \begin{equation}
     \min(\max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\})
@@ -224,6 +224,20 @@ The rest of the workflows are assigned based on an earlier finish time (EFT) heu
 The population size is relatively small to 20 chromosomes, i.e., potential plans, called micro-GA.
 Micro-GA reduces the computational load of the genetic algorithm, while it does not significantly impact the final result~\cite{zomaya2001observations}.
 
+The genetic algorithm uses a fitness function to calculate the goodness of a plan.
+This function returns a value between 0 and 1 for all plans in the population.
+Specifically, the fitness function is defined as:
+\begin{equation}
+F_{i} = 1 - \sqrt{(\sum_{j=1}^{N_{R}} \frac{w_{j}}{r_{j}} - IF)^2}
+\label{eq:fitness}
+\end{equation}
+where $N_{R}$ is the number of resources and $IF$ is the ideal makespan.
+The ideal makespan is equal to
+\begin{equation}
+IF = \frac{\sum_{i=1}^{N_{C}}T_{w_{i}}}{\sum_{j=1}^{N_{R}}r_{j}}
+\label{eq:ideal_fitness}
+\end{equation}
+
 Selection of the chromosomes to reproduce is based on a fitness function, which calculates the relative distance from a theoretical optimal processing time.
 Each chromosome is assigned a fitness value, which then defines the probability of a chromosome to be selected.
 Reproduction uses cyclic rotation to generate the new population members.
@@ -327,11 +341,7 @@ In addition, the genetic algorithm stopped evolving its population if it converg
 HEFT and L2FF provide the same makespan.
 This is because both them are equally distributing the workflows on resources.
 The genetic algorithm provides different makespans based on the percentage of workflows that are assigned non-randomly.
-
-As both figures show, any kind of planning offers better makespan than random placement with a significant margin.
-The genetic algorithm that used only random initialization of the population produced the worst out of the three different configurations.
-The other two genetic algorithm configuration do not provide significant different performance as the workflows increased, but they show the effect of the random placement when the number of resources increase.
-HEFT and L2FF offered the best makespan compared to the genetic algorithm.
+The makespan difference between different configurations of the genetic algorithm  ranges from 2~\% up to 2 times, 113k seconds for GA versus 67k seconds for GA-50 for 1024 workflows on 128 resources.
 
 \begin{figure*}[ht!]
     \centering
@@ -350,13 +360,20 @@ HEFT and L2FF offered the best makespan compared to the genetic algorithm.
     \label{fig:conv_rate}
 \end{figure*}
 
-The percentage of non-random placement has a significant effect in how able is the algorithm to produce the ideal makespan.
-This is supported by figure~\ref{fig:conv_rate} which shows the convergence rate of the three configurations.
-The full random initial placement did not produce consistently the ideal makespan even for four workflows and resources.
+The percentage of non-random placement affects the makespan of the plan the genetic algorithm produces.
+Based on the genetic algorithm's fitness function, the genetic algorithm converges when Eq.~\ref{eq:fitness} returns a value of 1 for a plan, otherwise continues until it completes 100 iterations.
+Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic algorithm as the number of workflows changes while the number of resources is constant.
+The full random initial placement did not produce consistently the ideal makespan even for four workflows and resources as its convergence rate is less than 1.
 The other two configurations did consistently produce the ideal makespan when the number of workflows varied.
-The small drop in the GA-25 (max of 3 out of 100 iterations) shows that there is still a small probability (max of 3~\%) to not produce the ideal makespan.
-In addition, Fig.~\ref{fig:ga_conv2} indicates that as the number of resources increase the performance of the genetic algorithm will drop.
-Despite the low convergence of GA-50 on 128 resources the difference from HEFT or L2FF is small which allows us to select this configuration for later experiments.
+GA-50 always generates a plan with the ideal makespan, while GA-25  shows that a small probability (max of 3~\%) to not produce the ideal makespan.
+
+Figure~\ref{fig:ga_conv2} shows the convergence rate of the genetic algorithm as the number of resources changes while the number of workflows is constant.
+When the population is initiallized randomly, the genetic algorithm is not able to produce a plan that has the ideal makespan.
+The convergence rate of GA-25 is 1 up to 16 resource and drops to 0 for more than 32 resources.
+GA-50, on the other hand, is able to produce ideal makespan up to 64 resources and drops to less than 0.2 for 128 resources.
+As a result, it can produce a plan with ideal makespan but with very small probability.
+
+Based on the convergence rate and the small differences of GA-50 from HEFT and L2FF in terms of makespan, we select to continue our experiments only with GA-50 and not report the values of GA and GA-25.
 
 \begin{figure*}[ht!]
     \centering
