@@ -226,17 +226,19 @@ Micro-GA reduces the computational load of the genetic algorithm, while it does 
 
 The genetic algorithm uses a fitness function to calculate the goodness of a plan.
 This function returns a value between 0 and 1 for all plans in the population.
-Specifically, the fitness function is defined as:
+The fitness function calculates the distance of a plan from the ideal makespan.
+This distance is defined as:
 \begin{equation}
-F_{i} = 1 - \sqrt{(\sum_{j=1}^{N_{R}} \frac{w_{j}}{r_{j}} - IF)^2}
+E = \sqrt{(\sum_{j=1}^{N_{C}}TTX_{w_{j},r_{j}} - IM)^2}
 \label{eq:fitness}
 \end{equation}
-where $N_{R}$ is the number of resources and $IF$ is the ideal makespan.
+where $N_{C}$ is the number of workflows and $IM$ is the ideal makespan.
 The ideal makespan is equal to
 \begin{equation}
-IF = \frac{\sum_{i=1}^{N_{C}}T_{w_{i}}}{\sum_{j=1}^{N_{R}}r_{j}}
+IM = \frac{\sum_{i=1}^{N_{C}}T_{w_{i}}}{\sum_{j=1}^{N_{R}}r_{j}}
 \label{eq:ideal_fitness}
 \end{equation}
+The fitness of a plan is the equal to $F = 1 /E$ when $E > 0$, otherwise it is equal to 1.
 
 Selection of the chromosomes to reproduce is based on a fitness function, which calculates the relative distance from a theoretical optimal processing time.
 Each chromosome is assigned a fitness value, which then defines the probability of a chromosome to be selected.
