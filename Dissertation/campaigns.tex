@@ -11,14 +11,21 @@ Among the many metrics that could be considered, the most common one is the tota
 An execution plan of a campaign is a mapping between workflows and resource to execute upon.
 Calculating the makespan of a campaign means finding an execution plan that satisfies the computational objective function.
 
-A computational campaign execute on several HPC resources.
-These resources are heterogeneous as they offer different type of resources.
-One aspect of this heterogeneity is the performance each HPC resources has in terms of Peta-Flops.
-In addition, these resources are dynamic as their availability and performance can change over time.
+A computational campaign can utilize several resources concurrently.
+These resources can either be homogeneous or heterogeneous as they offer different type of computational resources.
+One aspect of this heterogeneity is the performance each resources has in terms of number of operations per second.
+High Performance Computing (HPC) resources allow the concurrent execution of workflows on homogeneous resources by utilizing different sets of the same type of compute nodes for each workflow.
+In addition, resources can be heterogeneous by accessing completely different HPC resources, but also by utilizing different types of compute nodes on the resource.
 
+Uncertainty about the execution of a campaign can rise for several reasons, such resource dynamism or workflow runtime uncertainty.
+HPC resources are governed via policies that affect their performance, such as power regulating policies.
+In addition, HPC offer shared filesystems and networks which are used by multiple users concurrently.
+As a consequence, their performance is dynamic and change over time, which in turn creates uncertainty on the amount of time a workflow will execute for.
+Further, users are to always know 
 Users have deep knowledge of their workflows and their requirements when they prototype them.
 As a result, they may not know accurately the total number of operations of each workflow that comprise their campaign.
-This, in turn, makes it even harder to derive an execution plan that will satisfy the objective of the campaign.
+This, in turn, makes it even harder to derive an execution plan that will satisfy the objective of the campaign. 
+
 
 We use a campaign from a campaign from a polar science use case to evaluate three classes of planning algorithms.
 These classes differ on how they approach the planning problem and in the amount of knowledge they produce to derive a plan.
@@ -312,6 +319,7 @@ For the purpose of our experiments, we assume that workflow runtimes are drawn b
 
 In our first experiment, we measure the makespan using HEFT, GA, L2FF and random for different campaign and resource sizes for static resources.
 We either vary the campaign size from 4 to 1024 workflows while keeping the number of resources constant to 4, or vary the number of resources from 4 to 128 while keeping the number of workflows equal to 1024.
+We measure the makespan for three 
 
 Figure~\ref{fig:st_homog_analysis} shows the results for a campaign with homogeneous workflows and homogeneous resources.
 Figure~\ref{fig:StHomoCampaigns_4StHomoResources} compares the makespan produced from HEFT, the genetic algorithm (GA in the figure), L2FF and the Random placement when the campaign size varies from 4 workflows up to 1024.
@@ -395,8 +403,7 @@ Based on the convergence rate and the small differences of GA-50 from HEFT and L
 
 Figure~\ref{fig:het_het_analysis} shows the performance of the three algorithms for a campaign with heterogeneous workflows on homogeneous resources.
 Workflows are heterogeneous in terms of size, i.e., number of operations or total execution time.
-We draw heterogeneous workflows from a normal distribution with a mean of 75000 and sigma 4900 execution time when executed on a resource with 1Peta-Flop performance.
-Campaigns from the polar sciences are utilizing  data sets of imagery that are captured using the sensors over the same region.
+
 It is expected then that the total size of these datasets will not change significantly and as a consequence the execution time of the workflows will not be considerably different.
 
 The performance of the algorithms is not significantly different from the case of homogeneous workflows.
