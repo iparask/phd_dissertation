@@ -21,15 +21,10 @@ Uncertainty about the execution of a campaign can rise for several reasons, such
 HPC resources are governed via policies that affect their performance, such as power regulating policies.
 In addition, HPC offer shared filesystems and networks which are used by multiple users concurrently.
 As a consequence, their performance is dynamic and change over time, which in turn creates uncertainty on the amount of time a workflow will execute for.
-Further, users are to always know 
-Users have deep knowledge of their workflows and their requirements when they prototype them.
-As a result, they may not know accurately the total number of operations of each workflow that comprise their campaign.
-This, in turn, makes it even harder to derive an execution plan that will satisfy the objective of the campaign. 
+Further, users do not necessarily know the exact runtime for every workflow in a campaign, but an estimation.
+As a result, the runtime of a workflow is not know before the execution.
 
 
-We use a campaign from a campaign from a polar science use case to evaluate three classes of planning algorithms.
-These classes differ on how they approach the planning problem and in the amount of knowledge they produce to derive a plan.
-We experimentally measure and characterize the performance of these classes.
 
 The chapter offers the following contributions:
 \begin{inparaenum}[i)]
