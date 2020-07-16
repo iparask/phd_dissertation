@@ -22,9 +22,15 @@ In addition, HPC offer shared filesystems and networks which are used by multipl
 As a consequence, their performance is dynamic and change over time, which in turn creates uncertainty on the amount of time a workflow will execute for.
 Further, users do not necessarily know the exact runtime for every workflow in a campaign, but an estimation.
 As a result, the runtime of a workflow is not know before the execution.
+Both resource dynamism and workflow runtime uncertainty have the potential to affect the makespan of the campaign.
 
-
-
+There is a plethora of algorithms which calculate execution plan to minimize the makespan of a workflow offline~\cite{lu2019review} and before the workflow execution.
+These type of algorithms are important to planning the execution of a campaign as they provide information about the campaign's expected makespan.
+As a result, users will know whether there is a plan that satisfies their computational objective.
+Selecting an algorithm that is suitable for executing a given campaign on a set of resources is not necessarily trivial.
+To the best of our knowledge, there is not a methodology that allows to compare planning algorithms and select the most suitable for planning the execution of the campaign.
+Thus, we select three algorithms that each represents a larger family and compare their performance.
+Based on the comparison, we make a case of which algorithm to select given a computational campaign, it requirements and constraints.
 
 The chapter offers the following contributions:
 \begin{inparaenum}[i)]
