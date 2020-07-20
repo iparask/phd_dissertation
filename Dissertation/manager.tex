@@ -191,7 +191,7 @@ A planner class that implements planning algorithms.
 In addition, it defines a state model for the campaign and the workflows.
 
 The states models provide information about the state of the execution.
-The campaign state model has four states: 1) new, 2) planning, 3) executing and 3) final.
+The campaign state model has four states: 1) \textit{new}, 2) \textit{planning}, 3) \textit{executing}, 4) \textit{done}, 5) \textit{canceled} and 6) \textit{failed}.
 A campaign is considered \textit{new} when it is defined and no further action is taken.
 It goes to state \textit{planning} when a plan for its execution is derived.
 As soon as the execution of the campaign starts, the state transitions to \textit{executing}.
@@ -200,8 +200,12 @@ When the campaign execution ends and the campaign objective is achieved, the sta
 If the objective cannot be achieved or there is a failure during the execution, the state changes to \textit{failed}.
 Lastly, the campaign state goes to \textit{canceled} when the user cancels the execution of the campaign.
 
+The workflows state model defines three states: 1) \textit{new}, 2) \textit{executing}, 3) \textit{done}, 5) \textit{canceled} and 6) \textit{failed}.
+A workflow is in \textit{new} state when it is received by the bookkeeper.
+Its state transitions to \textit{executing} when the enactor submits the workflow for execution to the selected workflow management system.
+A workflow state transitions to one of the final states based on the final state the workflow management system reports.
 
-Figures~\ref{fig:rcm_class_diagram} and~\ref{fig:seq_diagram} show the class diagram of the prototype and the sequence diagram of executing a campaign.
+Figure~\ref{fig:rcm_class_diagram} shows the class diagram of the prototype.
 We define three classes based on each component of the reference architecture.
 Each class also defines a set of data structures to support the execution.
 
@@ -211,7 +215,7 @@ Each class also defines a set of data structures to support the execution.
     \caption{Class diagram of campaign manager prototype}\label{fig:rcm_class_diagram}
 \end{figure*}
 
-The Bookkeeper class defines the necessary methods and parameters to execute a campaign.
+The Bookkeeper class defines the necessary methods to execute a campaign.
 The most important methods are \textit{run}, \textit{work} and \textit{monitor}.
 Method \textit{run} initializes the campaign state to \textit{new} and sets up the environment for executing the campaign.
 \textit{Work} calls the planner to produce a plan transitioning the state of the campaign to \textit{planning}.
@@ -219,13 +223,8 @@ After a plan is produced, \textit{work} via calling \textit{\_verify\_objective}
 In addition, it pushes the submitted workflows to a data structure that the \textit{monitor} method reads.
 The \textit{monitor} method checks the state of the workflow execution as given by the enactor.
 
-
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/manager/rcm_seq.png}
-    \caption{Basic sequence diagram of executing a campaign via the campaign manager}\label{fig:seq_diagram}
-\end{figure*}
-
-
+The planner and enactor classes define the methods for planning the execution of a campaign, executing workflows on resource and monitoring their execution.
+The planner defines a \textit{plan} method which implements a planning algorithm.
+The \textit{enact} method submits a workflow to a resource for execution by calling the selected workflow management framework.
+The \textit{monitor} method checks periodically the state of the workflows that are executing and updates it accordingly.
 
