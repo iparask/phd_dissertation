@@ -139,23 +139,23 @@ A summary of the algorithms characteristics are shown in Table~\ref{tab:sched_al
 \subsection{Heterogeneous Earlier Finish Time (HEFT) algorithm}
 \label{algo:heft}
 List scheduling algorithms represent a general family of heuristic based scheduling algorithms to schedule workflows described as direct acyclic graphs~\cite{dong2006scheduling,list_sched_wiki}. 
-These algorithms assign priorities to tasks based on a heuristic and order them non-increasingly based on the derived priorities.
+These algorithms assign priorities to tasks based on a heuristic and order them in an non-increasing order.
 Then, this list is traversed and tasks are assigned to resources.
 HEFT is a classic example of this type of algorithms~\cite{dong2006scheduling}.
 
-HEFT is an offline scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
+HEFT is a scheduling algorithm which calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
 HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms~\cite{topcuoglu2002performance,fahringer2005askalon,canon2008comparative}. 
+Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}. 
 
 HEFT makes two important assumptions when used on workflows: 
 \begin{inparaenum}[(1)] 
     \item any task in a workflow can be executed on all available resources; and 
     \item all resources are initially available.
 \end{inparaenum}
-HEFT is mainly used to derive an execution plan for workflows, i.e., the execution order and resource placement of the tasks that comprise the workflow.
+HEFT is used to derive an execution plan for workflows, i.e., the execution order and resource placement of tasks that comprise a workflow.
 HEFT complexity is proportional to the number of dependencies between tasks and the number of resources offered. 
 Since we are interested in campaigns, our HEFT extension provides an execution plan based on workflows as atomic units instead of tasks.
-Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization}, as well as a HEFT extension on dynamic resources~\cite{dong2007pfas}. 
 Algorithm~\ref{alg:heft} shows HEFT for placing independent heterogeneous workflows on heterogeneous resources.
 
 \begin{algorithm}[ht]
@@ -165,7 +165,7 @@ Algorithm~\ref{alg:heft} shows HEFT for placing independent heterogeneous workfl
         \Procedure{HEFT}{$W$,$R$}\Comment{$W$ and $R$ are a set of workflow and resources respectively}
         \State \texttt{Calculate the computation cost $w_{tx}^{ij}$ of each workflow for all resources}
         \State \texttt{Assign $rank_i = \overline{w_{i}} = \nicefrac{\sum_{j=1}^{|R|}w_{tx}^{ij}}{|R|}$}
-        \State \texttt{Sort workflows by non-increasing order of $rank_i$}
+        \State \texttt{Sort workflows in non-increasing order of $rank_i$}
         \While{unscheduled workflows}
         \State \texttt{Select the first workflow $\tilde{w}$ from the sorted list}
         \For{$\forall r_{j}$ in $R$}
@@ -193,15 +193,15 @@ HEFT ends when all workflows are placed on a resource.
 % -------------------------------------------------------------------
 \subsection{Genetic Algorithm}
 \label{algo:gen}
-Genetic algorithms are represent another family of algorithms that are been used to minimize the makespan of workflows~\cite{dong2006scheduling}.
-Genetic algorithms are evolving to the final answer as they iterate and improve possible answers.
-In general, genetic algorithms are working based on the following procedure:
+Genetic algorithms represent another family of algorithms that are been used to minimize the makespan of workflows~\cite{dong2006scheduling}.
+Genetic algorithms start from an initial set of possible solutions, iterate and improve them at every iterations.
+In general, genetic algorithms follow the following procedure:
 \begin{inparaenum}[(i)]
-    \item create an initial population, where the population is a set of possible plans, called chromosomes;
-    \item evaluate the chromosomes based on a fitness function, which calculates the makespan on the workflow;
-    \item reproduce by selecting chromosomes, either randomly or based on their fitness value, and generate a new set of chromosomes (called children);
-    \item mutate randomly, where randomly selected workflows from a random chromosome are reassigned to resources; and
-    \item re-evaluate chromosomes in the population to check convergence.
+    \item create an initial population, where the population is a set of possible plans;
+    \item evaluate the population members based on a fitness function, which calculates the makespan of the workflow;
+    \item reproduce by selecting population members, either randomly or based on their fitness value, and generate a new set of possible plans;
+    \item mutate, where randomly selected tasks from a population member are reassigned to resources; and
+    \item re-evaluate the members in the population to check convergence.
 \end{inparaenum}
 
 The selected genetic algorithm~\cite{page2005algorithm} is developed to support the placement of independent tasks on heterogeneous resources.
@@ -220,19 +220,18 @@ The pseudocode of the selected genetic algorithm is shown in Algorithm~\ref{alg:
         \State{Selection}
         \State{Reproduce}
         \State{Randomly mutate}
-        \State{Balance}
         \EndWhile
         \EndProcedure
     \end{algorithmic}
 \end{algorithm}
 
-The chromosomes of the initial population are constructed either randomly or semi-randomly.
-Specifically, a specific percentage of the workflows are assigned randomly to resources, where the assignment is drawn by uniform distribution.
+The members of the initial population are constructed either randomly or semi-randomly.
+Specifically, a percentage of the workflows are assigned randomly to resources, where the assignment is drawn by uniform distribution.
 The rest of the workflows are assigned based on an earlier finish time (EFT) heuristic, similar to the one used by HEFT.
-The population size is relatively small to 20 chromosomes, i.e., potential plans, called micro-GA.
+The population size is relatively small to 20 members, i.e., potential plans, called micro-GA.
 Micro-GA reduces the computational load of the genetic algorithm, while it does not significantly impact the final result~\cite{zomaya2001observations}.
 
-The genetic algorithm uses a fitness function to calculate the goodness of a plan.
+The genetic algorithm uses a fitness function to calculate the goodness of a population member or plan.
 This function returns a value between 0 and 1 for all plans in the population.
 The fitness function calculates the distance of a plan from the ideal makespan.
 This distance is defined as:
@@ -248,11 +247,22 @@ IM = \frac{\sum_{i=1}^{N_{C}}T_{w_{i}}}{\sum_{j=1}^{N_{R}}r_{j}}
 \end{equation}
 The fitness of a plan is the equal to $F = 1 /E$ when $E > 0$, otherwise it is equal to 1.
 
-Selection of the chromosomes to reproduce is based on a fitness function, which calculates the relative distance from a theoretical optimal processing time.
-Each chromosome is assigned a fitness value, which then defines the probability of a chromosome to be selected.
+Selection of the members to reproduce is based on their fitness values.
+Each member fitness value defines the probability of that member to be selected.
 Reproduction uses cyclic rotation to generate the new population members.
-Mutation randomly selects an individual from the population and randomly swaps workflows.
-Finally, a rebalancing heuristic tries to rebalance and create fitter individuals in the population.
+Mutation randomly selects a member from the population and randomly swaps workflows.
+
+The genetic algorithm has the following algorithmic characteristics:
+\begin{inparaenum}[1)]
+    \item creates plans in a non-deterministic method,
+    \item produces an expectation when resources are available and
+\end{inparaenum}
+
+HEFT initially calculates the average execution time of a workflow on all resources and creates a priority list with the longest workflow first.
+In addition, HEFT initializes a vector where each element is when the respective resource is available.
+Then, it pulls the first workflow from the priority list and calculates when it will finish at each resource.
+Finally, it places the workflow on the resource that will finish it earlier and updates the resource availability.
+HEFT ends when all workflows are placed on a resource.
 
 % -------------------------------------------------------------------
 \subsection{Longest to Fastest First Available Resource Algorithm}
