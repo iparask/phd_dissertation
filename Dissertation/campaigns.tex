@@ -300,79 +300,47 @@ These sets of experiments provide a methodology to compare planning algorithms a
 During the execution of our experiments, we are making a set of assumptions.
 These assumptions are based on the supported use cases requirements and high performance computing resources we have access to.
 During our experiments we either vary the campaign size and keep the number of resources constant or vary the number of resources and keep the campaign size constant.
-The campaign size varies from 4 to 1024 workflows which satisfies requirement 1 from Table~\ref{tab:fun_reqs}.
-The number of resources vary from 4 up to 128 resources as per requirement 3 from Table~\ref{tab:fun_reqs}.
+The campaign size varies from 4 to 2048 workflows which satisfies requirement 1 from Table~\ref{tab:fun_reqs}.
+The number of resources vary from 4 up to 256 resources as per requirement 3 from Table~\ref{tab:fun_reqs}.
 
 Resources can be homogeneous or heterogeneous and static or dynamic.
 Resources are considered homogeneous when they have the same performance in terms of operations per second, otherwise they are heterogeneous.
 Further, static resources are those whose performance does not change over runtime and dynamic when the resource performance changes over runtime.
 When resources are homogeneous we assume that their performance is equal to 1 Peta-flop.
-
 We use four existing HPC resources as the basis for generating heterogeneous resources.
-These resources are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera.
-We utilize each resource performance, as published in the resource documentation, to generate heterogeneous resources for our experiments.
-Specifically, we use the published performance of each resource as the mean of a normal distirbution.
-When defining heterogeneous resources we draw samples from these distributions.
-Figure~\ref{fig:heter_res} shows such resources.
-The first 4 heterogeneous resources have performance equal to the mean values of each distribution.
-We create additional resources by taking one sample by each resource.
-
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/campaign/hetero_res.pdf}
-    \caption{Heterogeneous resource distributions.}
-    \label{fig:heter_res}
-\end{figure}
+These resources are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera with peak performance at 1.3, 2.7, 10.6 and 23.5 PetaFLOPS respectively.
 
 Workflow execution runtime is based on an ecological use case and specifically the one described in \S~\ref{ch:designs}.
-The runtime of the use case is defined by a mean value of 75000 seconds and a variance of 6000 seconds.
+The runtime of the use case is defined by a mean value of 75000 seconds and a variance of 6000 seconds when executed to a resource with performance of 1 PETAFLOP.
 For the purpose of our experiments, we assume that workflow runtimes are drawn by a normal distribution with a mean and variance based on this use case.
 
 \subsection{Experiment 1: Measuring makespan on static resources}
 
 In our first experiment, we measure the makespan using HEFT, GA, L2FF and random for different campaign and resource sizes for static resources.
-We either vary the campaign size from 4 to 1024 workflows while keeping the number of resources constant to 4, or vary the number of resources from 4 to 128 while keeping the number of workflows equal to 1024.
-We measure the makespan for three 
+We either vary the campaign size from 4 to 2048 workflows while keeping the number of resources constant to 4, or vary the number of resources from 4 to 256 while keeping the number of workflows equal to 1024.
 
-Figure~\ref{fig:st_homog_analysis} shows the results for a campaign with homogeneous workflows and homogeneous resources.
-Figure~\ref{fig:StHomoCampaigns_4StHomoResources} compares the makespan produced from HEFT, the genetic algorithm (GA in the figure), L2FF and the Random placement when the campaign size varies from 4 workflows up to 1024.
-Figure~\ref{fig:StHomoResources_StHomoCampaigns} makes the same comparison with varying the number of resources for a campaign of 1024 workflows.
+First, we measure the makespan of exeuting a homogeneous campaign, workflows with runtime of 75000 seconds,  on homogeneous resources with performance of 1 PETAFLOP.
+In this case an algorithm produces the minimum makespan when it is able to equally distribute the workflows of the campaign to the available resources.
 The genetic algorithm allows us to select the percentage of the workflows assigned non-randomly for each individual of the population.
 We used 0~\% (GA in the figure), 25~\% (GA-25) and 50~\% (GA-50).
-In addition, the genetic algorithm stopped evolving its population if it converged, i.e., an individual plan had the ideal makespan, or after 100 iterations and returned the individual in the current population with the best makespan.
+In addition, the genetic algorithm stops when it converges, i.e., an individual plan has a makespan equal to the ideal makespan as defined in Eq.~\ref{eq:ideal_fitness}, or after 100 iterations and returns the individual in the current population with the best fitness value.
 
-\begin{figure}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHomoResources.pdf}
-        \caption{}
-        \label{fig:StHomoCampaigns_4StHomoResources}
-    \end{subfigure}\\
-    ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoResources_StHomoCampaigns.pdf}
-        \caption{}
-        \label{fig:StHomoResources_StHomoCampaigns}
-    \end{subfigure}
-    \caption{~\ref{fig:StHomoCampaigns_4StHomoResources} Makespan of increasing number of homogeneous workflows on static homogeneous resources.
-    ~\ref{fig:StHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of static homogeneous resources.}
-    \label{fig:st_homog_analysis}
-\end{figure}
-
-HEFT and L2FF provide the same makespan.
-This is because both them are equally distributing the workflows on resources.
-The genetic algorithm provides different makespans based on the percentage of workflows that are assigned non-randomly.
-The makespan difference between different configurations of the genetic algorithm  ranges from 2~\% up to 2 times, 113k seconds for GA versus 67k seconds for GA-50 for 1024 workflows on 128 resources.
+The percentage of non-random placement affects the plan the genetic algorithm produces.
+Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic algorithm as the number of workflows changes while the number of resources is constant.
+When the population is initialized randomly, GA does not produce always a plan with the ideal makespan.
+The converge rate of GA is always less than one even.
+GA-25 convergence rate shows some small drop for 8, 16 and 32 workflows, but the value is less than 0.03 which is not enough to conclude that GA-25 does not produce plans with the ideal makespan.
+GA-50 consistently produces plans with the ideal makespan when the number of workflows varied.
 
 \begin{figure*}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHomoResourcesGAconv.pdf}
         \caption{}
         \label{fig:ga_conv1}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/HomogeResources_StHomogeCampaignsGAconv.pdf}
         \caption{}
         \label{fig:ga_conv2}
@@ -381,98 +349,115 @@ The makespan difference between different configurations of the genetic algorith
     \label{fig:conv_rate}
 \end{figure*}
 
-The percentage of non-random placement affects the makespan of the plan the genetic algorithm produces.
-Based on the genetic algorithm's fitness function, the genetic algorithm converges when Eq.~\ref{eq:fitness} returns a value of 1 for a plan, otherwise continues until it completes 100 iterations.
-Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic algorithm as the number of workflows changes while the number of resources is constant.
-The full random initial placement did not produce consistently the ideal makespan even for four workflows and resources as its convergence rate is less than 1.
-The other two configurations did consistently produce the ideal makespan when the number of workflows varied.
-GA-50 always generates a plan with the ideal makespan, while GA-25  shows that a small probability (max of 3~\%) to not produce the ideal makespan.
-
 Figure~\ref{fig:ga_conv2} shows the convergence rate of the genetic algorithm as the number of resources changes while the number of workflows is constant.
-When the population is initiallized randomly, the genetic algorithm is not able to produce a plan that has the ideal makespan.
+When the population is initiallized randomly, the genetic algorithm does not produce a plan that has the ideal makespan.
 The convergence rate of GA-25 is 1 up to 16 resource and drops to 0 for more than 32 resources.
-GA-50, on the other hand, is able to produce ideal makespan up to 64 resources and drops to less than 0.2 for 128 resources.
-As a result, it can produce a plan with ideal makespan but with very small probability.
+GA-50 convergence rate is 1 up to 64 resources and drops to less than 0.2 for 128 resources and equal to 0 for 256 resources.
 
-Based on the convergence rate and the small differences of GA-50 from HEFT and L2FF in terms of makespan, we select to continue our experiments only with GA-50 and not report the values of GA and GA-25.
+The analysis of the convergence rate of the genetic algorithm for different initial configurations provide us with information about the produced plans.
+We expect that GA will not provide on average a plan with the ideal makespan whether the campaign size changes or the number of resources.
+GA-25 will provide plans with the ideal makespan when the number of resources is less than 16 regardless the number of workflows.
+GA-50 provides plans with ideal makespan up to 64 resources.
 
-\begin{figure*}[ht!]
+Figure~\ref{fig:st_homog_analysis} shows the makespan for a campaign with homogeneous workflows and homogeneous resources a plan which uses HEFT, GA (for the three different configurations), L2FF and random (RA).
+Figure~\ref{fig:StHomoCampaigns_4StHomoResources} varies the campaign size from 4 to 2048 workflows while the number of resources is equal to 4 and Figure~\ref{fig:StHomoResources_StHomoCampaigns} varies the number of resources from 4 to 256 resources while the campaign size equals to 1024 workflows.
+
+\begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4StHomoResources.pdf}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHomoResources.pdf}
         \caption{}
-        \label{fig:StHeteroCampaigns_4StHomoResources}
+        \label{fig:StHomoCampaigns_4StHomoResources}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/HomogeResources_StHeteroCampaigns.pdf}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoResources_StHomoCampaigns.pdf}
         \caption{}
-        \label{fig:StHomoResources_StHeteroCampaigns}
+        \label{fig:StHomoResources_StHomoCampaigns}
     \end{subfigure}
-    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}) Makespan of increasing number of heterogeneous worklfows on static homogeneous resources;
-        ~\ref{fig:StHeteroResources_StHeteroCampaigns}) Makespan of heterogeneous campaign on different number of static homogeneous resources.}
-    \label{fig:het_het_analysis}
-\end{figure*}
+    \caption{~\ref{fig:StHomoCampaigns_4StHomoResources} Makespan of increasing number of homogeneous workflows on homogeneous resources.
+    ~\ref{fig:StHomoResources_StHomoCampaigns} Makespan of homogeneous campaign on different number of homogeneous resources.}
+    \label{fig:st_homog_analysis}
+\end{figure}
 
-Figure~\ref{fig:het_het_analysis} shows the performance of the three algorithms for a campaign with heterogeneous workflows on homogeneous resources.
-Workflows are heterogeneous in terms of size, i.e., number of operations or total execution time.
 
-It is expected then that the total size of these datasets will not change significantly and as a consequence the execution time of the workflows will not be considerably different.
+HEFT and L2FF provide better makespan that Random and the genetic algorithm.
+L2FF places equal number of workflows per resource for all available resources and thus produces a plan that offer the minimum makespan.
+HEFT places a workflow to the resource that will finish it earlier.
+This in turn means that will place a workflow to a resource has less number of workflows compared to the rest and as a result it is able to equally distribute the workflows to the resources.
 
-The performance of the algorithms is not significantly different from the case of homogeneous workflows.
-HEFT provides marginally better makespan from L2FF and the genetic algorithm.
-This is because of the deterministic behavior of HEFT as well as the knowledge it creates for when resources are available.
-L2FF has no notion of when a resource is available and the genetic algorithm creates some uncertainty due to the initial random placement of workflows on resources.
+The genetic algorithm confirms the makespan expectation providing different makespan based on the percentage of workflows that are assigned non-randomly.
+The performance of GA is 50~\% better than random and drops to almost 3~\% as the number of workflows increase for all configurations.
+When the number of resources changes GA shows 3~\% to 8~\% better performance than random and GA-25 and GA-50 produce up to 25~\% and 50~\% better performance than random.
+As a result, we will exclude GA and GA-25 from the next experiments and show only GA-50.
+
+The next run of this experiment shows how resource heterogeneity affects the performance of the algorithms.
+All algorithms produce and use different amount of information about resources and specifically resource availability.
+Based on the amount and type, absolute or relative, information they produce we expect the algorithms to have different performance with those that use more absolute information to have better performance.
 
 
 \begin{figure*}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4StHeteroResources.pdf}
+        \caption{}
+        \label{fig:StHomoCampaigns_4StHeteroResources}
+    \end{subfigure}\\
+    ~ 
+    \begin{subfigure}[b]{0.75\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroResources_StHomoCampaigns.pdf}
+        \caption{}
+        \label{fig:HeteroResources_StHomoCampaigns}
+    \end{subfigure}
+    \caption{Makespan of homogeneous worklfows on heterogeneous resources:~\ref{fig:StHomoCampaigns_4StHeteroResources}) varying campaign size with 4 resources;
+        ~\ref{fig:HeteroResources_StHomoCampaigns}) varying number of resources for constant campaign size at 1024 workflows.}
+    \label{fig:hom_het_analysis}
+\end{figure*}
+
+Figure~\ref{fig:hom_het_analysis} shows the makespan of the three algorithms for a campaign with homogeneous workflows on heterogeneous resources.
+HEFT provides always better makespan from L2FF and GA-50 whether the campaign size changes (Fig.~\ref{fig:StHomoCampaigns_4StHeteroResources}) or the number of resources (Fig.~\ref{fig:HeteroResources_StHomoCampaigns}).
+HEFT produces and uses information of when a resource will be available and uses that information to place a workflow to the resource that will finish it first.
+GA-50 produces consistently plans with better makespan that L2FF apart from the case of 256 resources.
+The genetic algorithm produces the same information but only after it has placed a subset of the workflows to resources randomly.
+The partially random initialization of the genetic algorithm can result to under-utilizing or even not using some resources.
+L2FF places the same number of workflows per resource and as a result it is able to use all the resources.
+As a result, it has similar performance with random for a large number of workflows compared to the number of resources, but allows it to provide better makespan as the number of resources increase.
+
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4StHeteroResources.pdf}
         \caption{}
         \label{fig:StHeteroCampaigns_4StHeteroResources}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroResources_StHeteroCampaigns.pdf}
         \caption{}
         \label{fig:StHeteroResources_StHeteroCampaigns}
     \end{subfigure}
-    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}) Makespan of increasing number of heterogeneous worklfows on static heterogeneous resources;
-        ~\ref{fig:StHeteroResources_StHeteroCampaigns}) Makespan of heterogeneous campaign on different number of static heterogeneous resources..}
+    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}) Makespan of increasing number of heterogeneous worklfows on heterogeneous resources;
+        ~\ref{fig:StHeteroResources_StHeteroCampaigns}) Makespan of heterogeneous campaign on different number of heterogeneous resources..}
     \label{fig:heter_analysis}
 \end{figure*}
 
-Figure~\ref{fig:heter_analysis} show the performance of the algorithms when heterogeneous resources are introduced.
-Resources are being drawn from the distributions shown in Fig.~\ref{fig:heter_res}.
-Specifically, for every 4 resources there is a Bridges, a Comet, a Stampede 2 and a Frontera like resource resulting to $k / 4$ single type resource with $k$ the total number of resources.
+Figure~\ref{fig:heter_analysis} shows the performance of the algorithms when a campaign with heterogeneous workflows executes on heterogeneous resources.
+Comparing the results with those in figure~\ref{fig:hom_het_analysis} we do not see significant changes in the performance of the algorithms due to workflow heterogeneity.
+Both HEFT and L2FF similarly rank the workflows.
+HEFT calculates the average execution time between resources, while L2FF sorts the workflows.
+Although GA does not rank workflows, it places part of the workflows on resources that will finish them the earlier.
+As a result, resource heterogeneity affects the performance of the algorithms more than workflow heterogeneity.
 
-HEFT due to its knowledge of  resource availability and its deterministic behavior of calculating the makespan has the best performance of the three algorithms.
-GA and L2FF are more sensitive to resource heterogeneity than HEFT.
-The GA randomness in the initialization shows that the algorithm is not able to evolve to a makespan close to HEFT at least in 1oo iterations.
-This also contributed in even worse performance from GA when the number of resources increases.
-L2FF is more sensitive to resource heterogeneity compared to GA up to 128 resources. 
-Although, we expect that L2FF will eventually produce better makespan than the genetic algorithm.
-L2FF assigns $N \mod k$ workflows per resource, where $N$ the number of workflows in a campaign and $k$ the number of resources, while GA may produce a plan that may under-utilize or not use a resource completely.
-This can be seen in figure~\ref{fig:res_util} where GA-50 did not utilize a Comet-like resource at all (Resource ID 37).
-
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/campaign/HeteroResources_StHeteroCampaigns_Utils.pdf}
-    \caption{Resource utilization for the best makespan from HEFT, GA-50 and L2FF for 1204 workflows and 128 heterogeneous resources.}
-    \label{fig:res_util}
-\end{figure}
-
-Figure~\ref{fig:res_util} shows that HEFT is able to utilize as much as possible all the resources with almost full utilization of the fastest resources.
-L2FF also utilizes all the resources, but under utilizes the faster ones due to it lack of knowledge for resource availability.
-GA evolves to a plan that tries to utilize as much as possible the faster resources.
-Having said that it can over utilize slower resources if more workflows are randomly assigned to those.
-
-In general, algorithms that prioritize workflows based on their size and make deterministic decisions would provide the better makespan when a campaign is executed on homogeneous resources.
-When resources are heterogeneous and distinct, algorithms that know when a resource is available provide better makespan for small number of resources.
-As the number of resources increase non-deterministic algorithms will eventually not perform as well.
-This allows to conclude that deterministic planning algorithms that produce or have the most knowledge about a campaign and the available resources are the ones that should be used on static resources.
-
+In summary, we can conclude that resource heterogeneity dominates the makespan performance among the considered algorithms.
+On homogeneous resources, HEFT, GA-50 and L2FF plans produce similar makespan.
+On heterogeneous resources, HEFT makespan is at least an order of magnitude smaller than L2FF makespan and is more than two times smaller than GA-50 makespan independent of workflow homogeneity and heterogeneity.
+Finally, the characteristics of the selected algorithms that affect the makespan performance are:
+\begin{inparaenum}[1)]
+    \item estimating when a resource will be available;
+    \item deterministic or randomized heuristics; and
+    \item creating a workflow priority list based on workflow runtime
+\end{inparaenum}
 
 \subsection{Experiment 2: Measuring makespan sensitivity on dynamic resources}
 
@@ -501,13 +486,13 @@ A random plan provides still the worst makespan.
 
 \begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHeteroResources.pdf}
         \caption{}
         \label{fig:StHeteroCampaigns_4DyHeteroResources}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=0.95\textwidth]{figures/campaign/DynHeteroResources_StHeteroCampaigns.pdf}
         \caption{}
         \label{fig:DyHeteroResources_StHeteroCampaigns}
@@ -530,13 +515,13 @@ This points us to the conclusion that the sensitivity of the algorithms is propo
 
 \begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHomoCampaigns_4DynHomoResourcesSens.pdf}
         \caption{}
         \label{fig:StHomoCampaigns_4DyHomoResourcesSens}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=0.95\textwidth]{figures/campaign/DynHomoResources_StHomoCampaignsSens.pdf}
         \caption{}
         \label{fig:DyHomoResources_StHomoCampaignsSens}
@@ -560,13 +545,13 @@ In contrast, the random initial placement of GA allows it to create a plan that 
 
 \begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/StHeteroCampaigns_4DynHomoResourcesSens.pdf}
         \caption{}
         \label{fig:StHeteroCampaigns_4DynHomoResourcesSens}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=0.95\textwidth]{figures/campaign/DynHomoResources_StHeteroCampaignsSens.pdf}
         \caption{}
         \label{fig:DynHomoResources_StHeteroCampaignsSens}
@@ -627,13 +612,13 @@ Figure~\ref{fig:inaccur_st} shows the results for static resources with figure~\
 
 \begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.95\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4StHeteroResourcesSens.pdf}
         \caption{}
         \label{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.95\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurStHeteroResources_StHeteroCampaignsSens.pdf}
         \caption{}
         \label{fig:InaccurStHeteroResources_StHeteroCampaignsSens}
@@ -648,23 +633,23 @@ In addition, specifically for HEFT the impact of uncertainty increases significa
 Since HEFT places one or two workflows on these resources, any change affects significantly its expected makespan.
 This verifies our conclusion from experiment 2, that algorithms with strong assumptions about workflow runtime and resource availability are very sensitive to changes.
 
-\begin{figure}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.95\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4DynHeteroResourcesSens.pdf}
-        \caption{}
-        \label{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesSens}
-    \end{subfigure}\\
-    ~ 
-    \begin{subfigure}[b]{0.95\textwidth}
-        \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurStHeteroResources_StHeteroCampaignsSens.pdf}
-        \caption{}
-        \label{fig:InaccurDynHeteroResources_StHeteroCampaignsSens}
-    \end{subfigure}
-    \caption{~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesSens} Makespan sensitivity for different levels of uncertainty and different number of workflows on static resources;
-    ~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsSens} Makespan sensitivity for different levels of uncertainty and different number of resources on static resources.}
-    \label{fig:inaccur_dyn}
-\end{figure}
+%\begin{figure}[ht!]
+%   \centering
+%    \begin{subfigure}[b]{0.95\textwidth}
+%        \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4DynHeteroResourcesSens.pdf}
+%        \caption{}
+%        \label{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesSens}
+%    \end{subfigure}\\
+%    ~ 
+%    \begin{subfigure}[b]{0.95\textwidth}
+%        \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurStHeteroResources_StHeteroCampaignsSens.pdf}
+%        \caption{}
+%        \label{fig:InaccurDynHeteroResources_StHeteroCampaignsSens}
+%    \end{subfigure}
+%    \caption{~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesSens} Makespan sensitivity for different levels of uncertainty and different number of workflows on static resources;
+%    ~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsSens} Makespan sensitivity for different levels of uncertainty and different number of resources on static resources.}
+%    \label{fig:inaccur_dyn}
+%\end{figure}
 
 Introducing resource dynamism increased further the sensitivity of the algorithms, as seen in figure~\ref{fig:inaccur_dyn}.
 The observed increase was no more than the level shown in experiment 2.
@@ -683,42 +668,6 @@ The less number of workflows placed on resources higher the significance of a ch
 %This is due to their deterministic behavior.
 %GA on the other hand is a non-deterministic algorithm and its runtime depends on its convergence rate.
 
-\subsection{Experiment 4: Performance Gain using Plan Adaptation}
-
-An adaptive plan is a new plan derived from the previous one on the base of information acquired at runtime.
-Plan adaptation can happen either via running the planning algorithm again with the new information or via submitting a workflow to the selected resource when it becomes available.
-In this experiment, we focus on the second type of adaptation since L2FF does not know when exactly a resource becomes available.
-Specifically, when a resource becomes available earlier than expected, the bookkeeping component pushes the next workflow to the selected resource, otherwise the workflow is queued and executes as soon the resource becomes available.
-
-We measure the performance gain of adaptive plans for executing a campaign with heterogeneous workflows and different level of uncertainty on heterogeneous dynamic resources.
-Figure~\ref{fig:gain_dyn} shows the normalized performance gain as a function of the workflow runtime uncertainty and either the number of workflows, fig.~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain}, or the number of resources, fig.~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsGain}.
-As we can see the performance gain is not significant.
-L2FF adaptive plan shows a maximum of 16~\% for 4 workflows and 4 resources, GA and HEFT around 12~\%, while when the number of resources vary none of the plans exceeds 6~\%.
-
-
-\begin{figure}[ht!]
-    \centering
-    \begin{subfigure}[b]{0.95\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4DynHeteroResourcesGain.pdf}
-        \caption{}
-        \label{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain}
-    \end{subfigure}\\
-    ~ 
-    \begin{subfigure}[b]{0.95\textwidth}
-        \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurDynHeteroResources_StHeteroCampaignsGain.pdf}
-        \caption{}
-        \label{fig:InaccurDynHeteroResources_StHeteroCampaignsGain}
-    \end{subfigure}
-    \caption{~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain} Normalized performance gain for different levels of uncertainty and different number of workflows on static resources;
-    ~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsGain} Normalized performance gain for different levels of uncertainty and different number of resources on static resources.}
-    \label{fig:gain_dyn}
-\end{figure}
-
-Since adaptive plans try to mitigate the effects of resource dynamism and workflow runtime uncertainty, we expect that the performance gain would be proportional to the ratio of number of workflows over the number of resources.
-Although this is generally true for L2FF and GA, it is not for HEFT.
-This is due to the fact that HEFT is placing a small number, 1 or 2, of workflows on slow resources.
-As a result, adaptive plans have no or very little effect.
-Contrary, L2FF and GA place more workflows on the slow resources allowing the adaptation to provide some gains.
 
 \section{Selecting Planning Algorithms and Campaign Budgeting Framework}
 \label{sec:cf_algo_sel}
@@ -770,3 +719,42 @@ Such information can then easily change to a monetary value of cost of resource 
 %The initialization method takes into account the times resources will be available during for the EFT heuristic.
 %Another point of extension would be the fitness function.
 %However, the fitness function of the selected algorithm~\cite{page2005algorithm} already takes into account the previous load of a resource, which is the time a resource is available.
+
+%% -----------------------------------------------------------------------------
+%
+%\subsection{Experiment 4: Performance Gain using Plan Adaptation}
+%
+%An adaptive plan is a new plan derived from the previous one on the base of information acquired at runtime.
+%Plan adaptation can happen either via running the planning algorithm again with the new information or via submitting a workflow to the selected resource when it becomes available.
+%In this experiment, we focus on the second type of adaptation since L2FF does not know when exactly a resource becomes available.
+%Specifically, when a resource becomes available earlier than expected, the bookkeeping component pushes the next workflow to the selected resource, otherwise the workflow is queued and executes as soon the resource becomes available.
+%
+%We measure the performance gain of adaptive plans for executing a campaign with heterogeneous workflows and different level of uncertainty on heterogeneous dynamic resources.
+%Figure~\ref{fig:gain_dyn} shows the normalized performance gain as a function of the workflow runtime uncertainty and either the number of workflows, fig.~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain}, or the number of resources, fig.~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsGain}.
+%As we can see the performance gain is not significant.
+%L2FF adaptive plan shows a maximum of 16~\% for 4 workflows and 4 resources, GA and HEFT around 12~\%, while when the number of resources vary none of the plans exceeds 6~\%.
+%
+%
+%\begin{figure}[ht!]
+%    \centering
+%    \begin{subfigure}[b]{0.95\textwidth}
+%        \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4DynHeteroResourcesGain.pdf}
+%        \caption{}
+%        \label{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain}
+%    \end{subfigure}\\
+%    ~ 
+%    \begin{subfigure}[b]{0.95\textwidth}
+%        \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurDynHeteroResources_StHeteroCampaignsGain.pdf}
+%        \caption{}
+%        \label{fig:InaccurDynHeteroResources_StHeteroCampaignsGain}
+%    \end{subfigure}
+%    \caption{~\ref{fig:InaccurStHeteroCampaigns_4DynHeteroResourcesGain} Normalized performance gain for different levels of uncertainty and different number of workflows on static resources;
+%        ~\ref{fig:InaccurDynHeteroResources_StHeteroCampaignsGain} Normalized performance gain for different levels of uncertainty and different number of resources on static resources.}
+%    \label{fig:gain_dyn}
+%\end{figure}
+%
+%Since adaptive plans try to mitigate the effects of resource dynamism and workflow runtime uncertainty, we expect that the performance gain would be proportional to the ratio of number of workflows over the number of resources.
+%Although this is generally true for L2FF and GA, it is not for HEFT.
+%This is due to the fact that HEFT is placing a small number, 1 or 2, of workflows on slow resources.
+%As a result, adaptive plans have no or very little effect.
+%Contrary, L2FF and GA place more workflows on the slow resources allowing the adaptation to provide some gains.
