@@ -3,7 +3,7 @@
 Computational campaigns enact an execution to achieve a computation objective under given requirements and constraints.
 The computational objective is a set of values selected by the user for a set of metrics.
 Some of these metrics are time to completion and throughput.
-Requirements describe the minimum amount and type of resources needed to execute each workflow of the campaign, while the constrains are the conditions that bound the execution, such as resource availability, resource capacity or costs.
+Requirements describe the minimum amount and type of resources needed to execute each workflow of the campaign, while the constraints are the conditions that bound the execution, such as resource availability, resource capacity or costs.
 
 The objective of a campaign can be translated to a computational objective function that would either minimize or maximize a metric.
 Among the many metrics that could be considered, the most common one is the total time taken to execute all workflows of a campaign, also known as makespan.
@@ -436,7 +436,7 @@ In turn, this results to plans with similar makespan with Random plans for a 4 r
         \caption{}
         \label{fig:StHeteroResources_StHeteroCampaigns}
     \end{subfigure}
-    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}) Makespan of increasing number of heterogeneous worklfows on heterogeneous resources;
+    \caption{~\ref{fig:StHeteroCampaigns_4StHeteroResources}) Makespan of increasing number of heterogeneous workflows on heterogeneous resources;
         ~\ref{fig:StHeteroResources_StHeteroCampaigns}) Makespan of heterogeneous campaign on different number of heterogeneous resources..}
     \label{fig:heter_analysis}
 \end{figure*}
@@ -562,7 +562,7 @@ In this experiment, we measure the sensitivity of makespan to workflow runtime e
 As shown in experiment 2, the makespan sensitivity of plans using HEFT, L2FF and GA-50 on homogeneous resources is similar.
 As a result, we expect the sensitivity to workflow runtime estimation uncertainty for campaigns executing on homogeneous resources to be similar across algorithms and we show only the results for heterogeneous workflows executing on heterogeneous resources.
 
-Similar to sensitivity to resource dynamism, we expect sensitivity to workflow runtime estimantion uncertainty to decrease as the number of workflows increase and increase as the number of resources decrease.
+Similar to sensitivity to resource dynamism, we expect sensitivity to workflow runtime estimation uncertainty to decrease as the number of workflows increase and increase as the number of resources decrease.
 In addition, we expect sensitivity to increase as the level of uncertainty increase by a constant factor.
 Figure~\ref{fig:inaccur_st} shows the results with figure~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens} varying the number of workflows and~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens} varying the number of resources.
 
@@ -629,7 +629,7 @@ Our experimental methodology allows us to compare plans in terms of makespan per
 
 Based on our investigation, we conclude that there are three factors that affect the performance and sensitivity of planning algorithms.
 The first factor is whether the algorithm uses an expectation of when a resource will be available.
-HEFT and the genetic algorithm use an expectation of resource availability and show better performance on homogeneous and heterogenous resources than L2FF and random.
+HEFT and the genetic algorithm use an expectation of resource availability and show better performance on homogeneous and heterogeneous resources than L2FF and random.
 The second factor is whether the algorithm uses a deterministic or randomized heuristic.
 GA shows performance similar to random plans when all workflows were initially placed randomly to resources.
 In addition, GA shows worse performance than L2Ff when 50~\% of the workflows were not placed randomly above 128 resources as it underutilized some of the resources.
@@ -651,7 +651,7 @@ When selecting a planning algorithm for a campaign a user should consider the fo
 \begin{inparaenum}
     \item resource homogeneity/heterogeneity;
     \item resource dynamism; and
-    \item workflow runtime estimation uncertainty
+    \item workflow runtime estimation uncertainty.
 \end{inparaenum}
 When resources are homogeneous, a planner like L2FF provides a plan with good makespan and it is very simple to engineer and is not significantly more sensitive from algorithms like HEFT or GA.
 When resources are heterogeneous and the computational objective is to produce the best possible makespan, a deterministic algorithm like HEFT is a good candidate, but it is quite sensitive to resource dynamism and workflow runtime uncertainty.
