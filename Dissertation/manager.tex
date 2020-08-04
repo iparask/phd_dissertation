@@ -55,10 +55,9 @@ The requirements for designing a campaign manager can be vast.
 We use three real use cases to derive the requirements of the campaign manager prototype.
 The first use case supports quantum chemistry campaigns, the second earth science and the third data analysis campaigns which analyze the data produced for the ATLAS experiment.
 
-The quantum chemistry use case (UC1) has O(1k) workflows to execute, and up to 1000 to be executing at any given point in time, to a number of different resources. 
+The quantum chemistry use case~\cite{smith2020molssi} (UC1) has O(1k) workflows to execute, and up to 1000 to be executing at any given point in time, to a number of different resources. 
 The workflows execution time varies between half-core hours up to 100-core hours.
 In addition, users have access to resources with several capabilities and not every workflow can be executed in any resources. 
-
 During the campaign definition, the users may provide an initial workflow priority.
 This priority may change during runtime, as users want specific workflows to execute before others.
 Furthermore, users may want to early bind workflows to resources, as some resources may already support the required software for a workflow, or have the necessary data there.
@@ -68,13 +67,21 @@ User may get access to new resources as the campaign is executing, and would lik
 In addition, a resource may become permanently unavailable as the user may lose access while the campaign executes.
 The campaign may change during runtime as users add or remove workflows.
 
-The earth science use case (UC2) requires the execution of multiple workflows to analyze images from different calendar years.
-Workflows are a set of pipelines over an acquired dataset.
-Workflow execution time varies from hours to a couple of days.
-Workflows are added to the campaign as data are becoming available.
-In addition, due to the data volume this use case requires a shared filesystem between the used resources.
+The earth science use case (UC2) requires the execution of multiple workflows to analyze images from different calendar years~\cite{paraskevakos2019workflow}.
+The workflows are a set of pipelines over an acquired set of satellite images and their execution time varies from hours to a couple of days.
+Workflows are added to the campaign as images are becoming available to resources.
 
-A summary of the functional requirements is shown in Table~\ref{tab:fun_reqs}.
+The third use case (UC3) supports the execution of data analysis workflows from the ATLAS experiment~\cite{atlas}.
+The large hadron collider produces data as particles collide inside the detector.
+These data are then analyzed by executing hundreds to thousands workflows with different timescales and frequencies~\cite{borodin2015big}.
+In addition, the analysis needs to happen in specific times scale while the detector is not operational.
+For example, one of the use cases described in Ref.~\cite{borodin2015big} analyzes thousands of different datasets with workflows running for months every yearly quarter.
+
+
+Based on these use cases we derive a set of fuctional requirements for the campaign manager prototype. 
+Table~\ref{tab:fun_reqs} shows a summary of the functional requirements.
+The table defines a requirement identification number, states the requirement and provides a description of each requirement.
+In addition to this information it shows from which use case the requirement is derived with ``G'' being a requirement that supports all three use cases. 
 
 \begin{table}[t]
     \centering
@@ -280,11 +287,12 @@ As a result, we are able to test and identify possible bottlenecks in the design
 \end{figure*}
 
 Figure~\ref{fig:cm_char} shows the performance characterization of the prototype with the simulator.
-We measured the time it takes the prototype to execute campaigns of different size while we kept the number of resources constant and a campaign with constant number of workflows executing on different number of resources.
+We measure the time it takes the prototype to execute campaigns of different size while we kept the number of resources constant and a campaign with constant number of workflows executing on different number of resources.
 The bookkeeper submits workflows for execution until all workflows have finished.
 As a result, the time the simulator runs is linear to the number of workflows.
 Figure~\ref{fig:SimTimeWork} shows the time it takes the simulator to execute 4 to 128 workflows on 4 resources and verifies the expectation that the execution time of the simulation is linear.
-On the other hand, the number of resources should not affect the execution time of the simulation.
+
+The number of resources should not affect the execution time of the simulation.
 This is generally true up to 32 resources, as we see in figure~\ref{fig:SimTimeRes}.
 Above 64 resource, the time of the simulation doubles.
 The enactor monitors all workflows that are executing via traversing a list and uses a callback for those that finished.
@@ -303,5 +311,4 @@ We used the prototype to simulate the execution of campaigns with different numb
 Based on our execution results, we see that we are able to simulate a campaign of 128 workflows to 128 resources in around 15 minutes.
 In addition, we saw that the execution times are linearly proportional to the number of workflows.
 Further, we saw that the number of resources can affect the execution time of the simulation when the number of resources is more than 64.
-The analysis of this unexpected behavior provides us with an idea which parts of the campaign manager may show significant overheads when it is used in production.
-
+The increased execution time of the simulation will not affect the execution of a campaign as it will run for several days.
