@@ -1,9 +1,16 @@
 \label{ch:cmanager}
-As stated in the introduction, computational sciences are benefiting from executing multiple workflows to achieve scientific insight.
-We support a diverse set of use cases from biomolecular sciences, earth sciences and large-scale experiments physics.
-The workflows of these use cases tend to be data-intensive.
-In the previous chapters, we discussed the requirements and support of data-intensive workloads and workflows on high performance computing (HPC) resources.
-This allows us to start discussing the execution of multiple data-intensive workflows on high performance resources, i.e., the execution of a computational campaign.
+
+In the previous chapters, we discussed the requirements and support of data- and compute-intensive workflows on high performance computing (HPC) resources. 
+When considering actual research, scientific projects require to execute multiple workflows at scale and potentially for long period of time.
+Usually, workflows are first developed, tested and, when ready, they are executed at scale until the project allocation on the target HPC machine(s) is exhausted. 
+This poses unprecedented computing challenges, shifting the problem from enabling the effective and efficient execution of a single workflow at scale, to managing the execution of a computational campaign.
+
+The challenges users face when executing a computational campaign include, but are not limited to, workflow submission, execution and monitoring and deciding an execution plan.
+Workflow submission requires from the user to have knowledge of submission systems, which generally are different between HPC resources.
+Furthermore, users have to connect to those resources to get information of the execution of a workflow or workflows.
+Lastly, users decide an execution plan which defines the order workflows are submitted and executed on HPC resources.
+Although, this is feasible for campaigns with small numbers of workflows and resources, it becomes non trivial for campaigns with hundreds of workflows that are executing for months on multiple resources~\cite{smith2020molssi}.
+To address these challenges, a campaign manager which given a computational campaign and a set of resources creates an execution plan, submits, executes and monitors workflows on HPC resources, is desirable.
 
 Currently, there are software systems which support computational campaigns, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others.
 PanDA WMS~\cite{maeno2008panda}, is built to support the ATLAS experiment~\cite{atlas} at LHC, and is able to execute several thousand jobs concurrently processing million of tasks per week~\cite{de2015future}.
@@ -279,7 +286,6 @@ Above 64 resource, the time of the simulation doubles.
 The enactor monitors all workflows that are executing via traversing a list and uses a callback for those that finished.
 In addition, the bookkeeper checks the state of the workflows that are executing.
 Increasing the number of resources means that the number of workflows increases and above 64 resources these two checks start to dominate the execution time.
-
 
 
 \section{Conclusions}
