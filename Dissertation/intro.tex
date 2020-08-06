@@ -22,8 +22,6 @@ High Energy physics science experiments, such the Large Hadron Collider ATLAS ex
 These datasets are then analyzed by executing hundreds to thousands workflows with different timescales and frequencies~\cite{borodin2015big}.
 For example, one of the use cases described in Ref.~\cite{borodin2015big} analyzes thousands of different datasets with workflows running for months every yearly quarter.
 
-%Eventually, scientists execute workflows to analyze their data repository and decide the next experiment.
-
 All these use cases define and execute a computational campaign to achieve scientific insight.
 Although they are different, they share a number of characteristics and requirements.
 Some of the most important common characteristics of these campaigns are:
@@ -35,12 +33,6 @@ Some of the most important common characteristics of these campaigns are:
     \item well defined computational objectives.
 \end{inparaenum}
 
-Currently, there are software systems ( e.i., campaign managers) that are supporting the execution of computational campaigns~\cite{maeno2008panda,casajus2010dirac,qcfractal,sfiligoi2008glidein,deelman2015pegasus, salim2019balsam}.
-A commonality between current campaign managers is that they are domain specifc and make assumptions about the type of workflows to be executed.
-Another common aspect is that they are build in a monolithic approach, despite their modular design.
-Furthermore, most of the existing campaign managers do not necessarily plan the execution of the campaign, in terms of order and placement of workflows on resources.
-As a result, there is a need to design a campaign manager which, in addition to supporting the above characteristics, will be domain agnostic and provide the planning capabilities.
-
 Based on the above discussion, it becomes important to support the execution of computational campaigns as the first order of execution.
 There is, thus, a need to design and offer a campaign manager that supports a diverse set of computational campaigns.
 Currently, campaign managers are making assumptions about the resources and the middleware they are utilizing, are monolithic software systems, and tend to be domain specific.
@@ -51,17 +43,9 @@ This, in turn, will allow the campaign manager to make no assumptions about the 
 Designing and implementing such a campaign manager poses the following challenges:
 \begin{inparaenum}[1)]
     \item support compute and data intensive scientific workflows in a domain agnostic manner;
-    \item define and enact upon a plan that will achieve the computation objective of the campaign; and
+    \item define and enact upon a plan that will achieve the objective of the campaign; and
     \item provide a modular and extensible design to support any campaign.
 \end{inparaenum}
-
-Scientific workflows are mainly executed by utilizing dedicated workflow management frameworks (WMFs), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus} and others.
-These frameworks offer runtime capabilities, such as task execution, data dependency resolution, and workflow definition and monitoring.
-Given a set of resources and a walltime, WMFs try to maximize resource utilization and minimize time to completion.
-WMFs assume that the user selects sufficient resources and walltime to execute the workflow.
-Some WMFs, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, by scaling up or down, based on the current state of execution.
-In addition, some  WMFs~\cite{deelman2015pegasus} may also support the concurrent execution of multiple workflows as independent entities.
-Furthermore, these WMFs support the execution of either only compute-based, such as RADICAL-EnTK~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, or data-based workflows, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}.
 
 Compute-based workflows are in the epicenter of scientific computing that utilizes HPC resources.
 These workflows are either defined as a single large application or as an ensemble of compute intensive tasks~\cite{balasubramanian2018harnessing}.
@@ -76,18 +60,15 @@ As a result, a diverse set of tools for data processing (e.\,g.\ MapReduce~\cite
 
 Some applications however, defy easy classification as compute- or data-intensive.
 In fact, there are classes of scientific applications, such as bio-molecular dynamics~\cite{dror2012biomolecular} and image analysis~\cite{goncalves2020sealnet}, that have strong characteristics of both compute- and data-intensive.
+
+Scientific workflows are mainly executed by utilizing dedicated workflow management frameworks (WMFs), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus} and others.
+These frameworks offer runtime capabilities, such as task execution, data dependency resolution, and workflow definition and monitoring.
+Given a set of resources and a walltime, WMFs try to maximize resource utilization and minimize time to completion.
+WMFs assume that the user selects sufficient resources and walltime to execute the workflow.
+Some WMFs, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, by scaling up or down, based on the current state of execution.
+In addition, some  WMFs~\cite{deelman2015pegasus} may also support the concurrent execution of multiple workflows as independent entities.
+Furthermore, these WMFs support the execution of either only compute-based, such as RADICAL-EnTK~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, or data-based workflows, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}.
 To the best of our knowledge, there is no runtime system that provides the integrated capabilities of compute- and data- intensive workflows and applications.
-
-From a design perspective, a promising approach to address these challenges is isolating tasks from execution management.
-Tasks are assumed to be self-contained programs which are executed in the operating system (OS) environment of HPC compute nodes.
-Programs implement the domain-specific functionalities required by use cases while computing frameworks implement resource acquisition, task scheduling, resource binding, and data management.
-
-Compared to approaches in which tasks are functions or methods, like on Spark~\cite{zaharia2010spark} or Dask~\cite{rocklin2015dask}, a program-based approach offers several benefits as, for example, simplified implementation of execution management, support of general purpose programming models, and separate programming of management and domain-specific functionalities.
-Program-based designs also impose performance limitations, including OS-mediated inter task communication and task spawning overheads, since programs execute as OS processes and do not share a memory space.
-
-Due to their performance limitations, program-based designs of computing frameworks are best suited to execute compute-intense workflows in which each task requires a certain amount of parallelism and runs from several minutes to hours.
-The emergence of workflows that require heterogeneous, compute-intense tasks to process large amount of data is pushing the boundaries of program-based designs, especially when scale requirements suggest the use of modern HPC infrastructures with large number of CPUs/GPUs and dedicated data facilities.
-
 
 \section{Contributions of the Dissertation}
 The goal of this research is to advance the state of the art in the execution of data-intensive scientific computational campaigns.
@@ -127,15 +108,33 @@ These workflows may require heterogeneous resources and implement a diverse set 
 Due to task heterogeneity, executing workflows poses the challenges of effective scheduling, correct resource binding and efficient data management.
 HPC resources exacerbate these challenges by privileging the execution of single, long-running jobs.
 
-In Chapter~\ref{ch:campaigns}, we investigate algorithms which given a campaign, an objective and a set of constraints, will derive an execution plan.
-We define a method to evaluate the performance of planning algorithms.
-We then utilize this method to compare a set of planning algorithms.
+In Chapter~\ref{ch:cmanager}, we design a campaign manager (CM) prototype which, given a campaign, an objective, and a set of constraints, can derive an execution plan and simulates the execution of a campaign.
 
-In Chapter~\ref{ch:cmanager}, we design a campaign manager (CM) which, given a campaign, an objective, and a set of constraints, can derive an execution plan and execute a campaign.
-If necessary the CM will change the execution plan by updating workflow to resource mapping, and resource availability.
+In Chapter~\ref{ch:campaigns}, we investigate algorithms which given a campaign, an objective and a set of constraints, will derive an execution plan.
+We define an experimental method to evaluate and compare the performance of planning algorithms.
+Based on our results, we define a conceptual model that allows users and developers to select a suitable planning algorithm for executing their campaign.
 The dissertation will conclude with Chapter~\ref{ch:conclusions} which will discussion the conclusions of this work and identify future work and research.
 
 %%%%%%%%%%%%%Old Text%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Missing computational campaign and planning capabilities
+
+%From a design perspective, a promising approach to address these challenges is isolating tasks from execution management.
+%Tasks are assumed to be self-contained programs which are executed in the operating system (OS) environment of HPC compute nodes.
+%Programs implement the domain-specific functionalities required by use cases while computing frameworks implement resource acquisition, task scheduling, resource binding, and data management.
+
+%Compared to approaches in which tasks are functions or methods, like on Spark~\cite{zaharia2010spark} or Dask~\cite{rocklin2015dask}, a program-based approach offers several benefits as, for example, simplified implementation of execution management, support of general purpose programming models, and separate programming of management and domain-specific functionalities.
+%Program-based designs also impose performance limitations, including OS-mediated inter task communication and task spawning overheads, since programs execute as OS processes and do not share a memory space.
+
+%Due to their performance limitations, program-based designs of computing frameworks are best suited to execute compute-intense workflows in which each task requires a certain amount of parallelism and runs from several minutes to hours.
+%The emergence of workflows that require heterogeneous, compute-intense tasks to process large amount of data is pushing the boundaries of program-based designs, especially when scale requirements suggest the use of modern HPC infrastructures with large number of CPUs/GPUs and dedicated data facilities.
+
+%Currently, there are software systems ( e.i., campaign managers) that are supporting the execution of computational campaigns~\cite{maeno2008panda,casajus2010dirac,qcfractal,sfiligoi2008glidein,deelman2015pegasus, salim2019balsam}.
+%A commonality between current campaign managers is that they are domain specifc and make assumptions about the type of workflows to be executed.
+%Another common aspect is that they are build in a monolithic approach, despite their modular design.
+%Furthermore, most of the existing campaign managers do not necessarily plan the execution of the campaign, in terms of order and placement of workflows on resources.
+%As a result, there is a need to design a campaign manager which, in addition to supporting the above characteristics, will be domain agnostic and provide the planning capabilities.
+
 %Furthermore, the characteristics of the workflows that comprise such applications are different.
 %Others gather data either from simulators, such as the ATLAS experiment~\cite{atlas}, or remote sensing, such as satellites~\cite{goncalves2020sealnet}, and require to analyze those data.
 %Last but not least are the applications that execute workflows that are simulating systems, analyze produced data and then steer further simulations~\cite{dakka2018concurrent}.
