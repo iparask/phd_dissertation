@@ -23,13 +23,14 @@
 \usepackage{soul}
 \usepackage{graphicx}
 \usepackage{subcaption}
+% \usepackage{color}
 % \usepackage{tabularx}
 \usepackage{url}
 % \usepackage{xcolor}
 \usepackage{wrapfig}
 \usepackage{xspace}
-\usepackage{hyperref}
-\usepackage{hypcap}
+% \usepackage{hyperref}
+% \usepackage{hypcap}
 % \usepackage{rotating}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -42,24 +43,24 @@
 \newcommand{\mr}[1]{\multirow{2}{*}{#1}}%
 \newcommand{\mc}[2]{\multicolumn{#1}{l}{#2}}
 
-\newif\ifdraft
-%\drafttrue
-\ifdraft
-\definecolor{ocolor}{rgb}{1,0,0.4}
-\newcommand{\jwave}[1]{ {\reduwave{#1}}}
-\newcommand{\jhanote}[1]{ {\textcolor{red} { ***shantenu: #1 }}}
-\newcommand{\mtnote}[1]{ {\textcolor{cyan} { ***matteo: #1 }}}
-\definecolor{orange}{rgb}{1,.5,0}
-\definecolor{dandelion}{cmyk}{0,0.29,0.84,0}
-\newcommand{\gpnote}[1]{{\textcolor{blue} {***giannis: #1}}}
-\newcommand{\note}[1]{ {\textcolor{magenta} { ***Note: #1 }}}
-\else
-\newcommand{\jwave}[1]{}
-\newcommand{\jhanote}[1]{}
-\newcommand{\mtnote}[1]{}
-\newcommand{\gpnote}[1]{}
-\newcommand{\note}[1]{}
-\fi
+% \newif\ifdraft
+% %\drafttrue
+% \ifdraft
+% \definecolor{ocolor}{rgb}{1,0,0.4}
+% \newcommand{\jwave}[1]{ {\reduwave{#1}}}
+% \newcommand{\jhanote}[1]{ {\textcolor{red} { ***shantenu: #1 }}}
+% \newcommand{\mtnote}[1]{ {\textcolor{cyan} { ***matteo: #1 }}}
+% \definecolor{orange}{rgb}{1,.5,0}
+% \definecolor{dandelion}{cmyk}{0,0.29,0.84,0}
+% \newcommand{\gpnote}[1]{{\textcolor{blue} {***giannis: #1}}}
+% \newcommand{\note}[1]{ {\textcolor{magenta} { ***Note: #1 }}}
+% \else
+% \newcommand{\jwave}[1]{}
+% \newcommand{\jhanote}[1]{}
+% \newcommand{\mtnote}[1]{}
+% \newcommand{\gpnote}[1]{}
+% \newcommand{\note}[1]{}
+% \fi
 
 
 \lstdefinestyle{mystyle}{
