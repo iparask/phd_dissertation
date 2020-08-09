@@ -217,10 +217,11 @@ Similarly, the Spark specific methods for launching and managing Compute Units o
 \section{Experiments and Evaluation}
 \label{sec:rph-exps}
 
-To evaluate the RADICAL~-Pilot YARN and Spark extension, we conduct two experiments: in \S~\ref{ssec:startup_pilot_unit}, we analyze and compare RADICAL~-Pilot and RADICAL~-Pilot-YARN with respect to startup times of both the Pilot and the Compute Units.
+To evaluate the RADICAL~-Pilot YARN and Spark extension, we conduct two experiments.
+In \S~\ref{ssec:startup_pilot_unit}, we analyze and compare RADICAL~-Pilot and RADICAL~-Pilot-YARN with respect to startup times of both the Pilot and the Compute Units.
 We use the well-known K-Means algorithm to investigate the performance and runtime trade-offs of a typical data-intensive application, in \S~\ref{ssec:kmeans}.
 Experiments are performed on two different XSEDE allocated machines: Wrangler~\cite{wrangler} and Stampede~\cite{stampede}.
-On Stampede every node has 16 cores and 32 GB of memory; on Wrangler 48\,cores and 128\,GB of memory.
+On Stampede every node had 16 cores and 32 GB of memory; on Wrangler 48 cores and 128 GB of memory.
 For our experiments we used RADICAL~-Pilot v0.45, Hadoop v2.6 and Spark v2.0.2.
 
 \subsection{Pilot Startup and Compute Unit Submission Characterization}
@@ -228,7 +229,7 @@ For our experiments we used RADICAL~-Pilot v0.45, Hadoop v2.6 and Spark v2.0.2.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/data_analytics_hpc/hpc_hadoop/pilot_unit_startup.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/data_analytics_hpc/hpc_hadoop/pilot_unit_startup.pdf}
     \caption{RADICAL~-Pilot and RADICAL~-Pilot-YARN startup overheads.
         \label{fig:startup_yarn}}
 %    \caption{\textbf{RADICAL~-Pilot and RADICAL~-Pilot-YARN startup overheads:}
@@ -238,7 +239,7 @@ For our experiments we used RADICAL~-Pilot v0.45, Hadoop v2.6 and Spark v2.0.2.
 \end{figure}
 
 In Figure~\ref{fig:startup_yarn} we analyze the measured overheads when starting RADICAL~-Pilot and RADICAL~-Pilot-YARN, and when submitting Compute Units.
-The agent startup time for RADICAL~-Pilot-YARN is defined as the time between RADICAL~-Pilot-Agent start and the processing of the first Compute Unit.
+The agent startup time for RADICAL~-Pilot-YARN is defined as the time between RADICAL~-Pilot-Agent starts and the processing of the first Compute Unit.
 On Wrangler, we compare both Mode I (Hadoop on HPC) and Mode II (HPC on Hadoop).
 For Mode I the startup time is higher compared to the normal RADICAL~-Pilot startup time and also compared to Mode II.
 This can be explained by the necessary steps required for download, configuration and start of the YARN cluster.
@@ -248,15 +249,13 @@ The startup times for Mode II on Wrangler -- using the dedicated Hadoop environm
 The inset of Figure~\ref{fig:startup_yarn} shows the time taken to start Compute Units via RADICAL~-Pilot to a YARN cluster.
 For each CU, resources have to be requested in two stages: first the application master container is allocated followed by the containers for the actual compute tasks.
 For short-running jobs this represents a bottleneck.
-%In the future, we will optimize this process by re-using the YARN application master and containers, which will reduce the startup time significantly.
 
-In summary, while there are overheads associated with execution inside of YARN, we believe these are acceptable, in particular for long-running tasks.
+In summary, while there are overheads associated with executing inside of YARN, we believe these are acceptable, in particular for long-running tasks.
 The novel capabilities of executing HPC tasks and YARN tasks within the same application has significant benefits for which measured overheads are likely acceptable.
 
 \subsection{K-Means Performance Characterization}
 \label{ssec:kmeans}
 We compare the time to completion of the K-Means algorithm using two configurations: RADICAL~-Pilot on HPC and RADICAL~-Pilot in HPC/YARN mode. 
-
 We use three different scenarios: 10,000 points and 5,000 clusters, 100,000 points / 500 clusters and 1,000,000 points / 50 clusters.
 Each point belongs to a three dimensional space.
 The compute requirements depend on the product of the number of points and number of clusters, thus it is constant for all three scenarios.
@@ -265,8 +264,8 @@ The shuffle traffic depends on the number of clusters and decreases with the num
 For the purpose of this benchmark, we run two iterations of K-Means.
 
 We utilize up to 3 nodes on Stampede and Wrangler.
-On Stampede every node has 16 cores and 32 GB of memory; on Wrangler each node has 48\,cores and 128\,GB of memory.
-Experiments are performed with the following configurations: 8~tasks on 1~node, 16~tasks on 2~nodes and 32~tasks on 3~nodes.
+On Stampede every node has 16 cores and 32 GB of memory; on Wrangler each node has 48 cores and 128 GB of memory.
+Experiments are performed with the following configurations: 8 tasks on 1 node, 16 tasks on 2 nodes and 32 tasks on 3 nodes.
 For RADICAL~-Pilot-YARN, we use Mode II (Hadoop on HPC): the YARN Resource Manager is deployed on the node running the RADICAL~-Pilot-Agent.
 
 Figure~\ref{fig:experiments_kmeans_rpyarnkmeans} shows the results of executing K-Means over different scenarios and configurations.
@@ -274,7 +273,7 @@ For RADICAL~-Pilot-YARN the runtimes include the time required to download and s
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=.85\textwidth]{figures/data_analytics_hpc/hpc_hadoop/kmeans.pdf}
+    \includegraphics[width=.75\textwidth]{figures/data_analytics_hpc/hpc_hadoop/kmeans.pdf}
     \caption{RADICAL~-Pilot and YARN-based K-Means time to completion on Stampede and Wrangler.}
 %\caption{\textbf{RADICAL~-Pilot and YARN-based K-Means on Stampede and Wrangler:}
 %        Across all configurations the performance of the YARN backend is in average 13\,\% better.
@@ -283,8 +282,8 @@ For RADICAL~-Pilot-YARN the runtimes include the time required to download and s
 \end{figure}
 
 Independent of the scenario, the runtimes decrease with the number of tasks.
-In particular, in the 8 task scenarios the overhead of YARN is visible.
-In particular for larger number of tasks, we observed on average 13\,\% shorter runtimes for RADICAL~-Pilot-YARN.
+In particular, in the 8 task scenarios the overhead of YARN is visible on Wrangler.
+For larger number of tasks, we observed on average 13~\% shorter runtimes for RADICAL~-Pilot-YARN.
 Also, RADICAL~-Pilot-YARN achieves better speedups, e.\,g., 3.2 for 32 tasks for the 1 million points scenario, which is significantly higher than the RADICAL~-Pilot speedup of 2.4 (both on Wrangler and compared to base case of 8 tasks).
 One of the reason for this is that for RADICAL~-Pilot-YARN the local file system is used, while for RADICAL~-Pilot the Lustre filesystem is used.
 
@@ -292,20 +291,22 @@ For similar scenarios and task/resource configuration, the runtimes on Wrangler 
 This is attributed to the better hardware (CPUs, memory).
 In particular for RADICAL~-Pilot-YARN we observed on average higher speedups on Wrangler, indicating that we saturated the 32 GB of memory available on each Stampede node.
 
-In summary, despite the overheads of RADICAL~-Pilot-YARN with respect to Pilot and Compute Unit startup time, we were able to observe performance improvements (on average 13\,\% better time to completion) mainly due to the better performance of the local disks.
+In summary, despite the overheads of RADICAL~-Pilot-YARN with respect to Pilot and Compute Unit startup time, we were able to observe performance improvements (on average 13~\% better time to completion) mainly due to the better performance of the local disks.
 
 
 \section{Conclusions}
 \label{sec:hpc_hadoop_concl}
 In this chapter, we motivated the use of the Pilot-Abstraction as an integrating concept between HPC and data analytics.
 We discussed the design and implementation of RADICAL~-Pilot extensions for Hadoop and Spark, and validated them with scalability analysis on two supercomputers.
-We demonstrated that the Pilot-Abstraction strengthens the state of practice in utilizing HPC resources in conjunction with emerging data analytics frameworks by allowing the user to combine a diverse set of best-of-breed tools running on heterogeneous infrastructure consisting of HPC.
-Using these capabilities, complex data applications utilizing a diverse set of Hadoop and HPC frameworks can be composed enabling scalable data ingests, feature engineering \& extractions and analytics stages.
-Each of these steps has its own I/O, memory and CPU characteristics. 
-Providing a unifying and powerful abstraction that enables all parts of such a data analytics workflow to co-exist is critical.
+We demonstrated that the Pilot-Abstraction strengthens the state of practice in utilizing HPC resources in conjunction with emerging data analytics frameworks by allowing users to combine a diverse set of tools running on heterogeneous infrastructure consisting of HPC.
+Using these capabilities, complex computational campaigns, utilizing a diverse set of Hadoop and HPC frameworks, can be composed enabling scalable data ingests, feature engineering \& extractions and analytics.
+Providing a unifying abstraction that enables compute and data analytics workflows to co-exist is critical.
 
-We continue with work with biophysical and molecular scientists to integrate molecular dynamics data trajectory analysis capabilities.
-While we demonstrated the importance of integrated capabilities, we want to understand their performance impact on scientific task-based data analytics scientifc application.
+
+While we demonstrated the importance of integrated capabilities for supporting data analytics on HPC, we want to understand their performance impact on scientific task-based data analytics scientific workflows.
+This is important when executing computational campaigns on HPC resources, as selecting a suitable capability to execute data-intensive workflows is desirable.
+Thus, we continue our work with integrating and measuring the performance of molecular dynamics data-analysis workflows utilizing these capabilities on HPC resources.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
