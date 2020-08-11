@@ -2,9 +2,9 @@
 
 In addition to the MapReduce style data-analytics, there is a set of data analysis workflows that do not necessarily conform to the MapReduce abstraction.
 Their tasks can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
-As a consequence, data-parallel frameworks, like Spark and Dask may not be the most suitable for their execution.
-Furthermore, the volume and scale of data justifies the use to parallelism and HPC resources.
-From a middleware perspective, the design and architectural space is large and the lack of performance analysis make it difficult to select among equivalent implementations.
+As a consequence, data-parallel frameworks, like Spark and Dask may not be the most suitable choice for their execution.
+Furthermore, the volume and scale of data justifies the use to parallelism and High Performance Computing (HPC) resources.
+From a middleware perspective, the design and architectural space is large and the lack of performance analysis makes it difficult to select among equivalent implementations.
 
 From a design perspective, a promising approach is isolating tasks from execution management.
 Tasks are assumed to be self-contained programs which are executed in the operating system (OS) environment of HPC compute nodes.
@@ -14,7 +14,7 @@ Nonetheless, program-based designs also impose performance limitations, includin
 Due to their performance limitations, program-based designs of computing frameworks are best suited to execute compute-intense workflows in which each task requires a certain amount of parallelism and runs from several minutes to hours.
 The emergence of workflows that require heterogeneous, compute-intense tasks to process large amount of data is pushing the boundaries of program-based designs, especially when scale requirements suggest the use of modern HPC infrastructures with large number of CPUs/GPUs and dedicated data facilities.
 
-We use a paradigmatic use case from the polar science domain to evaluate three alternative task-based designs, and experimentally characterize and compare their performance.
+We use a paradigmatic use case workflow from the polar science domain to evaluate three alternative task-based designs, and experimentally characterize and compare their performance.
 Our use case requires us to analyze satellite images of Antarctica to detect pack-ice seals taken across a whole calendar year.
 The resulting dataset consists of $3,097$ images for a total of $\approx4$~TB.
 The use case requires us to repeatedly process these images, running both CPUs and GPUs code that exchange several GB of data.
@@ -28,42 +28,30 @@ In \S~\ref{sec:design}, we discuss the three architecturally equivalent design t
 \section{Satellite Imagery Analysis Application}
 \label{sec:ucase}
 Imagery employed by ecologists as a tool to survey populations and ecosystems come from a wide range of sensors, e.g., camera-trap surveys~\cite{karanth1995estimating} and aerial imagery transects~\cite{western2009impact}.
-However, most traditional methods can be prohibitively labor-intensive when employed at large scales or in remote regions.
 Very High Resolution (VHR) satellite imagery provides an effective alternative to perform large scale surveys at locations with poor accessibility such as surveying Antarctic fauna~\cite{lynch2012detection}.
 To take full advantage from increasingly large VHR imagery, and reach the spatial and temporal breadths required to answer ecological questions, it is paramount to automate image processing and labeling.
-
-% that the image labeling step is handled automatically.
 
 Convolutional Neural Networks (CNN) represent the state-of-the-art for nearly every computer vision routine.
 For instance, ecologists have successfully employed CNNs to detect large mammals in airborne imagery~\cite{kellenberger2018detecting,polzounov2016right}, and camera-trap survey imagery~\cite{norouzzadeh2018automatically}.
 We use a Convolutional Neural Network (CNN) to survey Antarctic pack-ice seals in VHR imagery.
 Pack-ice seals are a main component of the Antarctic food web~\cite{fabra2008convention}: estimating the size and trends of their populations is key to understanding how the Southern Ocean ecosystem copes with climate change~\cite{hillebrand2018climate} and fisheries~\cite{reid2019climate}.
 
-For this use case, we process WorldView 3 (WV03) panchromatic imagery as provided by DigitalGlobe Inc.
-This dataset has the highest available resolution for commercial satellite imagery.
-We refrain from using imagery from other sensors because pack-ice seals are not clearly visible at lower resolutions.
-For our CNN architecture, we use a U-Net~\cite{ronneberger2015u} variant that counts seals with an added regression branch and locates them using a seal intensity heat map.
-To train our CNN, we use a training set of 53 WV03 images, with $88k$ hand-labeled tiles, where every tile has a correspondent seal count and a class label (i.e., seal vs. non-seal).
-For hyper-parameter search, we train CNN variants for 75 epochs (i.e., 75 complete runs through the training set) using an Adam optimizer~\cite{kingma2014adam} with a learning rate of $10^{-3}$ and tested against a validation set.
-The validation set consists of $10\%$ of the training set.
-In addition, we randomized the WV03 image selection so that a validation tile does not overlap with a training one.
-Testing was performed on 5 WV03 images.
-Double observer seal counting was performed and model detection results were compared to observer consensus detections.
-Furthermore, we avoid double counting by setting a minimum distance boundary between neighboring seals and keeping those where the model was more confident.
-
-We use the best performing model on an archive of over $3,097$ WV03 images, with a total dataset size of $\approx4$~TB.
+This use case workflow processes WorldView 3 (WV03) panchromatic imagery as provided by DigitalGlobe Inc.
+This imagery dataset has the highest available resolution for commercial satellite imagery.
+We use the best performing CNN model~\cite{goncalves2020sealnet} on an archive of over $3,097$ WV03 images, with a total dataset size of $\approx4$~TB.
 Due to limitations on GPU memory, it is necessary to tile WV03 images into smaller patches before sending input imagery through the seal detection CNN.
 Taking tiled imagery as input, the CNN outputs the latitude and longitude of each detected seal.
 While the raw model output still requires statistical treatment, such `mock-run' emulates the scale necessary to perform a comprehensive pack-ice seal census.
-We order the tiling and seal detection stages into a pipeline that can be re-run whenever new imagery is obtained.
+We order the tiling and seal detection stages into a pipeline that can be run with different imagery datasets.
 This allows domain scientists to create seal abundance time series that can aid in Southern Ocean monitoring.
+To create this time series, domain scientists can define a computational campaign where each workflow analyzes imagery from different calendar years or seasons.
+
 
 \section{Workflow Design and Implementation}\label{sec:design}
 Computationally, the use case described in~\S\ref{sec:ucase} presents three main challenges: heterogeneity, scale and repeatability.
 The images of the use case dataset vary in size with a wide distribution.
 Each image requires tiling, per tile counting of seal populations and result aggregation across tiles.
 Tiling is memory intensive while counting is computationally intensive, requiring CPU and GPU implementations, respectively.
-Whenever the image dataset is updated, it needs to be reprocessed.
 
 We address these challenges by codifying image analysis into a workflow.
 We then execute this workflow on HPC resources, leveraging the concurrency, storage systems and compute speed they offer to reduce time to completion.
@@ -155,7 +143,7 @@ For our use case, EnTK has three main advantages compared to other workflow engi
 \begin{inparaenum}[(1)]
     \item it exposes pipelines and tasks as first-order abstractions implemented in Python;
     \item it is specifically designed for concurrent management of up to $10^5$ pipelines; and
-    \item it supports RADICAL-Pilot, a pilot-based runtime system designed to execute heterogeneous bag of tasks on HPC machines~\cite{merzky2019using}.
+    \item it supports RADICAL-Pilot.
 \end{inparaenum} 
 Together, these features address the challenges of heterogeneity, scale and repeatability: users can encode multiple pipelines, each with different types of tasks, executing them at scale on HPC machines without explicitly coding parallelism and resource management.
 
@@ -185,10 +173,10 @@ While this design avoids I~/O bottlenecks, it may reduce concurrency when the pe
 
 Design~2 implements a queue-based design.
 We introduce two tasks $T_{1}$ and $T_{2}$ as defined in~\S\ref{ssec:approach1}.
-In contrast to Design 1, these tasks are started and then executed for as long as resources are available, processing input images at the rate taken to process each image.
+In contrast to Design 1, these tasks are started and then executed for as long as data and resources are available, processing input images at the rate taken to process each image.
 The number of concurrent $T_{1}$ and $T_{2}$ depends on available resources, including CPUs, GPUs, and RAM.
 
-For the implementation of Design~2, we do not need EnTK, as we submit a bag of $T_{1}$ and $T_{2}$ tasks via the RADICAL~-Pilot RTS, and manage the data movement between tasks via queues.
+For implementing Design~2, we do not need EnTK, as we submit a bag of $T_{1}$ and $T_{2}$ tasks via the RADICAL~-Pilot RTS, and manage the data movement between tasks via queues.
 As shown in Fig.~\ref{fig:seals_design2}, Design 2 uses one queue (Queue 1) for the dataset, and another queue (Queue 2) for each compute node.
 For each compute node, each $T_{1}$ pulls an image from Queue 1, tiles that image and then queues the resulting tiles to Queue 2.
 The first available $T_{2}$ on that compute node, pulls those tiles from Queue 2, and counts the seals.
@@ -208,7 +196,7 @@ Both $T_{1}$ of $A$ and $B$ will execute for around the same amount of time unti
 $T_{2}$ tasks executing on $B$ will process half as many images as $T_{2}$ tasks on $A$, possibly running for a shorter period of time, depending on the time taken to process each image.
 
 In principle, Design~2 can be modified to load balance also across Queue 2 but in practice, as discussed in~\S\ref{ssec:approach1}, this would produce I/O bottlenecks:
-Load balancing across $T_{2}$ tasks would require for all tiles produced by $T_{1}$ tasks to be written to and read  from a filesystem shared across multiple compute nodes.
+Load balancing across $T_{2}$ tasks would require for all tiles produced by $T_{1}$ tasks to be written to and read  from a  shared filesystem.
 Keeping Queue 2 local to each compute node enables using the filesystem local to each compute node.
 
 % ---------------------------------------------------------------------------
@@ -237,7 +225,6 @@ In addition, we had full control over the nodes during execution and were not sh
 
 The experiments dataset consists of $3,097$ images, ranging from $50$ to $2,770$~MB for a total of $\approx4$~TB of data.
 The images size follows a normal distribution with a mean value of $1,304.85$~MB and standard deviation of $512.68$~MB.
-
 
 For Design~1, 2 and 2.A described in~\S\ref{sec:design}, Experiment~1 models the execution time of the two tasks of our use case as a function of the image size (the only property of the images for which we found a correlation with execution time); Experiment~2 measures the total resource utilization of each design; and Experiment~3 characterizes the overheads of the middleware implementing each design.
 Together, these experiments enable performance comparison across designs, allowing us to draw conclusions about the performance of heterogeneous task-based execution of data-driven workflows on HPC resources.
@@ -584,7 +571,7 @@ Nonetheless, Design~1 would still require executing a task for each image, impos
 \section{Discussion and Conclusions}
 \label{sec:des_concl}
 
-While design 1, 2 and 2.A can successfully support the execution of the paradigmatic use case described in~\S\ref{sec:ucase}, our experiments show that for the metrics considered, Design~2.A is the one offering the better overall performance.
+While design 1, 2 and 2.A can successfully support the execution of the paradigmatic workflow described in~\S\ref{sec:ucase}, our experiments show that for the metrics considered, Design~2.A is the one offering the better overall performance.
 Generalizing this result, use cases that are both data-driven and compute-intense benefit from early binding of data to compute node so to maximize data and compute affinity and equally balance input across nodes.
 This approach minimizes the overall time to completion of this type of workflows while maximizing resource utilization.
 
@@ -593,11 +580,29 @@ In program-based designs, the overhead of bootstrapping programs needs to be min
 In presence of large amount of data, late binding implies copying, replicating or accessing data over network and at runtime.
 We showed that, in contemporary HPC infrastructures, this is too costly both for resource utilization and total time to completion.
 
+When executing workflows as part of a computational campaign, it is important to efficiently utilize available resources.
+Our design evaluation provides us with information on how to implement the workflows of a campaign effectively.
+In addition, our overheads characterization provides us with a baseline to evaluate the production grade workflow implementations.
+
+
 %Infrastructure-wise, our experiments show the limits imposed by an unbalance between number of CPU cores and available memory.
 %Given data-driven computation where multi GB images need processing, we were able to use just $10\%$ of the available cores due to the amount of RAM required.
 %This applies also to the unbalance between CPUs and GPUs: use cases with heterogeneous tasks would benefit from a n higher GPU/CPU ratio.
+
+
 
 %These results apply to the evaluation of the design of existing and future computing frameworks. 
 %For example, we are extending both EnTK and RADICAL-Pilot to implement Design~2.A.
 %We will use our overheads characterization as a baseline to evaluate our production-grade implementation and further improve the efficiency of our middleware. 
 %Further, we will apply the presented experimental methodology to other use cases and infrastructures, measuring the trade offs imposed by other types of task heterogeneity, including multi-core or multi-GPU tasks that extends beyond a single compute node.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%For our CNN architecture, we use a U-Net~\cite{ronneberger2015u} variant that counts seals with an added regression branch and locates them using a seal intensity heat map.
+%To train our CNN, we use a training set of 53 WV03 images, with $88k$ hand-labeled tiles, where every tile has a correspondent seal count and a class label (i.e., seal vs. non-seal).
+%For hyper-parameter search, we train CNN variants for 75 epochs (i.e., 75 complete runs through the training set) using an Adam optimizer~\cite{kingma2014adam} with a learning rate of $10^{-3}$ and tested against a validation set.
+%The validation set consists of $10\%$ of the training set.
+%In addition, we randomized the WV03 image selection so that a validation tile does not overlap with a training one.
+%Testing was performed on 5 WV03 images.
+%Double observer seal counting was performed and model detection results were compared to observer consensus detections.
+%Furthermore, we avoid double counting by setting a minimum distance boundary between neighboring seals and keeping those where the model was more confident.
