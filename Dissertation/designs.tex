@@ -1,7 +1,8 @@
 \label{ch:designs}
-A growing number of scientific domains are adopting workflows that use multiple analysis algorithms to perform data-analytics.
-In addition, there is a set of workflows that do not necessarily conform to the MapReduce abstraction.
+
+In addition to the MapReduce style data-analytics, there is a set of data analysis workflows that do not necessarily conform to the MapReduce abstraction.
 Their tasks can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
+As a consequence, data-parallel frameworks, like Spark and Dask may not be the most suitable for their execution.
 Furthermore, the volume and scale of data justifies the use to parallelism and HPC resources.
 From a middleware perspective, the design and architectural space is large and the lack of performance analysis make it difficult to select among equivalent implementations.
 
@@ -88,18 +89,18 @@ As a result, at any given point in time there are $C = n\times c$ CPUs and $G = 
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign1.pdf}
         \caption{}
         \label{fig:seals_design1}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign2.pdf}
         \caption{}\label{fig:seals_design2}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign3.pdf}
         \caption{}\label{fig:seals_design3}
     \end{subfigure}
