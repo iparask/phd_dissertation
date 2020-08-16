@@ -3,7 +3,7 @@
 In addition to the MapReduce style data-analytics, there is a set of data analysis workflows that do not necessarily conform to the MapReduce abstraction.
 Their tasks can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
 As a consequence, data-parallel frameworks, like Spark and Dask may not be the most suitable choice for their execution.
-Furthermore, the volume and scale of data justifies the use to parallelism and High Performance Computing (HPC) resources.
+%Furthermore, the volume and scale of data justifies the use to parallelism and High Performance Computing (HPC) resources.
 From a middleware perspective, the design and architectural space is large and the lack of performance analysis makes it difficult to select among equivalent implementations.
 
 From a design perspective, a promising approach is isolating tasks from execution management.
@@ -36,15 +36,14 @@ For instance, ecologists have successfully employed CNNs to detect large mammals
 We use a Convolutional Neural Network (CNN) to survey Antarctic pack-ice seals in VHR imagery.
 Pack-ice seals are a main component of the Antarctic food web~\cite{fabra2008convention}: estimating the size and trends of their populations is key to understanding how the Southern Ocean ecosystem copes with climate change~\cite{hillebrand2018climate} and fisheries~\cite{reid2019climate}.
 
-This use case workflow processes WorldView 3 (WV03) panchromatic imagery as provided by DigitalGlobe Inc.
-This imagery dataset has the highest available resolution for commercial satellite imagery.
-We use the best performing CNN model~\cite{goncalves2020sealnet} on an archive of over $3,097$ WV03 images, with a total dataset size of $\approx4$~TB.
+This use case workflow processes WorldView 3 (WV03) panchromatic imagery, which has the highest available resolution for commercial satellite imagery.
+%We use the best performing CNN model~\cite{goncalves2020sealnet} on an archive of over $3,097$ WV03 images, with a total dataset size of $\approx4$~TB.
 Due to limitations on GPU memory, it is necessary to tile WV03 images into smaller patches before sending input imagery through the seal detection CNN.
 Taking tiled imagery as input, the CNN outputs the latitude and longitude of each detected seal.
-While the raw model output still requires statistical treatment, such `mock-run' emulates the scale necessary to perform a comprehensive pack-ice seal census.
+%While the raw model output still requires statistical treatment, such `mock-run' emulates the scale necessary to perform a comprehensive pack-ice seal census.
 We order the tiling and seal detection stages into a pipeline that can be run with different imagery datasets.
 This allows domain scientists to create seal abundance time series that can aid in Southern Ocean monitoring.
-To create this time series, domain scientists can define a computational campaign where each workflow analyzes imagery from different calendar years or seasons.
+To create this time series, domain scientists define a computational campaign where each workflow analyzes imagery from different calendar years or seasons.
 
 
 \section{Workflow Design and Implementation}\label{sec:design}
@@ -63,7 +62,7 @@ Note that both designs separate the functionalities required to process each ima
 This is consistent with moving away from vertical, end-to-end single-point solutions, favoring designs and implementations that satisfy multiple use cases, possibly across diverse domains.
 Accordingly, the two designs we consider, implement, and characterize use two tasks (i.e., programs) to implement the tiling and counting functionalities required by the use case.
 
-Both designs are functionally equivalent, in that they both enable the analysis of the given image dataset.
+Both designs are functionally equivalent, in that they both enable the analysis of the given dataset.
 Nonetheless, each design leads to different amounts of concurrency, resource utilization and overheads, depending on data/compute affinity, scheduling algorithm, and coordination between CPU and GPU computations.
 Based on a performance analysis, it will be possible to know which design entails the best tradeoffs for common metrics as total execution time or resource utilization.
 
@@ -109,7 +108,7 @@ As a result, at any given point in time there are $C = n\times c$ CPUs and $G = 
 
 We specify the workflow for counting the number of seals in a set of images as a set of pipelines.
 Each pipeline is composed of two stages, each with one type of task.
-The task of the first stage gets an image as input and generates tiles of that image based on a selected tile size as output.
+The task of the first stage gets an image as input and generates tiles of that image as output.
 The task of the second stage gets the generated tiles as input, counts the number of seals found in each tile and outputs the aggregated result for the whole image.
 
 Formally, we define two types of tasks:
@@ -129,7 +128,8 @@ Each sub\-array is converted to an compressed image via OpenCV routines and save
 
 Seal counting in $T_{2}$ is performed via a Convolutional Neural Network (CNN) implemented with PyTorch~\cite{paszke2017automatic}.
 The CNN counts the number of seals for each tile of an input image.
-When all tiles are processed, the coordinates of the tiles are converted to the geographical coordinates of the image and saved in a file, along with the number of counted seals. Note that the number of seals in an tile does not affect the execution of the network, i.e. the same number of operations will be executed.
+When all tiles are processed, the coordinates of the tiles are converted to the geographical coordinates of the image and saved in a file, along with the number of counted seals.
+Note that the number of seals in an tile does not affect the execution of the network, i.e. the same number of operations will be executed.
 
 Both tiling and seal counting implementations are invariant between the designs we consider.
 This is consistent with the designs being task-based, i.e., each task exclusively encapsulates the capabilities required to perform a specific operation over an image or tile.
@@ -173,7 +173,7 @@ While this design avoids I~/O bottlenecks, it may reduce concurrency when the pe
 
 Design~2 implements a queue-based design.
 We introduce two tasks $T_{1}$ and $T_{2}$ as defined in~\S\ref{ssec:approach1}.
-In contrast to Design 1, these tasks are started and then executed for as long as data and resources are available, processing input images at the rate taken to process each image.
+Contrary to Design 1, these tasks are started and then executed for as long as data and resources are available, processing input images at the rate taken to process each image.
 The number of concurrent $T_{1}$ and $T_{2}$ depends on available resources, including CPUs, GPUs, and RAM.
 
 For implementing Design~2, we do not need EnTK, as we submit a bag of $T_{1}$ and $T_{2}$ tasks via the RADICAL~-Pilot RTS, and manage the data movement between tasks via queues.
@@ -181,13 +181,13 @@ As shown in Fig.~\ref{fig:seals_design2}, Design 2 uses one queue (Queue 1) for 
 For each compute node, each $T_{1}$ pulls an image from Queue 1, tiles that image and then queues the resulting tiles to Queue 2.
 The first available $T_{2}$ on that compute node, pulls those tiles from Queue 2, and counts the seals.
 
-To communicate data and control signals between queues and tasks, we defined a communication protocol with three entities: Sender, Receiver, and Queue. 
-Sender connects to Queue and pushes data.
-When done, Sender informs Queue and disconnects.
-Receiver connects to Queue and pulls data.
-If there are no data in Queue but Sender is connected, Receiver pulls a ``wait'' message, waits, and pulls again after a second.
-When there are no data in Queue or Sender is not connected to Queue, Receiver pulls an ``empty'' message, upon which it disconnects and terminates.
-This ensures that tasks are executing, even if starving, and that all tasks are gracefully terminating when all images are processed.
+%To communicate data and control signals between queues and tasks, we defined a communication protocol with three entities: Sender, Receiver, and Queue. 
+%Sender connects to Queue and pushes data.
+%When done, Sender informs Queue and disconnects.
+%Receiver connects to Queue and pulls data.
+%If there are no data in Queue but Sender is connected, Receiver pulls a ``wait'' message, waits, and pulls again after a second.
+%When there are no data in Queue or Sender is not connected to Queue, Receiver pulls an ``empty'' message, upon which it disconnects and terminates.
+%This ensures that tasks are executing, even if starving, and that all tasks are gracefully terminating when all images are processed.
 
 Note that Design~2 load balances $T_{1}$ tasks across compute nodes but  balances $T_{2}$ tasks only within each node.
 For example, suppose that $T_{1}$ on compute node $A$ runs two times faster than $T_{1}$ on compute node $B$.
@@ -195,7 +195,7 @@ Since both tasks are pulling images from the same queue, $T_{1}$ of $A$ will pro
 Both $T_{1}$ of $A$ and $B$ will execute for around the same amount of time until Queue 1 is empty, but Queue 2 of $A$ will be twice as large as Queue 2 of $B$.
 $T_{2}$ tasks executing on $B$ will process half as many images as $T_{2}$ tasks on $A$, possibly running for a shorter period of time, depending on the time taken to process each image.
 
-In principle, Design~2 can be modified to load balance also across Queue 2 but in practice, as discussed in~\S\ref{ssec:approach1}, this would produce I/O bottlenecks:
+In principle, Design~2 can be modified to load balance also across Queue 2 but in practice, as discussed in~\S\ref{ssec:approach1}, this would produce I/O bottlenecks.
 Load balancing across $T_{2}$ tasks would require for all tiles produced by $T_{1}$ tasks to be written to and read  from a  shared filesystem.
 Keeping Queue 2 local to each compute node enables using the filesystem local to each compute node.
 
@@ -243,7 +243,7 @@ Thus, there is a weak correlation between task execution time and image size wit
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_0_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Red line shows fitted linear function.}\label{fig:stage_0_execution}
 \end{figure}
@@ -256,7 +256,7 @@ Further, we observe that as the type of task and the compute node are the same a
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/designs/concerrency_std.pdf}
+    \includegraphics[width=.75\textwidth]{figures/designs/concerrency_std.pdf}
     \caption{$STD$ of $T_{1}$ execution time based on image size bin and number of concurrent tasks.
         Mostly dependent on compute node's performance and invariant across values of task concurrency.}\label{fig:concurrency_test}
 \end{figure}
@@ -271,6 +271,7 @@ T(x) = \alpha \times x+\beta
 
 
 \begin{table*}[t]
+    \scriptsize
     \centering
     \begin{tabular}{@{}cclrcl@{}}
         \toprule
@@ -282,7 +283,7 @@ T(x) = \alpha \times x+\beta
         \textbf{Figure}                                \\
         \midrule
         1                                              & 
-        $T^{UC1}_{1}$                                  & 
+        $T_{1}$                                  & 
         $1.92\times 10^{-2}$                           & 
         $60.49$                                        & 
         $0.97$                                         & 
@@ -344,7 +345,7 @@ Note the slightly stronger positive skew of the data compared to that of Fig.~\r
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_1_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Green line shows fitted linear function.}
     \label{fig:stage_1_execution}
@@ -370,7 +371,7 @@ Accordingly, in Design~2 we observe an execution time variation comparable to th
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box_des2.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_0_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Red line shows fitted linear function.}\label{fig:stage_1_execution_des2}
 \end{figure}
@@ -398,7 +399,7 @@ This further supports our hypothesis that the long tail of the distribution of $
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box_des2.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_1_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Green line shows fitted linear function.}\label{fig:stage_2_execution_des2}
 \end{figure}
@@ -427,13 +428,13 @@ Thus, Design~2 can create imbalances in the time to completion of $T_{2}$, as sh
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.95\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/design2_timelines.pdf}
         \caption{}
         \label{fig:design2_timeline}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.95\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/design2a_timelines.pdf}
         \caption{}
         \label{fig:design2a_timeline}
@@ -526,13 +527,13 @@ The discussion of Experiment~1 and 2 results explains how these differences rela
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.7\textwidth}
+    \begin{subfigure}{0.75\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/ttx.pdf}
         \caption{}
         \label{fig:ttx}
     \end{subfigure}\\
     ~
-    \begin{subfigure}{0.7\textwidth}
+    \begin{subfigure}{0.75\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/overheads.pdf}
         \caption{}
         \label{fig:overheads}
