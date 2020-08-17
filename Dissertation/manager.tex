@@ -32,19 +32,19 @@ In addition, there are workflow management systems on HPCs, like Pegasus~\cite{d
 Existing campaign managers are making assumptions about the resources and middleware they are utilizing.
 In addition, they are monolithic software systems, despite their modular design, and tend to be domain specific.
 For example, PanDA~\cite{maeno2008panda}, Pegasus~\cite{deelman2015pegasus}, and glideinWMS~\cite{sfiligoi2008glidein} are not easily extensible to use other capabilities or runtime systems.
-QCFractal is built to be extensible and be able to interface with different workflow and workload management systems. Currently, it supports multiple execution engines.
-As a consequence, domain scientists and user either build custom tools to support their needs or fit their campaigns to a selected software system.
+QCFractal is built to be extensible and be able to interface with different workflow and workload management systems.
+Currently, it supports multiple execution engines.
+As a consequence, domain scientists and users either build custom tools to support their needs or fit their campaigns to a selected software system.
 
 In response to these limitations --- monolithic designs, domain specific support and resource and middleware assumptions --- we design and prototype a new campaign manager (CM).
-We select to create a prototype instead a production grade system for several reasons.
-First, a prototype allows to understand the design space of a campaign manager, its component and basic functionality.
-Second, it allows us to quickly implement and test whether the selected design supports the requirements of the supported use cases.
-Third, having a prototype allows us to change the environment of the campaign's execution with minimal cost.
+As our campaign manager supports use cases from different scientific domains, such as molecular dynamics, earth sciences and high energy physics, the design and functionality space explodes.
+A prototype allows us identify the most important components and functionality to support the effectively support our use cases.
+Further, we can quickly implement and test the campaign manager without necessarily considering any performance and data management limitations that may arise when executing an actual campaign.
+Finally, a prototype allows us to tune parts of the campaign manager with minimal engineering cost.
 
-The campaign manager prototype supports use cases from different domains, such as molecular dynamics and earth sciences, and as a result it is domain agnostic.
-In addition, our campaign manager is designed by following the building blocks approach~\cite{turilli2019middleware}.
-This way, it is agnostic of the system used to manage the execution of the campaign workflows allowing us to utilize all the capabilities presented in the previous chapters.
-In addition, the campaign manager makes no assumptions about the resources on which the campaign workflows will be mapped and executed.
+The campaign manager prototype is domain agnostic as it supports use cases from different domains.
+In addition, it is designed by following the building blocks approach~\cite{turilli2019middleware}.
+This way, the prototype is agnostic and makes no assumptions of the workflow management framework used to manage the execution of individual workflows, as well as the type of resources used.
 
 The chapter is organized as follows:
 In section~\ref{sec:cm_req}, we discuss the supported use cases and the campaign manager requirements.
@@ -55,27 +55,26 @@ We close the chapter with our conclusions in section~\ref{sec:cm_concl}.
 \section{Campaign manager requirements}
 \label{sec:cm_req}
 
-The space of data analysis computational campaigns can be vast with different scientific objectives, types and number of workflows and resources they utilize.
-As a result, we use three real use cases with data analysis workflows to derive the requirements of the campaign manager prototype.
+The space of data analysis computational campaigns can be vast with different scientific objectives, types and number of workflows and resources.
+We use three real use cases with data analysis workflows to derive the requirements of the campaign manager prototype.
 The first use case supports quantum chemistry campaigns (UC1), the second earth science (UC2) and the third data analysis campaigns which analyze the data produced for the ATLAS experiment (UC3).
 
-Quantum chemistry campaigns execute workflows that execute chemical computations on molecules to calculate their properties.
-Computational scientist through MolSSI~\cite{smith2020molssi} execute thousands of workflows, with up to 1000 executing at any given point in time, to a number of different resources.
+Quantum chemistry defines campaigns which execute workflows performing chemical computations on molecules to calculate their properties, e\.g\., energy.
+These campaigns execute thousands of workflows, with up to 1000 executing at any given point in time, to a number of different resources~\cite{smith2020molssi}.
 The workflows execution time varies between half-core hours up to 100-core hours with different levels of concurrency.
-In addition, users have access to resources with several capabilities and not every workflow can be executed in any resources. 
+In addition, users have access to resources with several capabilities and not every workflow can be executed on every resource.
 During the campaign definition, the users may provide an initial workflow priority.
 Furthermore, users may want to early bind workflows to resources, as some resources may already support the required software for a workflow, or have the necessary data there.
 
-Earth science campaign analyze imagery acquired via sensors from different calendar years~\cite{paraskevakos2019workflow} to create time series of ecological events.
-Their campaigns requires the execution of one workflow per calendar year of data.
-The workflows analyze a set of satellite images and their execution time varies from hours to a couple of days.
-In this use case, users have access to the resources where their imagery is stored.
-While analyzing the data based on the year they represent, a specific order is not necessary as long as all datasets are analyzed.
+Earth science campaigns analyze imagery acquired via sensors from different calendar years~\cite{paraskevakos2019workflow} to create time series of ecological events, executing one workflow per imagery from a calendar year.
+Their execution time varies from hours to a couple of days.
+Due to the volume of the data, users have access to a small number of resources where imagery is stored.
+While workflows analyze datasets based on the year they represent, a specific order is not necessary as long as all datasets are analyzed.
 
 The third use case supports the execution of data analysis workflows from the ATLAS experiment~\cite{atlas}.
-The large hadron collider produces data as particles collide inside the detector.
+The large hadron collider produces data as particles collide inside its particle detector.
 These data are then analyzed by executing hundreds to thousands workflows with different timescales and frequencies~\cite{borodin2015big}.
-In addition, the analysis needs to happen in specific times scale while the detector is not operational.
+In addition, the analysis needs to happen in specific time scales while the detector is not operational.
 For example, one of the use cases described in Ref.~\cite{borodin2015big} analyzes thousands of different datasets with workflows running for months every yearly quarter.
 
 Based on these use cases we derive a set of fuctional requirements for the campaign manager prototype. 
@@ -144,8 +143,7 @@ In addition to this information it shows from which use case the requirement is 
 \label{sec:cm_des}
 
 This section discusses the design principles and the architecture of the campaign manager prototype.
-The design principles the campaign manager follows are presented in ~\S~\ref{ssec:building_blocks}.
-The architecture of the campaign manager is described in \S~\ref{ssec:cm_arch}.
+The design principles of the campaign manager are presented in ~\S~\ref{ssec:building_blocks} and its architecture in \S~\ref{ssec:cm_arch}.
 
 \subsection{Building Blocks Design Approach}
 \label{ssec:building_blocks}
@@ -176,28 +174,27 @@ It has three components:
     \item a Bookkeeper. 
 \end{inparaenum}
 Workflow execution will be managed by an existing workflow management framework (WMF) on HPC resources.
-Plan updates will be based on workflows execution metrics provided by the selected WMF such as tasks execution time, overheads calculation and time to completion.
-These metrics will be aggregated across workflows, resulting in campaign-wide execution metrics.
+Each of these components support a basic functionality the campaign manager needs to support, such creating an execution, execute individual workflows and execute and monitor the campaign.
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/manager/CEM_design.pdf}
+    \includegraphics[width=.75\textwidth]{figures/manager/CEM_design.pdf}
     \caption{Reference Architecture of a Campaign Manager. Basic 
         components of Campaign Manager (CM): 1) Planner, 2) Enactor and 3) Bookkeeper. 
         CM communicates decisions to Workflows Management Framework. CM communicates with HPCs to 
         execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
-The planner derives an execution plan based on a planning algorithm and calculates the makespan for a campaign and a set of resources.
+The planner derives an execution plan based on a planning algorithm and calculates the makespan for a campaign on a set of resources.
 It receives information about available resources and the workflows of the campaign from the bookkeeper component.
-The planner does not adhere to a specific planning algorithm allowing different planning to be added and used based on the campaign's requirements and objective.
+The planner does not adhere to a specific planning algorithm allowing different algorithms to be used based on the campaign's requirements and objective.
 
 The Bookkeeper component is responsible for monitoring the execution of the campaign.
 This component holds information about the state of the campaign, the execution plan, the availability of resources, and the campaign's objective.
 The state of the campaign is based on information about workflow execution provided by the enactor.
 In addition, the bookkeeper knows the state of the resources the campaign is utilizing at runtime and the state of the resources that are planned to be used.
 Based on this set of information, the bookkeeper checks whether the campaign's objective can be achieved.
-The bookkeeper will request the planner to update the plan when changes in the campaign happen that affect the effectiveness of a current plan or make the objective not achievable. 
+The bookkeeper will request the planner to update the plan when changes in the campaign happen that affect the effectiveness of a current plan or make the objective not achievable.
 For example, the availability of one or more resources can change during runtime requiring a revision of the execution plan.
 
 The last component is the enactor which is responsible to execute the campaign's workflows by interfacing with a workflow management system (WMF).
@@ -224,10 +221,10 @@ When the campaign execution ends and the campaign objective is achieved, the sta
 If the objective cannot be achieved or there is a failure during the execution, the state changes to \textit{failed}.
 Lastly, the campaign state goes to \textit{canceled} when the user cancels the execution of the campaign.
 
-The workflows state model defines six states: 1) \textit{new}, 2) \textit{executing}, 3) \textit{done}, 5) \textit{canceled} and 6) \textit{failed}.
+The workflows state model defines five states: 1) \textit{new}, 2) \textit{executing}, 3) \textit{done}, 4) \textit{canceled} and 5) \textit{failed}.
 A workflow is in \textit{new} state when it is received by the bookkeeper.
 Its state transitions to \textit{executing} when the enactor submits the workflow for execution to the selected workflow management system.
-A workflow state transitions to one of the final states based on the final state the workflow management system reports.
+A workflow state transitions to one of the final states,  \textit{done}, \textit{canceled} or \textit{failed}, based on the final state the workflow management system reports.
 
 \begin{figure*}[t]
     \centering
@@ -235,11 +232,11 @@ A workflow state transitions to one of the final states based on the final state
     \caption{Class diagram of campaign manager prototype}\label{fig:rcm_class_diagram}
 \end{figure*}
 
-The Bookkeeper class defines the necessary methods to execute a campaign.
-The most important methods are \textit{run}, \textit{work} and \textit{monitor}.
+The Bookkeeper class defines the several methods to execute a campaign.
+The most important ones are \textit{run}, \textit{work} and \textit{monitor}.
 Method \textit{run} initializes the campaign state to \textit{new} and sets up the environment for executing the campaign.
 \textit{Work} calls the planner to produce a plan transitioning the state of the campaign to \textit{planning}.
-After a plan is produced, \textit{work} calls \textit{\_verify\_objective} to verify if the objective of the campaign can be achieved and starts submitting workflows to the enactor.
+After a plan is produced, \textit{work} calls \textit{\_verify\_objective} to verify if the objective of the campaign can be achieved, and either starts submitting workflows to the enactor or transitions the campaign to the \textit{failed} state.
 In addition, it pushes the submitted workflows to a data structure that the \textit{monitor} method reads.
 The \textit{monitor} method checks the state of the workflow which are executing and receives information from the enactor via callbacks.
 
@@ -256,19 +253,19 @@ The \textit{monitor} method of the enactor checks periodically the state of the 
 \end{figure*}
 
 During the execution of a campaign there is a specific sequence of actions that happen.
-FIgure~\ref{fig:seq_diag} shows the sequence diagram of the execution.
-Before the execution of a campaign the bookkeeper gets as input a campaign ( a set of workflows) and a set of resources.
+Figure~\ref{fig:seq_diag} shows the sequence diagram of the execution.
+Before the execution of a campaign the bookkeeper gets as input a campaign (a set of workflows) and a set of resources.
 As the user requests from the prototype to execute the campaign, the bookkeeper passes to the planner the information it needs.
-As soon as the plan is ready, the execution of the campaign begins with the bookkeeper passing a workflow along with the resource that it will run to the enactor.
-As the enactor executes the workflow, it pushes state updates to the bookkeeper via callbacks, updating the state of the workflows for the bookkeeper.
-The bookkeeper continues to pass workflows to the enactor as resources become available and as long as there are workflows that are not executed.
+When the plan is ready, the execution of the campaign begins with the bookkeeper passing a workflow along with the resource that it will execute upon to the enactor.
+As the enactor executes the workflow, it pushes state updates to the bookkeeper via callbacks.
+The bookkeeper continues to pass workflows to the enactor as resources become available and as long as there are still workflows to execute.
 
-The execution of a campaign can span from months to a year and any experimentation with a prototype is almost unfeasible.
+The execution of a campaign can span from months to a year and any experimentation with an actual campaign is almost unfeasible.
 For this reason, we utilize a discrete time simulator, SimPy~\cite{simpy}.
 The simulator advances time which, in turn, allows the CM's components to recognize the state of the execution and take the necessary actions.
 As a result, we are able to test the prototype with different campaigns and resources without necessarily having access to them as long as we can model their performance.
 
-\begin{figure*}[ht!]
+\begin{figure*}[t]
     \centering
     \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=.95\textwidth]{figures/manager/SimTimeWork.pdf}
@@ -290,14 +287,14 @@ We measure the time it takes the prototype to execute campaigns of different siz
 The bookkeeper submits workflows for execution until all workflows have finished.
 As a result, the time the simulator runs is linear to the number of workflows.
 Figure~\ref{fig:SimTimeWork} shows the time it takes the simulator to execute 4 to 128 workflows on 4 resources and verifies the expectation that the execution time of the simulation is linear.
-In addition, it executes the 128 workflows on less than 2 minutes, when in reality executing a campaign can be up to months.
+In addition, it executes 128 workflows on less than 2 minutes.
 
 The number of resources should not affect the execution time of the simulation.
 This is generally true up to 32 resources, as we see in figure~\ref{fig:SimTimeRes}.
 Above 64 resource, the time of the simulation doubles.
 The enactor monitors all workflows that are executing via traversing a list and uses a callback for those that finished.
 In addition, the bookkeeper checks the state of the workflows that are executing.
-Increasing the number of resources means that the number of workflows increases and above 64 resources these two checks start to dominate the execution time.
+Increasing the number of resources means that the number of monitored workflows increases and above 64 resources these two checks start to dominate the execution time of the simulation.
 
 
 \section{Conclusions}
@@ -308,16 +305,14 @@ Based on the selected design, we implemented a software prototype that simulates
 The prototype allows us to understand and correctly implement the necessary functionality of the campaign manager.
 
 We used the prototype to simulate the execution of campaigns with different number of workflows and different number of resources.
-Based on our execution results, we see that we are able to simulate a campaign of 128 workflows to 128 resources in around 15 minutes.
+Based on our simulation results, we see that we are able to simulate a campaign of 128 workflows to 128 resources in around 15 minutes.
 In addition, we saw that the execution times are linearly proportional to the number of workflows.
 Further, we saw that the number of resources can affect the execution time of the simulation when the number of resources is more than 64.
-The increased execution time of the simulation will not affect the execution of a campaign as it will run for several days.
+The increased execution time of the simulation will not affect the execution of an actual campaign as it will run for several days.
 
 When executing campaigns, the execution plan can significantly affect the total time to completion of the campaign.
 With the campaign manager prototype we are able to simulate the execution of the campaign with different plans using different planning algorthims.
 In the next chapter, we explore planning algorithms and evaluate the plans they produce.
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
