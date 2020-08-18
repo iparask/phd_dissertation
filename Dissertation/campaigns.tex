@@ -18,21 +18,21 @@ Different types of computational resources can be offered by the same HPC resour
 
 During the execution of a campaign, uncertainty can arise for several reasons, including resource dynamism and workflow runtime uncertainty.
 HPC resources are governed via policies that affect their performance, such as power regulating policies~\cite{inadomi2015analyzing} and filesystem and network  multitenacy~\cite{brown2018interference}.
-As a consequence, their performance changes over time and is dynamic, which in turn creates uncertainty on the amount of time a workflow will execute for.
+As a consequence, their performance changes over time and is dynamic, which in turn creates uncertainty on the makespan of a campaign.
 Further, accurately estimating the runtime of each workflow in a campaign is challenging, as each workflow can have different inputs or datasets to analyze.
 Instead, users offer an estimation in the form of a range of possible values.
-Both resource dynamism and workflow runtime uncertainty have the potential to increase the makespan of a execution plan.
+Both resource dynamism and workflow runtime uncertainty have the potential to increase the makespan of an execution plan.
 
 There is a plethora of algorithms which derive an execution plan by calculating the makespan of a workflow, and not a campaign, offline~\cite{lu2019review}, i.e., before the execution of a workflow.
 Selecting and extending an algorithm that is suitable to plan the execution of a campaign on HPC resources is not trivial.
 To the best of our knowledge, there is not a methodology that allows to compare planning algorithms and select the most suitable for planning the execution of a campaign on a set of resources.
 We select three algorithms that each represents a larger family and compare their performance in respect to the makespan of the plans they produce as well as how sensitive they are on resource dynamism and workflow runtime uncertainty.
-Based on the comparison, we make a case of which algorithm to select given a computational campaign, it requirements and constraints.
+Based on the comparison, we make a case of which algorithm to select given a computational campaign, its requirements and constraints.
 
 The chapter offers the following contributions:
 \begin{inparaenum}[i)]
-    \item an experiment-based methodology to compare planning algorithms performance that does not depend on the considered use case and computing framework;
-    \item a conceptual framework for selecting planning algorithms based on the algorithm, campaign and resources characteristics
+    \item an experiment-based methodology to compare planning algorithms performance that is independent of the considered use case and computing framework;
+    \item a conceptual framework for selecting planning algorithms based on the algorithmic, campaign and resources characteristics
 \end{inparaenum}
 
 The chapter is organized as follows: \S~\ref{sec:makespan_calc} discusses the calculation of the makespan of a campaign given the set of assumptions of this work.
@@ -62,14 +62,14 @@ These are:
     \item every workflow of a given campaign can be executed on the given resources;
     \item random resource selection is based on a uniform distribution;
     \item only one workflow can be executed on a resource at any point in time; and
-    \item workflows can be homogeneous or heterogeneous in time---the amount of time they are executing.
+    \item workflows can be homogeneous or heterogeneous in time---the amount of time they are executing--- and space---the amount of resources they require.
 \end{inparaenum}
 
 We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{C}]$, where $w_{i}$ is a workflow and $N_{C}$ is the total number of workflows, $R = [ r_{j}: 1 \leq j \leq N_{R}]$ is a set of available resources, where $r_{j}$ is a resource and $N_{R}$ is the total number of available resources, and $ M(C,R) = [(w_i, r_j): 1 \leq i \leq N_{C}, r_j \in R] $ is a mapping function of workflows onto resources.
 In addition, we denote the execution time of a workflow as $Tx_{w_{i}}$, the makespan of campaign $C$ as $TTX_{C}$, and the makespan of campaign $C$ for a given mapping function $ M $ as $TTX_{C}(M)$.
 Assumption~\#3 allows to abstract the resource implementation details, as workflows can be executed on different resources such as HPCs, Clouds, pilots and more. 
 
-With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be executed sequentially, regardless the execution order or if the workflows are homogeneous or heterogeneous.
+With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be executed sequentially, regardless the execution order or whether the workflows are homogeneous or heterogeneous.
 As a result the makespan of the campaign is:
 \begin{equation}
    TTX_{C} = \sum_{i=1}^{N_{C}}Tx_{w_{i}} 
@@ -103,10 +103,11 @@ In the next section, we discuss a set of algorithms that try to satisfy this obj
 \section{Planning Algorithms}
 \label{sec:algo}
 
-As mentioned before, there is a plethora of methods and algorithms to calculate the makespan of a workflow~\cite{lu2019review}, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
+As mentioned before, there is a plethora of methods and algorithms to calculate the makespan of a workflow~\cite{lu2019review}.
+%, including queuing networks~\cite{yao2019throughput,bao2019performance}, domain specific languages~\cite{carothers2017durango,maheshwari2016workflow}, and machine learning~\cite{witt2019predictive,pumma2017runtime}.
 From this plethora of selections, we selected to investigate and extend three algorithms, each one representative of a larger family of algorithms.
 The algorithms are Heterogeneous Earlier Finish Time algorithm (HEFT)~\cite{topcuoglu2002performance}, a genetic algorithm~\cite{page2005algorithm} and a simple heuristic algorithm.
-A common characteristic among all algorithms is that they require workflow runitme and resource performance as input.
+As all these algorithms are producing an execution plan before the actual execution of the campaign, they require workflow runtime and resource performance as input.
 Table~\ref{tab:sched_algo} shows a summary of the algorithms characteristics.
 
 \begin{table}[t]
@@ -134,11 +135,11 @@ Table~\ref{tab:sched_algo} shows a summary of the algorithms characteristics.
 \label{algo:heft}
 List scheduling algorithms represent a general family of heuristic based scheduling algorithms to schedule workflows described as direct acyclic graphs~\cite{dong2006scheduling,list_sched_wiki}. 
 These algorithms assign priorities to tasks based on a heuristic and order them.
-Then, the algorithm traverses the list of tasks and assigns tasks to resources.
+Then, they traverse the list of tasks and assign tasks to resources.
 HEFT is an example of this type of algorithms~\cite{dong2006scheduling} and calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
 
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
-HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms,~\cite{topcuoglu2002performance,canon2008comparative}, such as genetic algorithms~\cite{fahringer2005askalon}. 
+HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms,~\cite{topcuoglu2002performance,canon2008comparative}, e\.g\., genetic algorithms~\cite{fahringer2005askalon}. 
 Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization} and on dynamic resources~\cite{dong2007pfas}. 
 
 HEFT makes two important assumptions when used on workflows: 
@@ -146,18 +147,20 @@ HEFT makes two important assumptions when used on workflows:
     \item any task in a workflow can be executed on all available resources; and 
     \item all resources are initially available.
 \end{inparaenum}
+Note that assumption~\#1 is equivalent to assumption~\#4 in \S~\ref{sec:makespan_calc}.
 HEFT's complexity is proportional to the number of dependencies between tasks and the number of resources offered. 
 As we are interested in executing computational campaigns, our HEFT extension provides an execution plan based on workflows as atomic units instead of tasks.
 Algorithm~\ref{alg:heft} shows HEFT for placing independent workflows on resources.
 
-\begin{algorithm}[ht]
+\begin{algorithm}[t]
     \caption{Heterogeneous Earliest Finish Time (HEFT) algorithm}
     \label{alg:heft}
+    \scriptsize
     \begin{algorithmic}[1]
-        \Procedure{HEFT}{$W$,$R$}\Comment{$W$ and $R$ are a set of workflow and resources respectively}
+        \Procedure{HEFT}{$W$,$R$}\Comment{$W$ and $R$ are a set of workflows and resources respectively}
         \State \texttt{Calculate the computation cost $w_{tx}^{ij}$ of each workflow for all resources}
         \State \texttt{Assign $rank_i = \overline{w_{i}} = \nicefrac{\sum_{j=1}^{|R|}w_{tx}^{ij}}{|R|}$}
-        \State \texttt{Sort workflows in non-increasing order of $rank_i$}
+        \State \texttt{Sort workflows in decreasing order of $rank_i$}
         \While{unscheduled workflows}
         \State \texttt{Select the first workflow $\tilde{w}$ from the sorted list}
         \For{$\forall r_{j}$ in $R$}
@@ -184,7 +187,7 @@ HEFT ends when all workflows are placed on a resource.
 % -------------------------------------------------------------------
 \subsection{Genetic Algorithm}
 \label{algo:gen}
-Genetic algorithms represent another family of algorithms that are been used to calculate the makespan of workflows~\cite{dong2006scheduling}.
+Genetic algorithms represent another family of algorithms that are used to calculate the makespan of workflows~\cite{dong2006scheduling}.
 Genetic algorithms start from an initial set of possible solutions, iterate and improve them at every iteration.
 In general, genetic algorithms follow the following procedure:
 \begin{inparaenum}[(i)]
@@ -201,11 +204,12 @@ These assumptions are in accordance with the assumptions made for workflows in a
 We extend this algorithm can be extended to support scientific campaigns.
 The pseudocode of the selected genetic algorithm is shown in Algorithm~\ref{alg:gen_algo}.
 
-\begin{algorithm}[ht]
+\begin{algorithm}[t]
     \caption{Genetic Algorithm}
     \label{alg:gen_algo}
+    \scriptsize
     \begin{algorithmic}[1]
-        \Procedure{GA}{$W$, $R$, $T$}\Comment{$W$ and $R$ are a set of workflow and resources respectively. $T$ is a dictionary of when a resource becomes available.}
+        \Procedure{GA}{$W$, $R$}\Comment{$W$ and $R$ are a set of workflows and resources respectively}
         \State \texttt{Initaliaze population}
         \While{Conergence Criteria not met and \#Gen $<$ Total\_Generations}
         \State{Selection}
@@ -238,7 +242,7 @@ The fitness of a plan is the equal to $F = 1 /E$ when $E > 0$, otherwise to 1.
 
 The algorithm selects members to reproduce based on their fitness values.
 Each member fitness value defines the probability of that member to be selected.
-When the selection is complete the algorithm uses cyclic rotation~\cite{oliver1987study} to generate new population members, which then replaces those with the lowest fitness.
+When the selection is complete the algorithm uses cyclic rotation~\cite{oliver1987study} to generate new population members and replaces those with the lowest fitness.
 After a population member is selected randomly and two random workflows swap, completing the mutation step.
 The algorithm stops evolving either when a member has fitness equal to 1 or after a specified number of iterations.
 
@@ -266,7 +270,7 @@ Algorithm~\ref{alg:l2ff} show the pseudocode for this algorithm.
     \caption{Longest to Fastest First (L2FF)}
     \label{alg:l2ff}
     \begin{algorithmic}[1]
-        \Procedure{l2ff}{$W$, $R$}\Comment{$W$ and $R$ are a set of workflow and resources respectively.}
+        \Procedure{l2ff}{$W$, $R$}\Comment{$W$ and $R$ are a set of workflows and resources respectively.}
         \State \texttt{$W_{sorted}=sort(W)$} 
         \State \texttt{$R_{sorted}=sort(R)$}
         \For{$w$ in $W_{sorted}$}
@@ -288,31 +292,33 @@ Contrary to HEFT and GA, L2FF does not produce an expectation of when a resource
 \label{sec:algo_perf_comp}
 
 We execute three experiments to evaluate and analyze the performance of the selected algorithms.
-We use random plans as the baseline of  our experiments.
+We use random plans as the baseline of our experiments.
 The Random planner selects a resource based on a uniform distribution and places a workflow to that resource.
 In addition, it requires no information about workflow runtime and resource performance.
 
 The first experiment measures the makespan of a plan that uses HEFT, GA, L2FF and Random for different campaign and resource sizes.
 The second experiment measures the sensitivity of the makespan to resource dynamism, i.e. resource performance changes over time.
-We define sensitivity as the difference between the makespan measured via executing a campaign and the expecte makespan given by the execution plan.
+We define sensitivity as the difference between the makespan measured via executing a campaign and the expected makespan given by the execution plan.
 Last, we measure the sensitivity of the makespan to workflow runtime uncertainty.
 This set of experiments provides a methodology to compare planning algorithms and decide which algorithm is more suited based on a campaign's computational requirements, i.e. workflow size, resource performance and initial information uncertainty.
 
-During the execution of our experiments, we are making a set of assumptions, which are based on the supported use cases and high performance computing resources we have access to.
-During our experiments we either vary the campaign size and keep the number of resources constant or vary the number of resources and keep the campaign size constant.
-The campaign size varies from 4 to 2048 workflows which satisfies requirement 1 from Table~\ref{tab:fun_reqs}.
-The number of resources vary from 4 up to 256 resources as per requirement 3 from Table~\ref{tab:fun_reqs}.
-
+During the execution of our experiments, we are making a set of assumptions about resource performance and workflow runtime.
+These assumption are based on the supported use cases and high performance computing resources we have access to.
 Resources can be homogeneous or heterogeneous and static or dynamic.
 Resources are considered homogeneous when they have the same performance in terms of operations per second, otherwise they are heterogeneous.
 Further, static resources are those whose performance does not change over runtime and dynamic when the resource performance changes over runtime.
-When resources are homogeneous we assume that their performance is equal to 1 petaFLOP.
+When resources are homogeneous, we assume that their performance is equal to 1 petaFLOP.
 We use four existing HPC resources as the basis for generating heterogeneous resources.
 These resources are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera with peak performance at 1.3, 2.7, 10.6 and 23.5 petaFLOPS respectively.
 
 Workflow execution runtime is based on an ecological use case and specifically the one described in \S~\ref{ch:designs}.
 The runtime of the use case is defined by a mean value of 75000 seconds and a variance of 6000 seconds when executed to a resource with performance of 1 petaFLOP.
 For the purpose of our experiments, we assume that workflow runtimes are drawn by a normal distribution with a mean and variance based on this use case.
+
+During our experiments we either vary the campaign size and keep the number of resources constant or vary the number of resources and keep the campaign size constant.
+The campaign size varies from 4 to 2048 workflows which satisfies requirement 1 from Table~\ref{tab:fun_reqs}.
+The number of resources vary from 4 up to 256 resources as per requirement 3 from Table~\ref{tab:fun_reqs}.
+
 
 \subsection{Experiment 1: Measuring makespan on static resources}
 
@@ -327,10 +333,10 @@ The genetic algorithm allows us to select the percentage of the workflows assign
 We use 0~\% (GA), 25~\% (GA-25) and 50~\% (GA-50).
 The percentage of non-random placement affects the plan the genetic algorithm produces.
 Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic algorithm as the number of workflows changes while the number of resources is constant.
-When the population is initialized randomly, GA does not always equally distributes workflows to resources, as the convergence rate is always less than 1.
+When the population is initialized randomly, GA does not always equally distribute workflows to resources, as the convergence rate is always less than 1.
 As a result, GA does not always produce a plan with the ideal makespan.
 Contrary, GA-25 and GA-50 have a convergence rate of 1, apart from a small drop GA-25 shows 8, 16 and 32 workflows.
-The drop is less than 0.03 which is not enough to conclude that GA-25 does not produce plans with the ideal makespan.
+The drop is less than 0.03 which is not significant to conclude that GA-25 does not produce plans with the ideal makespan.
 
 \begin{figure*}[ht!]
     \centering
@@ -354,7 +360,7 @@ When the population is initialized randomly, the genetic algorithm does not prod
 The convergence rate of GA-25 is 1 up to 16 resource and drops to 0 for more than 32 resources.
 GA-50 convergence rate is 1 up to 64 resources and drops to less than 0.2 for 128 resources and equal to 0 for 256 resources.
 The drop is due to the random initial placement of workflows on resources.
-As the number of resources increase, the probability for the random to place less than $ N_{C} \ N_{R} $ workflows on a resource decreases.
+As the number of resources increase, the probability for GA to place less than $ N_{C} \ N_{R} $ workflows on a resource decreases.
 
 Based the convergence rate, we expect that GA will not provide on average a plan with the ideal makespan whether the campaign size changes or the number of resources.
 GA-25 will provide plans with the ideal makespan when the number of resources is less than 16 regardless the number of workflows.
@@ -381,7 +387,6 @@ Figure~\ref{fig:StHomoCampaigns_4StHomoResources} varies the campaign size from 
     \label{fig:st_homog_analysis}
 \end{figure}
 
-
 HEFT and L2FF provide better makespan that Random and the genetic algorithm.
 L2FF places equal number of workflows per resource for all available resources.
 HEFT places a workflow to the resource that will finish it earlier.
@@ -396,7 +401,7 @@ As GA-50 provides plans with the best makespan over the three different configur
 
 The next configuration of this experiment shows how resource heterogeneity affects the performance of the algorithms.
 All algorithms produce and use different information about resources and specifically resource availability.
-Based on the information they produce, we expect the algorithms that produce more exact information to have better performance.
+Based on the information they produce, we expect the algorithms that produce more exact information to have better performance, such as HEFT and GA-50.
 
 \begin{figure*}[ht!]
     \centering
@@ -422,9 +427,9 @@ In addition, GA-50 produces plans with at least two times better makespan that L
 As the number of resources increase, the difference between the plans that GA-50 and L2FF produce reduces with L2FF providing a plan with better makespan than GA-50 for 256 resources.
 Due to the partial random initialization of  its plans, the genetic algorithm under-utilize some resources and over utilizes others.
 Instead, L2FF places the same number of workflows per resource and as a result overutilizes less performant resources.
-This leads to conclude that GA-50 places more than 8 and 4 workflows on the less performant resources for 128 and 256 resources respectively.
+%This leads to the believe that GA-50 places more than 8 and 4 workflows on the less performant resources for 128 and 256 resources respectively.
 Further, HEFT is ranking the workflows and also places a workflow to the resource that will finish it earlier.
-As a result, HEFT utilizes resources so that for every placement the makespan increase is the minimum possible.
+As a result, HEFT utilizes resources so that for every placement the makespan increase is the least possible.
 
 
 \begin{figure*}[ht!]
@@ -446,7 +451,7 @@ As a result, HEFT utilizes resources so that for every placement the makespan in
 \end{figure*}
 
 Figure~\ref{fig:heter_analysis} shows the performance of the algorithms when a campaign with heterogeneous workflows executes on heterogeneous resources.
-Comparing the results with those in figure~\ref{fig:hom_het_analysis}, there is not significant difference in the performance of the algorithms due to workflow heterogeneity we observed from our use case.
+Comparing the results with those in figure~\ref{fig:hom_het_analysis}, there is not significant difference in the performance of the algorithms due to workflow heterogeneity from our use case.
 This leads to the conclusion that resource heterogeneity affects the performance of the algorithms more than workflow heterogeneity.
 
 In summary, we can conclude that resource heterogeneity dominates the makespan performance among the considered algorithms.
@@ -463,13 +468,13 @@ Based on our analysis, the characteristics of the selected algorithms that affec
 
 High performance computing (HPC) resources show performance variations for multiple reasons, including power constrained operations~\cite{inadomi2015analyzing}, network and shared filesystem congestion~\cite{brown2018interference} and performance degradation~\cite{wu2017survey}.
 In addition, the timescales of the variations span from day to years~\cite{skinner2005understanding}.
-We model resource dynamism as a normal distribution with a mean value equal to the performance of a resource and sigma to 6~\% of the mean, resulting to $\pm$ 20~\% variation in $3\sigma$ distance.
+We model resource dynamism as a normal distribution with a mean value equal to the performance of a resource and sigma to 6~\% of the mean, resulting to $\pm$ 20~\% change in resource performance.
 Further, we assume that the performance changes daily and as a result affects the execution of the workflows of the selected use case.
 Figure~\ref{fig:dynamic_res} shows a histogram of a dynamic resource performance with a mean value equal to 1 petaFLOP.
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/campaign/DynRes.pdf}
+    \includegraphics[width=.75\textwidth]{figures/campaign/DynRes.pdf}
     \caption{Resource performance distribution of a dynamic resource with 1 petaFLOP average performance.}
     \label{fig:dynamic_res}
 \end{figure}
@@ -480,12 +485,11 @@ In addition, all workflows are assigned to a resource before executing the campa
 Based on our understanding from experiment 1, we expect the sensitivity to be similar between algorithms on homogeneous resources, as all three algorithms produce similar plans.
 Figures~\ref{fig:dyn_homog_sens_analysis} and~\ref{fig:dyn_hetero_sens_analysis} show the results for homogeneous workflows/ homogeneous resources and heterogeneous workflows/ heterogeneous resources respectively.
 
-Figures~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} and~\ref{fig:DyHomoResources_StHomoCampaignsSens} show the makespan sensitivity when workflows and resources are homogeneous.
-As per our expectation, the sensitivity of makespan among the three algorithms is similar and it is between 1~\% and 10~\%.
+As per our expectation, the sensitivity of makespan among the three algorithms is similar and it is between 1~\% and 10~\% (see Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} and~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
 In addition, we observe a drop in GA-50 sensitivity at 128 resources.
 This is because, GA-50 produces different plans at every realization of the experiment, since it places a number of workflows to resources randomly.
 In addition, the sensitivity drops as the number of workflows increase and the number of resources is constant ( Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens}) and increases when the number of resources increase and the number of workflows is constant (Fig.~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
-This leads us to the conclusion that as the average number of workflows per resource increases the sensitivity decreases regardless how many workflows are placed per resource by a plan.
+Thus, as the average number of workflows per resource increases the sensitivity decreases regardless how workflows are placed onto resource by a plan.
 
 
 \begin{figure}[ht!]
@@ -510,7 +514,7 @@ This leads us to the conclusion that as the average number of workflows per reso
 Figure~\ref{fig:dyn_hetero_sens_analysis} shows the makespan sensitivity as a percentage for a campaign of heterogeneous workflows and heterogeneous resources.
 We excluded the case of homogeneous workflows as it is similar in terms of makespan to executing heterogeneous workflows on heterogeneous resources.
 Based on the two subplots, we see that sensitivity decreases as the number of workflows increase and increase as the number of resources increase.
-This verifies our conclusion that as the average number of workflows per resource increases the sensitivity decreases.
+This further supports our conclusion that as the average number of workflows per resource increases the sensitivity decreases.
 Makespan sensitivity shows similar values for all three algorithms in figure~\ref{fig:StHeteroCampaigns_4DyHeteroResourcesSens}, except HEFT for more than 512 workflows.
 HEFT places workflows on resources in such a way that each resource will be used for similar amount of time.
 As a result, a slow down on a resource will affect the makespan more than GA-50 and L2FF which produce plans that overutilize some resources.
@@ -541,8 +545,8 @@ This experiment measured how sensitive are plans using HEFT, GA, L2FF and Random
 On homogeneous resources, all algorithms show similar levels of sensitivity.
 GA-50 sensitivity drops from more than 64 resources as some resources are overutilized.
 On heterogeneous resources, HEFT is generally more sensitive since it uses an expectation about resource availability to map workflows to resources.
-L2FF becomes more sensitive than HEFT after 128 resources as it places equal number of workflow to resources overutilizing less performant resources.
-Sensitivity is proportional to the number of resources and inverse proportional to the number of workflows, since it decreases as the number of workflows increase when using constant number of resources and increases when number of resources increases and campaign size is constant.
+L2FF becomes more sensitive than HEFT after 128 resources as it places equal number of workflows to resources overutilizing less performant resources.
+In addition, sensitivity is proportional to the number of resources and inverse proportional to the number of workflows, since it decreases as the number of workflows increase when using constant number of resources and increases when number of resources increases and campaign size is constant.
 Finally, we observed that for a 6~\% temporal resource variation causes less than 10~\% variation in makespan regardless if resources are homogeneous or heterogeneous.
 
 
@@ -606,11 +610,11 @@ This in conjunction with experiment 2 allows us to conclude that the sensitivity
 
 \section{Conclusions}
 \label{sec:cf_algo_sel}
-In this chapter, we motivate and discuss using planning algorithms to plan the execution of a computational campaign on HPC resources.
+In this chapter, we discuss and compare planning algorithms to plan the execution of a computational campaign on HPC resources.
 Specifically, we discuss three planning algorithms, HEFT, a genetic algorithm (GA) and L2FF, and their algorithmic characteristics.
 Our experimental methodology allows us to compare plans in terms of makespan performance and their sensitivity to resource dynamism and workflow runtime uncertainty.
 
-Based on our investigation, we conclude that there are three factors which affect the performance and sensitivity of planning algorithms.
+Based on our analysis, we conclude that there are three factors which affect the performance and sensitivity of planning algorithms.
 The first factor is whether the algorithm uses an expectation of when a resource will be available.
 HEFT and the genetic algorithm use an expectation of resource availability and show better performance on homogeneous and heterogeneous resources than L2FF and random.
 The second factor is whether the algorithm uses a deterministic or randomized heuristic.
@@ -626,7 +630,7 @@ Further, sensitivity is proportional to the number of resources and inverse prop
 Sensitivity to resource dynamism or workflow runtime uncertainty decreases as the number of workflows increase when using constant number of resources and increases when number of resources increases and campaign size is constant.
 When variation originates from workflow runtime uncertainty, both HEFT and L2FF were more sensitive than GA-50 since they prioritize workflows based on their runtime estimation.
 
-When selecting a planning algorithm for a campaign a user should consider the following factors:
+When selecting a planning algorithm for a campaign, users should consider the following factors:
 \begin{inparaenum}[1)]
     \item resource homogeneity/heterogeneity;
     \item resource dynamism; and
