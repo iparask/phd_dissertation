@@ -1,9 +1,10 @@
 \label{ch:designs}
-A growing number of scientific domains are adopting workflows that use multiple analysis algorithms to perform data-analytics.
-In addition, there is a set of workflows that do not necessarily conform to the MapReduce abstraction.
+
+In addition to the MapReduce style data-analytics, there is a set of data analysis workflows that do not necessarily conform to the MapReduce abstraction.
 Their tasks can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
-Furthermore, the volume and scale of data justifies the use to parallelism and HPC resources.
-From a middleware perspective, the design and architectural space is large and the lack of performance analysis make it difficult to select among equivalent implementations.
+As a consequence, data-parallel frameworks, like Spark and Dask may not be the most suitable choice for their execution.
+%Furthermore, the volume and scale of data justifies the use to parallelism and High Performance Computing (HPC) resources.
+From a middleware perspective, the design and architectural space is large and the lack of performance analysis makes it difficult to select among equivalent implementations.
 
 From a design perspective, a promising approach is isolating tasks from execution management.
 Tasks are assumed to be self-contained programs which are executed in the operating system (OS) environment of HPC compute nodes.
@@ -13,7 +14,7 @@ Nonetheless, program-based designs also impose performance limitations, includin
 Due to their performance limitations, program-based designs of computing frameworks are best suited to execute compute-intense workflows in which each task requires a certain amount of parallelism and runs from several minutes to hours.
 The emergence of workflows that require heterogeneous, compute-intense tasks to process large amount of data is pushing the boundaries of program-based designs, especially when scale requirements suggest the use of modern HPC infrastructures with large number of CPUs/GPUs and dedicated data facilities.
 
-We use a paradigmatic use case from the polar science domain to evaluate three alternative task-based designs, and experimentally characterize and compare their performance.
+We use a paradigmatic use case workflow from the polar science domain to evaluate three alternative task-based designs, and experimentally characterize and compare their performance.
 Our use case requires us to analyze satellite images of Antarctica to detect pack-ice seals taken across a whole calendar year.
 The resulting dataset consists of $3,097$ images for a total of $\approx4$~TB.
 The use case requires us to repeatedly process these images, running both CPUs and GPUs code that exchange several GB of data.
@@ -27,42 +28,29 @@ In \S~\ref{sec:design}, we discuss the three architecturally equivalent design t
 \section{Satellite Imagery Analysis Application}
 \label{sec:ucase}
 Imagery employed by ecologists as a tool to survey populations and ecosystems come from a wide range of sensors, e.g., camera-trap surveys~\cite{karanth1995estimating} and aerial imagery transects~\cite{western2009impact}.
-However, most traditional methods can be prohibitively labor-intensive when employed at large scales or in remote regions.
 Very High Resolution (VHR) satellite imagery provides an effective alternative to perform large scale surveys at locations with poor accessibility such as surveying Antarctic fauna~\cite{lynch2012detection}.
 To take full advantage from increasingly large VHR imagery, and reach the spatial and temporal breadths required to answer ecological questions, it is paramount to automate image processing and labeling.
-
-% that the image labeling step is handled automatically.
 
 Convolutional Neural Networks (CNN) represent the state-of-the-art for nearly every computer vision routine.
 For instance, ecologists have successfully employed CNNs to detect large mammals in airborne imagery~\cite{kellenberger2018detecting,polzounov2016right}, and camera-trap survey imagery~\cite{norouzzadeh2018automatically}.
 We use a Convolutional Neural Network (CNN) to survey Antarctic pack-ice seals in VHR imagery.
 Pack-ice seals are a main component of the Antarctic food web~\cite{fabra2008convention}: estimating the size and trends of their populations is key to understanding how the Southern Ocean ecosystem copes with climate change~\cite{hillebrand2018climate} and fisheries~\cite{reid2019climate}.
 
-For this use case, we process WorldView 3 (WV03) panchromatic imagery as provided by DigitalGlobe Inc.
-This dataset has the highest available resolution for commercial satellite imagery.
-We refrain from using imagery from other sensors because pack-ice seals are not clearly visible at lower resolutions.
-For our CNN architecture, we use a U-Net~\cite{ronneberger2015u} variant that counts seals with an added regression branch and locates them using a seal intensity heat map.
-To train our CNN, we use a training set of 53 WV03 images, with $88k$ hand-labeled tiles, where every tile has a correspondent seal count and a class label (i.e., seal vs. non-seal).
-For hyper-parameter search, we train CNN variants for 75 epochs (i.e., 75 complete runs through the training set) using an Adam optimizer~\cite{kingma2014adam} with a learning rate of $10^{-3}$ and tested against a validation set.
-The validation set consists of $10\%$ of the training set.
-In addition, we randomized the WV03 image selection so that a validation tile does not overlap with a training one.
-Testing was performed on 5 WV03 images.
-Double observer seal counting was performed and model detection results were compared to observer consensus detections.
-Furthermore, we avoid double counting by setting a minimum distance boundary between neighboring seals and keeping those where the model was more confident.
-
-We use the best performing model on an archive of over $3,097$ WV03 images, with a total dataset size of $\approx4$~TB.
+This use case workflow processes WorldView 3 (WV03) panchromatic imagery, which has the highest available resolution for commercial satellite imagery.
+%We use the best performing CNN model~\cite{goncalves2020sealnet} on an archive of over $3,097$ WV03 images, with a total dataset size of $\approx4$~TB.
 Due to limitations on GPU memory, it is necessary to tile WV03 images into smaller patches before sending input imagery through the seal detection CNN.
 Taking tiled imagery as input, the CNN outputs the latitude and longitude of each detected seal.
-While the raw model output still requires statistical treatment, such `mock-run' emulates the scale necessary to perform a comprehensive pack-ice seal census.
-We order the tiling and seal detection stages into a pipeline that can be re-run whenever new imagery is obtained.
+%While the raw model output still requires statistical treatment, such `mock-run' emulates the scale necessary to perform a comprehensive pack-ice seal census.
+We order the tiling and seal detection stages into a pipeline that can be run with different imagery datasets.
 This allows domain scientists to create seal abundance time series that can aid in Southern Ocean monitoring.
+To create this time series, domain scientists define a computational campaign where each workflow analyzes imagery from different calendar years or seasons.
+
 
 \section{Workflow Design and Implementation}\label{sec:design}
 Computationally, the use case described in~\S\ref{sec:ucase} presents three main challenges: heterogeneity, scale and repeatability.
 The images of the use case dataset vary in size with a wide distribution.
 Each image requires tiling, per tile counting of seal populations and result aggregation across tiles.
 Tiling is memory intensive while counting is computationally intensive, requiring CPU and GPU implementations, respectively.
-Whenever the image dataset is updated, it needs to be reprocessed.
 
 We address these challenges by codifying image analysis into a workflow.
 We then execute this workflow on HPC resources, leveraging the concurrency, storage systems and compute speed they offer to reduce time to completion.
@@ -74,7 +62,7 @@ Note that both designs separate the functionalities required to process each ima
 This is consistent with moving away from vertical, end-to-end single-point solutions, favoring designs and implementations that satisfy multiple use cases, possibly across diverse domains.
 Accordingly, the two designs we consider, implement, and characterize use two tasks (i.e., programs) to implement the tiling and counting functionalities required by the use case.
 
-Both designs are functionally equivalent, in that they both enable the analysis of the given image dataset.
+Both designs are functionally equivalent, in that they both enable the analysis of the given dataset.
 Nonetheless, each design leads to different amounts of concurrency, resource utilization and overheads, depending on data/compute affinity, scheduling algorithm, and coordination between CPU and GPU computations.
 Based on a performance analysis, it will be possible to know which design entails the best tradeoffs for common metrics as total execution time or resource utilization.
 
@@ -88,18 +76,18 @@ As a result, at any given point in time there are $C = n\times c$ CPUs and $G = 
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign1.pdf}
         \caption{}
         \label{fig:seals_design1}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign2.pdf}
         \caption{}\label{fig:seals_design2}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/SealsDesign3.pdf}
         \caption{}\label{fig:seals_design3}
     \end{subfigure}
@@ -120,7 +108,7 @@ As a result, at any given point in time there are $C = n\times c$ CPUs and $G = 
 
 We specify the workflow for counting the number of seals in a set of images as a set of pipelines.
 Each pipeline is composed of two stages, each with one type of task.
-The task of the first stage gets an image as input and generates tiles of that image based on a selected tile size as output.
+The task of the first stage gets an image as input and generates tiles of that image as output.
 The task of the second stage gets the generated tiles as input, counts the number of seals found in each tile and outputs the aggregated result for the whole image.
 
 Formally, we define two types of tasks:
@@ -140,7 +128,8 @@ Each sub\-array is converted to an compressed image via OpenCV routines and save
 
 Seal counting in $T_{2}$ is performed via a Convolutional Neural Network (CNN) implemented with PyTorch~\cite{paszke2017automatic}.
 The CNN counts the number of seals for each tile of an input image.
-When all tiles are processed, the coordinates of the tiles are converted to the geographical coordinates of the image and saved in a file, along with the number of counted seals. Note that the number of seals in an tile does not affect the execution of the network, i.e. the same number of operations will be executed.
+When all tiles are processed, the coordinates of the tiles are converted to the geographical coordinates of the image and saved in a file, along with the number of counted seals.
+Note that the number of seals in an tile does not affect the execution of the network, i.e. the same number of operations will be executed.
 
 Both tiling and seal counting implementations are invariant between the designs we consider.
 This is consistent with the designs being task-based, i.e., each task exclusively encapsulates the capabilities required to perform a specific operation over an image or tile.
@@ -154,7 +143,7 @@ For our use case, EnTK has three main advantages compared to other workflow engi
 \begin{inparaenum}[(1)]
     \item it exposes pipelines and tasks as first-order abstractions implemented in Python;
     \item it is specifically designed for concurrent management of up to $10^5$ pipelines; and
-    \item it supports RADICAL-Pilot, a pilot-based runtime system designed to execute heterogeneous bag of tasks on HPC machines~\cite{merzky2019using}.
+    \item it supports RADICAL-Pilot.
 \end{inparaenum} 
 Together, these features address the challenges of heterogeneity, scale and repeatability: users can encode multiple pipelines, each with different types of tasks, executing them at scale on HPC machines without explicitly coding parallelism and resource management.
 
@@ -184,21 +173,21 @@ While this design avoids I~/O bottlenecks, it may reduce concurrency when the pe
 
 Design~2 implements a queue-based design.
 We introduce two tasks $T_{1}$ and $T_{2}$ as defined in~\S\ref{ssec:approach1}.
-In contrast to Design 1, these tasks are started and then executed for as long as resources are available, processing input images at the rate taken to process each image.
+Contrary to Design 1, these tasks are started and then executed for as long as data and resources are available, processing input images at the rate taken to process each image.
 The number of concurrent $T_{1}$ and $T_{2}$ depends on available resources, including CPUs, GPUs, and RAM.
 
-For the implementation of Design~2, we do not need EnTK, as we submit a bag of $T_{1}$ and $T_{2}$ tasks via the RADICAL~-Pilot RTS, and manage the data movement between tasks via queues.
+For implementing Design~2, we do not need EnTK, as we submit a bag of $T_{1}$ and $T_{2}$ tasks via the RADICAL~-Pilot RTS, and manage the data movement between tasks via queues.
 As shown in Fig.~\ref{fig:seals_design2}, Design 2 uses one queue (Queue 1) for the dataset, and another queue (Queue 2) for each compute node.
 For each compute node, each $T_{1}$ pulls an image from Queue 1, tiles that image and then queues the resulting tiles to Queue 2.
 The first available $T_{2}$ on that compute node, pulls those tiles from Queue 2, and counts the seals.
 
-To communicate data and control signals between queues and tasks, we defined a communication protocol with three entities: Sender, Receiver, and Queue. 
-Sender connects to Queue and pushes data.
-When done, Sender informs Queue and disconnects.
-Receiver connects to Queue and pulls data.
-If there are no data in Queue but Sender is connected, Receiver pulls a ``wait'' message, waits, and pulls again after a second.
-When there are no data in Queue or Sender is not connected to Queue, Receiver pulls an ``empty'' message, upon which it disconnects and terminates.
-This ensures that tasks are executing, even if starving, and that all tasks are gracefully terminating when all images are processed.
+%To communicate data and control signals between queues and tasks, we defined a communication protocol with three entities: Sender, Receiver, and Queue. 
+%Sender connects to Queue and pushes data.
+%When done, Sender informs Queue and disconnects.
+%Receiver connects to Queue and pulls data.
+%If there are no data in Queue but Sender is connected, Receiver pulls a ``wait'' message, waits, and pulls again after a second.
+%When there are no data in Queue or Sender is not connected to Queue, Receiver pulls an ``empty'' message, upon which it disconnects and terminates.
+%This ensures that tasks are executing, even if starving, and that all tasks are gracefully terminating when all images are processed.
 
 Note that Design~2 load balances $T_{1}$ tasks across compute nodes but  balances $T_{2}$ tasks only within each node.
 For example, suppose that $T_{1}$ on compute node $A$ runs two times faster than $T_{1}$ on compute node $B$.
@@ -206,8 +195,8 @@ Since both tasks are pulling images from the same queue, $T_{1}$ of $A$ will pro
 Both $T_{1}$ of $A$ and $B$ will execute for around the same amount of time until Queue 1 is empty, but Queue 2 of $A$ will be twice as large as Queue 2 of $B$.
 $T_{2}$ tasks executing on $B$ will process half as many images as $T_{2}$ tasks on $A$, possibly running for a shorter period of time, depending on the time taken to process each image.
 
-In principle, Design~2 can be modified to load balance also across Queue 2 but in practice, as discussed in~\S\ref{ssec:approach1}, this would produce I/O bottlenecks:
-Load balancing across $T_{2}$ tasks would require for all tiles produced by $T_{1}$ tasks to be written to and read  from a filesystem shared across multiple compute nodes.
+In principle, Design~2 can be modified to load balance also across Queue 2 but in practice, as discussed in~\S\ref{ssec:approach1}, this would produce I/O bottlenecks.
+Load balancing across $T_{2}$ tasks would require for all tiles produced by $T_{1}$ tasks to be written to and read  from a  shared filesystem.
 Keeping Queue 2 local to each compute node enables using the filesystem local to each compute node.
 
 % ---------------------------------------------------------------------------
@@ -228,7 +217,7 @@ While in Design 2 some node may end up waiting for another node to process a muc
 We executed three experiments using GPU compute nodes of the XSEDE Bridges supercomputer.
 These nodes offer 32 cores, 128 GB of RAM and two P100 Tesla GPUs.
 We stored the dataset of the experiments and the output files on XSEDE Pylon5 Lustre filesystem.
-We stored the tiles produced by the tailing tasks on the local filesystem of the compute nodes.
+We stored the tiles produced by the tiling tasks on the local filesystem of the compute nodes.
 This way, we avoided creating a performance bottleneck by performing millions of reads and writes of $\approx700$~KB on Pylon5.
 We submitted jobs requesting 4 compute nodes to keep the average queue time within a couple of days.
 Requesting more nodes produced queue times in excess of a week.
@@ -237,7 +226,6 @@ In addition, we had full control over the nodes during execution and were not sh
 The experiments dataset consists of $3,097$ images, ranging from $50$ to $2,770$~MB for a total of $\approx4$~TB of data.
 The images size follows a normal distribution with a mean value of $1,304.85$~MB and standard deviation of $512.68$~MB.
 
-
 For Design~1, 2 and 2.A described in~\S\ref{sec:design}, Experiment~1 models the execution time of the two tasks of our use case as a function of the image size (the only property of the images for which we found a correlation with execution time); Experiment~2 measures the total resource utilization of each design; and Experiment~3 characterizes the overheads of the middleware implementing each design.
 Together, these experiments enable performance comparison across designs, allowing us to draw conclusions about the performance of heterogeneous task-based execution of data-driven workflows on HPC resources.
 
@@ -245,17 +233,16 @@ Together, these experiments enable performance comparison across designs, allowi
 \subsection{Experiment~1: Design~1 Tasks Execution Time}
 \label{ssec:des1analysis}
 
-
 Fig.~\ref{fig:stage_0_execution} shows the execution time of the tiling task---defined as $T_{1}$ in~\S\ref{des1}---as a function of the image size.
 We partition the set of images based on image size, obtaining 22 bins with a range of $125$~MB each starting from $50$~MB up to $2,800$~MB.
 The average time taken to tile an image in each bin tends to increase with the size of the image.
 The box-plots show some positive skew of the data with a number of data points  falling outside the assumed normal distribution.
-There are also large standard  deviations ($STD$, blue line) in most of the bins.
+There are also large standard deviations ($STD$, blue line) in most of the bins.
 Thus, there is a weak correlation between task execution time and image size with a large spread  across all the image sizes.
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_0_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Red line shows fitted linear function.}\label{fig:stage_0_execution}
 \end{figure}
@@ -266,9 +253,9 @@ We observe that $STD$ drops with increased concurrency but remains relatively st
 We attribute the initial dropping to how Lustre's caching improves the performance of an increasing number of concurrent requests.
 Further, we observe that as the type of task and the compute node are the same across all our measures, the relatively stable and consistent $STD$ observed across degrees of task concurrency depends on fluctuations in the node performance.
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/designs/concerrency_std.pdf}
+    \includegraphics[width=.75\textwidth]{figures/designs/concerrency_std.pdf}
     \caption{$STD$ of $T_{1}$ execution time based on image size bin and number of concurrent tasks.
         Mostly dependent on compute node's performance and invariant across values of task concurrency.}\label{fig:concurrency_test}
 \end{figure}
@@ -283,6 +270,7 @@ T(x) = \alpha \times x+\beta
 
 
 \begin{table*}[t]
+    \scriptsize
     \centering
     \begin{tabular}{@{}cclrcl@{}}
         \toprule
@@ -294,7 +282,7 @@ T(x) = \alpha \times x+\beta
         \textbf{Figure}                                \\
         \midrule
         1                                              & 
-        $T^{UC1}_{1}$                                  & 
+        $T_{1}$                                  & 
         $1.92\times 10^{-2}$                           & 
         $60.49$                                        & 
         $0.97$                                         & 
@@ -328,7 +316,7 @@ T(x) = \alpha \times x+\beta
         N/A     \\
 		%
         2.A                                            &
-        $_{2}$.                                        &
+        $T_{2}$.                                        &
         $4.80\times 10^{-2}$                           &
         $87.60$                                        &
         $0.95$                                         &
@@ -354,9 +342,9 @@ Fig.~\ref{fig:stage_1_execution} shows the execution time of the seals counting 
 Defined as $T_{2}$ in~\S\ref{des1}, this task presents a different behavior than $T_{1}$, as the code executed is different.
 Note the slightly stronger positive skew of the data compared to that of Fig.~\ref{fig:stage_0_execution} but still consistent with our conclusion that deviations are mostly due to fluctuations in the compute node performance (i.e., different code but similar fluctuations).
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_1_tx_box.pdf}
     \caption{Experiment~1, Design~1: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Green line shows fitted linear function.}
     \label{fig:stage_1_execution}
@@ -380,9 +368,9 @@ In this type of middleware, task code is independent from that of the middleware
 Nonetheless, in real scenarios with concurrency and heterogeneous tasks, the middleware may perform operations on multiple tasks while waiting for others to return.
 Accordingly, in Design~2 we observe an execution time variation comparable to that observed with Design~1 but Fig.~\ref{fig:stage_1_execution_des2} shows a stronger positive skew of the data in Design~2 than Fig.~\ref{fig:stage_0_execution} in Design~1.
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_0_tx_box_des2.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_0_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{1}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Red line shows fitted linear function.}\label{fig:stage_1_execution_des2}
 \end{figure}
@@ -408,13 +396,12 @@ $T_{2}$ executes on GPU and $T_{1}$ on CPU but their execution times produce com
 This further supports our hypothesis that the long tail of the distribution of $T_{1}$ and especially $T_{2}$ execution times depends on the competition for main memory and I/O between the middleware implementing Design~2 and the executing tasks.
 
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/designs/stage_1_tx_box_des2.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/designs/stage_1_tx_box_des2.pdf}
     \caption{Experiment~1, Design~2: Box-plots of $T_{2}$ execution time, mean and $STD$ for $125$~MB image size bins.
         Green line shows fitted linear function.}\label{fig:stage_2_execution_des2}
 \end{figure}
-
 
 Fitting the model gives $\alpha = 4.71 \times 10^{-2}$ and $\beta = 95.83$.
 $R^{2}$ is $0.95$ and $S_{error}$ of $5.96$.
@@ -432,20 +419,19 @@ Design~2.A requires one queue more than Design~2 for $T_{1}$ and therefore more 
 This can explain the slowing of $T_{2}$ but not the speedup of $T_{1}$.
 This requires further investigation, measuring whether the performance fluctuations of compute nodes are larger than measured so far.
 
-
 As discussed in~\S\ref{ssec:approach2}, balancing of workflow execution differs between Design~2 and Design~2.A. Fig.~\ref{fig:design2_timeline} shows that each $T_{1}$ task can work on a different number of images but all $T_{1}$ tasks concurrently execute for a similar duration.
 The four distributions in Fig.~\ref{fig:design2_timeline} also show that this balancing can result in different input distributions for each compute node, affecting the total execution time of $T_{2}$ tasks on each node.
 Thus, Design~2 can create imbalances in the time to completion of $T_{2}$, as shown by the red bars in Fig.~\ref{fig:design2_timeline}.
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
-    \begin{subfigure}[b]{0.95\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/design2_timelines.pdf}
         \caption{}
         \label{fig:design2_timeline}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.95\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \includegraphics[width=\linewidth]{figures/designs/design2a_timelines.pdf}
         \caption{}
         \label{fig:design2a_timeline}
@@ -480,30 +466,29 @@ GPUs are not utilized for almost an hour at the beginning of the execution and u
 
 Analysis shows that RADICAL-Pilot's scheduler did not schedule GPU tasks at the start of the execution even if GPU resources were available.
 This points to an implementation issue and not to an inherent property of Design~1.
-The drop in GPU utilization is instead explained by noticing that, as explained in~\S\ref{sec:design}, GPU tasks where pinned to specific compute nodes so to avoid I/O bottlenecks.
+The drop in GPU utilization is instead explained by noticing that, as explained in~\S\ref{sec:design}, GPU tasks were pinned to specific compute nodes to avoid I/O bottlenecks.
 Our experiments confirm that this indeed reduces utilization as some of the GPU tasks on some nodes take longer time to process than those on other nodes.
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.75\textwidth}
+    \begin{subfigure}[b]{0.65\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/Design1Utilization.pdf}
         \caption{}
         \label{fig:design1util}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.75\textwidth}
+    \begin{subfigure}[b]{0.65\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/Design2Utilization.pdf}
         \caption{}
         \label{fig:design2util}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.75\textwidth}
+    \begin{subfigure}[b]{0.65\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/Design2AUtilization.pdf}
         \caption{}
         \label{fig:design2autil}
     \end{subfigure}
-    \caption{Percentage of CPU and GPU utilization for: (a) Design~1; (b)
-        Design~2, and (3) Design~2.A.}
+    \caption{Percentage of CPU and GPU utilization for: (a) Design~1; (b) Design~2, and (3) Design~2.A.}
     \label{fig:Utilization}
 \end{figure}
 
@@ -517,17 +502,17 @@ This shows that the additional execution time of that node was only due to the d
 Fig.~\ref{fig:design2autil} shows the resource utilization for a specific run of Design~2.A.
 For 3 compute nodes out of 4, CPU utilization is shorter than for Design~1 and 2.
 For the 4th compute node, CPU utilization is much longer as already explained when discussing $T_{1}$ execution time for Node 3 in Fig.~\ref{fig:design_balancing}, Experiment~1.
-As already mentioned, the anomalous behavior of Node 3 support our hypothesis that compute node performance fluctuations can be much wider than expected.
+As already mentioned, the anomalous behavior of Node 3 supports our hypothesis that compute node performance fluctuations can be much wider than expected.
 
 Fig.~\ref{fig:design2autil} shows that in Design~2.A GPUs are released faster compared to Design~1 and Design~2, leading to a GPU utilization above $90\%$.
-As already explained in Experiment~1, this is due to differences in data balancing among designs.
+As explained in Experiment~1, this is due to differences in data balancing among designs.
 This shows the efficacy of two design choices for the concurrent execution of data-driven, compute-intense and heterogeneous workflows: early binding of data to node with balanced distribution of image size alongside the use of local filesystems for data sharing among tasks.
 
 Note that drops in resource utilization are observed in all three designs.
 In Design~1, although both CPUs and GPUs were used, in some cases CPU utilization dropped to 6 cores.
 Our analysis showed that this happened when RADICAL-Pilot scheduled both CPU and GPU tasks, pointing to an inefficiency in the scheduler implementation.
 Design~2 and 2.A CPU utilization drops mostly by one CPU where multiple tiling tasks try to pull from the queue at the same time.
-This confirm our conclusions in Experiment~1 about resource competition between middleware and executing tasks.
+This confirms our conclusions in Experiment~1 about resource competition between middleware and executing tasks.
 In all designs, there is no significant fluctuations in GPU utilization, although there are more often in Design~1 when CPU and GPUs are used concurrently.
 
 % ---------------------------------------------------------------------------
@@ -538,13 +523,13 @@ The discussion of Experiment~1 and 2 results explains how these differences rela
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.7\textwidth}
+    \begin{subfigure}{0.75\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/ttx.pdf}
         \caption{}
         \label{fig:ttx}
     \end{subfigure}\\
     ~
-    \begin{subfigure}{0.7\textwidth}
+    \begin{subfigure}{0.75\textwidth}
         \includegraphics[width=\textwidth]{figures/designs/overheads.pdf}
         \caption{}
         \label{fig:overheads}
@@ -556,8 +541,9 @@ The discussion of Experiment~1 and 2 results explains how these differences rela
 
 Fig.~\ref{fig:overheads} shows the overheads of each design implementation.
 All three designs overheads are at least two orders of magnitude smaller than the total time to execution.
-A common overheads between all designs is the ``Dataset Discovery Overhead''.
-This overhead is the time needed to list the dataset and it is proportional to the size of the dataset. RADICAL-Pilot has two main components: Agent and Client.
+A common overhead between all designs is the ``Dataset Discovery Overhead''.
+This overhead is the time needed to list the dataset and it is proportional to the size of the dataset. 
+RADICAL-Pilot has two main components: Agent and Client.
 RADICAL-Pilot Agent's overhead is less than a second in all designs while RADICAL-Pilot Client's overhead is in the order of seconds for all three designs.
 The latter overhead is proportional to the number of tasks submitted simultaneously to RADICAL-Pilot Agent.
 
@@ -568,8 +554,8 @@ Experiments should be performed to measure the offset between resource utilizati
 
 Fig.~\ref{fig:overheads} shows that the dominant overheads of Design~2 is ``Design~2 Setup Overhead''.
 This overhead includes setting up and starting queues in each compute node, and starting and shutting down both $T_{1}$ and $T_{2}$ tasks on each node.
-Setting up and starting the queues accounts for most of the overhead as we use a conservative waiting time to assure that all the queues are indeed up and ready.
-This can be optimized further reducing the impact of this overhead.
+Setting up and starting the queues accounts for most of the overhead as we use a conservative waiting time to assure that all the queues are up and ready.
+%This can be optimized further reducing the impact of this overhead.
 
 Alongside the overheads already discussed, Design~2.A also introduces an overhead called ``Design~2.A Distributing Overhead'' when partitioning and distributing the dataset over separate nodes.
 The average time of this overhead is $7.5$ seconds, with a standard deviation of $3.71$ and is proportional to the dataset and the number of available compute nodes.
@@ -583,7 +569,7 @@ Nonetheless, Design~1 would still require executing a task for each image, impos
 \section{Discussion and Conclusions}
 \label{sec:des_concl}
 
-While design 1, 2 and 2.A can successfully support the execution of the paradigmatic use case described in~\S\ref{sec:ucase}, our experiments show that for the metrics considered, Design~2.A is the one offering the better overall performance.
+While designs 1, 2 and 2.A successfully support the execution of the paradigmatic workflow described in~\S\ref{sec:ucase}, our experiments show that for the metrics considered, Design~2.A is the one offering the better overall performance.
 Generalizing this result, use cases that are both data-driven and compute-intense benefit from early binding of data to compute node so to maximize data and compute affinity and equally balance input across nodes.
 This approach minimizes the overall time to completion of this type of workflows while maximizing resource utilization.
 
@@ -592,11 +578,29 @@ In program-based designs, the overhead of bootstrapping programs needs to be min
 In presence of large amount of data, late binding implies copying, replicating or accessing data over network and at runtime.
 We showed that, in contemporary HPC infrastructures, this is too costly both for resource utilization and total time to completion.
 
+When executing workflows as part of a computational campaign, it is important to efficiently utilize available resources.
+Our design evaluation provides us with information on how to implement the workflows of a campaign effectively.
+In addition, our overheads characterization provides us with a baseline to evaluate the production grade workflow implementations.
+
+
 %Infrastructure-wise, our experiments show the limits imposed by an unbalance between number of CPU cores and available memory.
 %Given data-driven computation where multi GB images need processing, we were able to use just $10\%$ of the available cores due to the amount of RAM required.
 %This applies also to the unbalance between CPUs and GPUs: use cases with heterogeneous tasks would benefit from a n higher GPU/CPU ratio.
+
+
 
 %These results apply to the evaluation of the design of existing and future computing frameworks. 
 %For example, we are extending both EnTK and RADICAL-Pilot to implement Design~2.A.
 %We will use our overheads characterization as a baseline to evaluate our production-grade implementation and further improve the efficiency of our middleware. 
 %Further, we will apply the presented experimental methodology to other use cases and infrastructures, measuring the trade offs imposed by other types of task heterogeneity, including multi-core or multi-GPU tasks that extends beyond a single compute node.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%For our CNN architecture, we use a U-Net~\cite{ronneberger2015u} variant that counts seals with an added regression branch and locates them using a seal intensity heat map.
+%To train our CNN, we use a training set of 53 WV03 images, with $88k$ hand-labeled tiles, where every tile has a correspondent seal count and a class label (i.e., seal vs. non-seal).
+%For hyper-parameter search, we train CNN variants for 75 epochs (i.e., 75 complete runs through the training set) using an Adam optimizer~\cite{kingma2014adam} with a learning rate of $10^{-3}$ and tested against a validation set.
+%The validation set consists of $10\%$ of the training set.
+%In addition, we randomized the WV03 image selection so that a validation tile does not overlap with a training one.
+%Testing was performed on 5 WV03 images.
+%Double observer seal counting was performed and model detection results were compared to observer consensus detections.
+%Furthermore, we avoid double counting by setting a minimum distance boundary between neighboring seals and keeping those where the model was more confident.
