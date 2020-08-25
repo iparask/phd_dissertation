@@ -648,11 +648,11 @@ We continue by analyzing the performance of each architectural approach and used
 
 \begin{figure}[t]
     \centering
-    \begin{subfigure}{.75\textwidth}
+    \begin{subfigure}{.85\textwidth}
         \centering
         \includegraphics[width=.95\linewidth]{figures/data_analytics_hpc/task_par/All4approachesWith4M_logscaleline.pdf}
     \end{subfigure}\\
-    \begin{subfigure}{.75\textwidth}
+    \begin{subfigure}{.85\textwidth}
         \centering
         \includegraphics[width=.95\linewidth]{figures/data_analytics_hpc/task_par/All4approachesWith4MSpeedup.pdf}
     \end{subfigure}
@@ -849,7 +849,6 @@ Our method can be used for any application which data are represented as time se
 While the task abstractions provided by all frameworks are well-suited for implementing all use cases, the high-level MapReduce programming model provided by Spark and Dask has several advantages. 
 It is easier to use and efficiently support common data exchange patterns, e.\,g. shuffling between \texttt{map} and \texttt{reduce} stages. 
 In our benchmarks, Spark outperforms Dask in communication-intensive tasks, such as broadcasts and shuffles. 
-%Further, the in-memory RDD abstraction performs well for iterative algorithms. 
 Dask provides more versatile low and high level APIs and integrates better with python frameworks. 
 RADICAL-Pilot does not provide a MapReduce API, but is well suited for coarse-grained task-level parallelism~\cite{merzky2018design, merzky2019using}, and when HPC and analytics frameworks need to be integrated. 
 We also identified a limitation in Dask and Spark: while both frameworks provide some support for linear algebra through a distributed array abstraction, it proved inflexible for an efficient all-pairs pattern implementation. 
