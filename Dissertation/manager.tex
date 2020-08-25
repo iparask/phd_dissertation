@@ -1,3 +1,4 @@
+% !TEX root = main.tex
 \label{ch:cmanager}
 %Change this chapter to emulator instead of actual design.
 %What am I prototyping here??????????
@@ -6,14 +7,15 @@
 
 In the previous chapters, we discussed the requirements and support of data-intensive workloads and workflows on high performance computing (HPC) resources. 
 When considering actual research, scientific projects require to execute multiple workflows at scale and potentially for long period of time.
-Usually, workflows are first developed, tested and, when ready, they are executed at scale until the project allocation on the target HPC machine(s) is exhausted. 
+Usually, workflows are first developed, tested and executed for small scale problems which can be verified theoretically.
+When ready, multiple workflows are executed, potentially concurrently, at production scale for long periods of time on the target HPC machine(s). 
 This poses unprecedented computing challenges, shifting the problem from enabling the effective and efficient execution of a single workflow at scale, to managing the execution of a computational campaign.
 
-The challenges users face when executing a computational campaign include, but are not limited to, workflow submission, execution and monitoring, and deciding an execution plan.
+The challenges users face when executing a computational campaign include, but are not limited to, deciding an execution plan, submitting, executing and monitoring workflows, and potentially transferring data between resources.
 Workflow submission requires from users to have knowledge of submission systems, which generally are different between HPC resources.
 Furthermore, users have to connect to those resources to get information of the execution of a workflow or workflows.
-Lastly, users decide an execution plan which defines the order workflows are submitted and executed on HPC resources.
-Although, this is feasible for campaigns with small numbers of workflows and resources, it becomes non trivial for campaigns with hundreds of workflows that are executing for months on multiple resources~\cite{smith2020molssi}.
+Lastly, users decide an execution plan which defines when each workflow will be executed and on which HPC resource.
+Although, this is feasible a small numbers of workflows and resources, it becomes non-trivial for campaigns with hundreds of workflows on hundreds of resources~\cite{smith2020molssi}.
 To address these challenges, a campaign manager which given a computational campaign and a set of resources creates an execution plan, submits, executes and monitors workflows on HPC resources, is desirable.
 
 Currently, there are software systems which support computational campaigns, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others.

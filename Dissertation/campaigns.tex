@@ -1,14 +1,14 @@
 % !TEX root = main.tex
 \label{ch:campaigns}
-Computational campaigns enact an execution plan to achieve a computational objective under given requirements and constraints.
-The computational objective is a set of values selected by the user for a set of metrics.
-Some of these metrics are time to completion and throughput.
-Requirements, generally, describe the minimum amount and type of resources needed to execute each workflow of the campaign, while the constraints are the conditions that bound the execution, such as resource availability, resource capacity or costs.
+Computational campaigns enact an execution plan to achieve a computational objective for given requirements and respecting constraints.
+A computational objective is a set of values that must be satisfied for a set of metrics.
+Some of these metrics are time to completion or throughput defined as number of workflows executed per unit of time.
+Requirements, generally, describe the minimum amount and type of resources needed to execute each workflow of the campaign, while constraints are the conditions that bound the execution, such as resource availability, resource capacity or costs.
 
-The objective of a campaign can be translated to a computational objective function that would either minimize or maximize a metric.
+The objective of a campaign can be translated to a computational objective function that would either satisfy a lower or upper bound of a metric.
 Among the many metrics that could be considered, the most common one is the total time taken to execute all workflows of a campaign, also known as makespan.
 An execution plan of a campaign is a mapping between workflows and resources to execute upon.
-Calculating the makespan of a campaign means finding an execution plan that satisfies the computational objective function.
+Calculating the makespan of a campaign for a given plan means verifying if said execution plan satisfies the computational objective function.
 
 A computational campaign can utilize several resources concurrently.
 These resources can either be homogeneous or heterogeneous as they offer different type of computational resources.
@@ -16,16 +16,18 @@ One aspect of this heterogeneity is the performance each resource has in terms o
 High Performance Computing (HPC) resources, a campaign can utilize, offer the concurrent execution of workflows on different sets of the same type or different type of computational resources, thus homogeneous or heterogeneous respectively.
 Different types of computational resources can be offered by the same HPC resource or different HPC resources.
 
-During the execution of a campaign, uncertainty can arise for several reasons, including resource dynamism and workflow runtime uncertainty.
+Uncertainty in the execution of a campaign can arise for several reasons, including resource dynamism and workflow runtime uncertainty.
 HPC resources are governed via policies that affect their performance, such as power regulating policies~\cite{inadomi2015analyzing} and filesystem and network  multitenacy~\cite{brown2018interference}.
 As a consequence, their performance changes over time and is dynamic, which in turn creates uncertainty on the makespan of a campaign.
 Further, accurately estimating the runtime of each workflow in a campaign is challenging, as each workflow can have different inputs or datasets to analyze.
 Instead, users offer an estimation in the form of a range of possible values.
 Both resource dynamism and workflow runtime uncertainty have the potential to increase the makespan of an execution plan.
 
-There is a plethora of algorithms which derive an execution plan by calculating the makespan of a workflow, and not a campaign, offline~\cite{lu2019review}, i.e., before the execution of a workflow.
-Selecting and extending an algorithm that is suitable to plan the execution of a campaign on HPC resources is not trivial.
-To the best of our knowledge, there is not a methodology that allows to compare planning algorithms and select the most suitable for planning the execution of a campaign on a set of resources.
+There is a plethora of algorithms which derive an execution plan by calculating the makespan of a workflow offline~\cite{lu2019review}, i.e., before the execution of a workflow.
+Although, planning for a workflow with $N_t$ tasks is not significantly different from planning for a campaign with $N_W$ workflows, the performance of a plan can be affected when the campaign executes on dynamic and heterogeneous workflows.
+This is true as offline algorithms may not take into account how resource performance may change over time. 
+As a consequence, selecting an algorithm that is suitable to plan the execution of a campaign on heterogeneous and dynamic HPC resources is not trivial.
+To the best of our knowledge, there is not a methodology that allows to compare planning algorithms on dynamic and heterogeneous resources.
 We select three algorithms that each represents a larger family and compare their performance in respect to the makespan of the plans they produce as well as how sensitive they are on resource dynamism and workflow runtime uncertainty.
 Based on the comparison, we make a case of which algorithm to select given a computational campaign, its requirements and constraints.
 
@@ -53,7 +55,7 @@ In addition, the size of the workflows, i.e., the number of resources they requi
     \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
 \end{figure*}
 
-We are making a set of assumptions which we do not relax during the analysis of a model that calculates the makespan of a campaign.
+We make a set of assumptions which we do not relax during the definition of a model that calculates the makespan of a campaign.
 These are:
 \begin{inparaenum}[(1)]
     \item a workflow is an atomic unit and cannot be decomposed;
@@ -65,11 +67,11 @@ These are:
     \item workflows can be homogeneous or heterogeneous in time---the amount of time they are executing--- and space---the amount of resources they require.
 \end{inparaenum}
 
-We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{C}]$, where $w_{i}$ is a workflow and $N_{C}$ is the total number of workflows, $R = [ r_{j}: 1 \leq j \leq N_{R}]$ is a set of available resources, where $r_{j}$ is a resource and $N_{R}$ is the total number of available resources, and $ M(C,R) = [(w_i, r_j): 1 \leq i \leq N_{C}, r_j \in R] $ is a mapping function of workflows onto resources.
+We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{C}]$, where $w_{i}$ is a workflow and $N_{C}$ is the total number of workflows, $R = [ r_{j}: 1 \leq j \leq N_{R}]$ is a set of available resources, where $r_{j}$ is a resource and $N_{R}$ is the total number of available resources before the execution of the campaign, and $ M(C,R) = [(w_i, r_j): 1 \leq i \leq N_{C}, r_j \in R] $ is a mapping function of workflows onto resources.
 In addition, we denote the execution time of a workflow as $Tx_{w_{i}}$, the makespan of campaign $C$ as $TTX_{C}$, and the makespan of campaign $C$ for a given mapping function $ M $ as $TTX_{C}(M)$.
 Assumption~\#3 allows to abstract the resource implementation details, as workflows can be executed on different resources such as HPCs, Clouds, pilots and more. 
 
-With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be executed sequentially, regardless the execution order or whether the workflows are homogeneous or heterogeneous.
+With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be executed sequentially, regardless of the execution order or whether the workflows are homogeneous or heterogeneous.
 As a result the makespan of the campaign is:
 \begin{equation}
    TTX_{C} = \sum_{i=1}^{N_{C}}Tx_{w_{i}} 
@@ -77,12 +79,12 @@ As a result the makespan of the campaign is:
 
 With multiple resources, i.e., $1 < N_{R} < N_{C}$, the workflows of a campaign can be executed concurrently.
 With homogeneous resources, this is semantically equivalent to executing on a single resource large enough to allow concurrent workflow execution, where each workflow executes on a resource partition. 
-Because of assumptions~\#4 and~\#7, executing homogeneous or heterogeneous in space workflows has the same makespan.
+Because of assumptions~\#4 and~\#7, the execution of spatially homogeneous or heterogeneous workflows has the same makespan.
 A random mapping of workflows onto resource will have a makespan:
 \begin{equation}
    TTX_{C}(Random) \geq \frac{1}{N_{R}}\sum_{i=1}^{N_{C}} Tx_{w_{i}} 
 \end{equation}
-Given multiple homogeneous resources, when executing workflows that are heterogeneous in time and that can be homogeneous or heterogeneous in space, the makespan of the campaign for a given mapping function $ M $ is:
+Given multiple homogeneous resources, when executing workflows that are heterogeneous in time and that can be spatially homogeneous or heterogeneous, the makespan of the campaign for a given mapping function $ M $ is:
 \begin{equation}
 TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \label{eq:makespan}
@@ -93,7 +95,7 @@ As a result, Eq.~\ref{eq:makespan} holds in calculating the makespan of the camp
 Computational campaigns execute to achieve an objective.
 We consider as objective the total time of completion of the campaign.
 As a result, the objective function of a plan is translating in minimizing the value of eq~\ref{eq:makespan}.
-As objective function is:
+The objective function is:
 \begin{equation}
     \min\Big\{\max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}\Big\}
 \end{equation}
@@ -133,13 +135,13 @@ Table~\ref{tab:sched_algo} shows a summary of the algorithms characteristics.
 % -------------------------------------------------------------------
 \subsection{Heterogeneous Earlier Finish Time (HEFT) algorithm}
 \label{algo:heft}
-List scheduling algorithms represent a general family of heuristic based scheduling algorithms to schedule workflows described as direct acyclic graphs~\cite{dong2006scheduling,list_sched_wiki}. 
-These algorithms assign priorities to tasks based on a heuristic and order them.
-Then, they traverse the list of tasks and assign tasks to resources.
+List scheduling algorithms represent a general family of heuristic based scheduling algorithms to schedule workflows~\cite{dong2006scheduling,list_sched_wiki}. 
+These algorithms assign priorities to tasks based on a heuristic and then order tasks based on their priority.
+To place tasks on resources, they traverse the list of tasks in order and assign a task to a resource that can execute it.
 HEFT is an example of this type of algorithms~\cite{dong2006scheduling} and calculates the makespan of a workflow on heterogeneous resources, in terms of performance.
 
 HEFT has been implemented as part of the planning capabilities in Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon} amongst other algorithms.
-HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms,~\cite{topcuoglu2002performance,canon2008comparative}, e\.g\., genetic algorithms~\cite{fahringer2005askalon}. 
+HEFT has been shown to provide better performance in terms of makespan minimization compared to other mapping algorithms,~\cite{topcuoglu2002performance,canon2008comparative}, e.g., genetic algorithms~\cite{fahringer2005askalon}. 
 Furthermore, there has been some initial research to extend HEFT to resources that provide CPU and GPUs~\cite{shetti2013optimization} and on dynamic resources~\cite{dong2007pfas}. 
 
 HEFT makes two important assumptions when used on workflows: 
