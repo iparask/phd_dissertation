@@ -1,7 +1,12 @@
 % !TEX root = main.tex
 \label{ch:task-par}
 
-Task-parallel applications involve partitioning a workload into a set of self-contained units of work.
+Molecular Dynamics campaigns are significant consumer of computing cycles and produce immense amounts of data, especially during simulation stages.
+In addition to being prototypical HPC application, their simulation workflows are simulating physical systems with a typical $\mu sec$ MD simulation of a physical system of $O(100k)$ atoms producing from $O(10)$ to $O(1000)$ GBs of data~\cite{cheatham2015impact}.
+Further, there is increasingly a need for the analysis to be integrated with simulations and drive the next stages of execution~\cite{balasubramanian2016extasy}.
+The analysis workflows process trajectory data can benefit from task level parallelism as they can be partitioned into independent units of work.
+
+Task-parallel applications involve partitioning a workflow into a set of self-contained units of work.
 Based on the application, these tasks can be independent, have no inter-task communication, or coupled with varying degrees of data dependencies.
 Data-intensive applications exploit task parallelism for data-parallel operations (e.\,g., \texttt{map}), but also require coupling, for computing aggregates (\texttt{reduce}).
 Typically, a reduce operation includes shuffling intermediate data from a set of nodes to node(s) where the reduce executes.
@@ -17,12 +22,9 @@ In addition, Spark offers in-memory capabilities allowing data caching data, mak
 Dask also provides a MapReduce API (Dask Bags).
 Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
 
-We investigate the data analysis requirements of Molecular Dynamics (MD) applications.
-MD simulations are significant consumers of computing cycles, producing immense amounts of data.
-A typical $\mu sec$ MD simulation of physical system of $O(100k)$ atoms can produce from $O(10)$ to $O(1000)$ GBs of data~\cite{cheatham2015impact}.
-In addition to being the prototypical HPC application, there is increasingly a need for the analysis to be integrated with simulations and drive the next stages of execution~\cite{balasubramanian2016extasy}.
-Performing analysis quickly and efficiently, so as to steer simulations, remains still challenge since different task-parallel frameworks offer different capabilities.
-As a result, there is a need to understand which framework is more suited for performing a specific analysis.
+As task-parallel frameworks offer different abstractions and capabilities, executing data analysis workflows in an efficient and scalable manner remains a challenge.
+As data analysis applications can have different characteristics, e.\,g.\, embarrassingly parallel, MapReduce, different abstractions and capabilities may offer different performance and efficiency.
+As a result, there is a need to understand which framework is more suitable for performing a specific type of analysis.
 
 In this chapter, we investigate three task-parallel frameworks and their suitability for implementing MD trajectory analysis algorithms.
 In addition to Spark and Dask, we investigate RADICAL-Pilot~\cite{merzky2019using}.
@@ -31,14 +33,15 @@ The task-parallel implementations performance and scalability compared to MPI is
 MD trajectories are time series of atoms/particles positions and velocities, which are analyzed using different statistical methods to infer certain properties, e.\,g. the relationship between distinct trajectories, snapshots of a trajectory etc.
 As a result, they can be considered as a representative set of scientific datasets that are organized as time series and their analysis algorithms. 
 
-The chapter is organized as follows: Section~\ref{sec:md_use_cases} discusses the MD analysis algorithms investigated and reviews different MD analysis frameworks with respect to their ability to support scalable analytics of large volume MD trajectories. 
+The chapter is organized as follows: Section~\ref{sec:tp_related_work} discusses several approaches to support scalable MD trajectory data analytics. Section~\ref{sec:md_use_cases} discusses the MD analysis algorithms investigated and reviews different MD analysis frameworks with respect to their ability to support scalable analytics of large volume MD trajectories. 
 Section~\ref{sec:frameworks} describes the different frameworks that were used for evaluation. 
 Section~\ref{sec:impl_exp} provides a description of the implementation of the MD algorithms on top of RADICAL-Pilot, Spark and  Dask, as well as a performance evaluation and a discussion of findings. 
-The chapter concludes with a conceptual framework that allows application developers to carefully select a framework according to their requirements, in  section~\ref{sec:task_sel_model}.
+Then we provide a conceptual framework that allows application developers to carefully select a framework according to their requirements, in  section~\ref{sec:task_sel_model}.
+The chapter concludes with our conclusions in section~\ref{sec:tp_concl}.
 %
 
 \section{Related Work}
-\label{sec:related_work}
+\label{sec:tp_related_work}
 MD analysis algorithms were until recently executed serially and parallelization was not straightforward.
 During the last years several frameworks emerged providing parallel algorithms for analyzing MD trajectories.
 Some of those frameworks are CPPTraj~\cite{roe2013ptraj,roe2018parallelization}, HiMach~\cite{tiankai2008scalable}, PMDA~\cite{fan2019pmda}, Pteros 2.0~\cite{yesylevskyy2015pteros} and nMoldyn-3~\cite{hinsen2012nmoldyn}.
@@ -835,6 +838,7 @@ Spark needs to be particularly considered for shuffle-intensive applications.
 Its in-memory caching mechanism is particularly suited for iterative algorithms that maintain a static set of data in-memory and conduct multiple passes on that set.
 
 \section{Conclusions}
+\label{sec:tp_concl}
 In this chapter, we investigated the use of different programming abstractions and frameworks for implementing a range of algorithms for MD trajectory analysis. 
 We conducted an in-depth analysis of applications' characteristics and assessed the architectures of RADICAL-Pilot, Spark and Dask. 
 We provide a conceptual framework that enables application developers to qualitatively evaluate task parallel frameworks with respect to application requirements. 
