@@ -49,6 +49,17 @@ The chapter concludes with a discussion of experimentally validating the propose
 
 \section{Related work and challenges}
 \label{sec:hpc_hadoop_rel}
+\subsection{Related work}
+There are several frameworks which explored the usage of Hadoop on HPC resources, e.\,g., Hadoop on Demand~\cite{hod}, JUMMP~\cite{moody2013jummp}, MagPie~\cite{chu2015magpie}, MyHadoop~\cite{krishnan2011myhadoop}, MyCray~\cite{mycray}.
+These frameworks provide users with a set of scripts that can spawn and manage a Hadoop cluster on HPC resources.
+As soon as Hadoop is started, users can either submit their MapReduce jobs interactively or via a script.
+
+Although these frameworks can spawn and manage Hadoop clusters, they isolate the Hadoop cluster from the HPC environment.
+The scripts and capabilities they offer interact directly with the HPC's submission system.
+As a result, users cannot execute on the same set of nodes HPC and Hadoop applications.
+Further, they do not necessarily optimize configurations and resource usage, including the use of available SSDs, parallel filesystems and high-end network features, e.\,g.\ RDMA~\cite{rahman2014homr}.
+
+\subsection{Challenges}
 Hadoop originally provided a rudimentary resource management system, the YARN scheduler.
 The YARN scheduler~\cite{vavilapalli2013apache} provides an application-level scheduling framework addressing the increased requirements with respect to applications and infrastructure, such as more complex data localities (memory, disk, datacenter), long-lived services, periodic jobs, interactive and batch jobs.
 In contrast, to batch schedulers of HPC resources, YARN is optimized for supporting data-intensive environments and managing a large number of fine-grained tasks.
@@ -60,10 +71,6 @@ In addition, the Application Master manages data locality, e.,g., between HDFS b
 Managing resources on top of YARN is associated with several challenges.
 While applications with fine-grained, short-running tasks are well supported, applications with coarse-grained, long-running task, such as MPI applications, are not.
 To achieve interoperability and integration between Hadoop and HPC, it is essential to consider a more diverse set of applications on top of YARN.
-
-There are several frameworks which explored the usage of Hadoop on HPC resources, e.\,g., Hadoop on Demand~\cite{hod}, JUMMP~\cite{moody2013jummp}, MagPie~\cite{chu2015magpie}, MyHadoop~\cite{krishnan2011myhadoop}, MyCray~\cite{mycray}.
-While these frameworks can spawn and manage Hadoop clusters many challenges remain, with respect to optimizing configurations and resource usage, including the use of available SSDs, parallel filesystems and high-end network features, e.\,g.\ RDMA~\cite{rahman2014homr}.
-Further, these approaches do not address the need for interoperability between HPC and Hadoop application stages.
 
 A particular challenge for Hadoop on HPC deployment is the choice of storage and filesystem backend.
 Typically, when using Hadoop local storage is preferred.
