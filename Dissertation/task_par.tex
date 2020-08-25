@@ -17,6 +17,13 @@ In addition, Spark offers in-memory capabilities allowing data caching data, mak
 Dask also provides a MapReduce API (Dask Bags).
 Furthermore, Dask's API is more versatile, allowing custom workflows and parallel vector/matrix computations.
 
+We investigate the data analysis requirements of Molecular Dynamics (MD) applications.
+MD simulations are significant consumers of computing cycles, producing immense amounts of data.
+A typical $\mu sec$ MD simulation of physical system of $O(100k)$ atoms can produce from $O(10)$ to $O(1000)$ GBs of data~\cite{cheatham2015impact}.
+In addition to being the prototypical HPC application, there is increasingly a need for the analysis to be integrated with simulations and drive the next stages of execution~\cite{balasubramanian2016extasy}.
+Performing analysis quickly and efficiently, so as to steer simulations, remains still challenge since different task-parallel frameworks offer different capabilities.
+As a result, there is a need to understand which framework is more suited for performing a specific analysis.
+
 In this chapter, we investigate three task-parallel frameworks and their suitability for implementing MD trajectory analysis algorithms.
 In addition to Spark and Dask, we investigate RADICAL-Pilot~\cite{merzky2019using}.
 We utilize MPI4py~\cite{dalcin2005mpi} to provide MPI equivalent implementations of the algorithms.
