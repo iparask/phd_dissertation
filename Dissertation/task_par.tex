@@ -30,6 +30,50 @@ Section~\ref{sec:impl_exp} provides a description of the implementation of the M
 The chapter concludes with a conceptual framework that allows application developers to carefully select a framework according to their requirements, in  section~\ref{sec:task_sel_model}.
 %
 
+\section{Related Work}
+\label{sec:related_work}
+MD analysis algorithms were until recently executed serially and parallelization was not straightforward.
+During the last years several frameworks emerged providing parallel algorithms for analyzing MD trajectories.
+Some of those frameworks are CPPTraj~\cite{roe2013ptraj,roe2018parallelization}, HiMach~\cite{tiankai2008scalable}, PMDA~\cite{fan2019pmda}, Pteros 2.0~\cite{yesylevskyy2015pteros} and nMoldyn-3~\cite{hinsen2012nmoldyn}.
+
+Several different techniques are used for parallelizing these algorithms.
+CPPTraj~\cite{roe2018parallelization} utilizes MPI and OpenMP to exeucte large scale analysis on HPC.
+OpenMP is also utilized by Pteros~\cite{yesylevskyy2015pteros} to parallelize the compute intensive parts of the analysis.
+HiMach~~\cite{tiankai2008scalable} extends Google's MapReduce and defines Map and Reduce methods.
+nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
+The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
+
+%HiMach~\cite{tiankai2008scalable} was developed by D. E. Shaw Research group to provide a parallel analysis framework for MD simulations, and extends Google's MapReduce.
+%HiMach API defines trajectories, does per frame data acquisition (Map) and cross-frame analysis (Reduce).
+%HiMach's runtime is responsible to parallelize and distribute Map and Reduce phases to resources.
+%Data transfers are done through a communication protocol created specifically for HiMach.
+
+%Pteros-2.0~\cite{yesylevskyy2015pteros} is a open-source library that is used for modeling and analyzing MD trajectories, providing a plugin for each supported algorithm.
+%The execution is done by a user defined driver application, which setups trajectory  I/O and frame dispatch for analysis.
+%It offers a C++ and Python API.
+%Pteros 2.0 parallelizes computational intensive algorithms via OpenMP and Multithreading.
+%As a result, it is bounded to execute on a single node, making any analysis execution highly dependent on memory size.
+%Through RADICAL-Pilot, Spark and Dask, we avoided recompiling every time there is a change to the underlying resource, ensuring the application's execution.
+
+%MDTraj~\cite{mcgibbon2015mdtraj} is a Python package for analyzing MD trajectories.
+%It links MD data and Python statistical and visualization software.
+%MDTraj proposes parallelizing the execution by using the parallel package of IPython as a wrapper along with an out-of-core trajectory reading method.
+%Our approach allows data parallelization on any level of the execution, not only in data read.
+
+%nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
+%The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
+%In addition, it provides adaptability, allowing on-the-fly addition of resources, and execution fault tolerance when worker processes disconnect.
+
+A common denominator of most approaches is that they do not use general purpose frameworks for parallelizing the execution.
+Although, they are optimized to get as much performance as possible from the environments they are developed for, their portability is limited.
+CPPTraj~\cite{roe2018parallelization} and Pteros~\cite{yesylevskyy2015pteros}, for example, are highly dependent on the underlying low level libraries of the resource they use.
+HiMach~\cite{tiankai2008scalable} is build specifically for the Antons Supercomputer.
+
+In contrast, our approach utilizes more general purpose frameworks for parallelization.
+%Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
+The frameworks used provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
+In addition, resource acquisition and management is done transparently.
+
 \section{Molecular Dynamics (MD) Data Analysis}
 \label{sec:md_use_cases}
 Some commonly used algorithms for analyzing MD trajectories are Root Mean Square Deviation (RMSD), Pairwise Distances (PD), and Sub-setting~\cite{mura2014biomolecules}.
@@ -179,50 +223,6 @@ The shuffling required between map and reduce is medium as the number of edges i
 Spark and Dask natively support MapReduce and implementing the Leaflet Finder algorithm is relatively straightforward.
 RADICAL-Pilot, on the other hand, does not support natively MapReduce.
 As a result, it is required by the application developer to define the data shuffling between the \emph{map} and \emph{reduce} phase of the algorithm.
-
-\subsection{Current Solutions for Parallel MD Data Analysis}
-\label{ssec:related_work}
-MD analysis algorithms were until recently executed serially and parallelization was not straightforward.
-During the last years several frameworks emerged providing parallel algorithms for analyzing MD trajectories.
-Some of those frameworks are CPPTraj~\cite{roe2013ptraj,roe2018parallelization}, HiMach~\cite{tiankai2008scalable}, PMDA~\cite{fan2019pmda}, Pteros 2.0~\cite{yesylevskyy2015pteros} and nMoldyn-3~\cite{hinsen2012nmoldyn}.
-
-Several different techniques are used for parallelizing these algorithms.
-CPPTraj~\cite{roe2018parallelization} utilizes MPI and OpenMP to exeucte large scale analysis on HPC.
-OpenMP is also utilized by Pteros~\cite{yesylevskyy2015pteros} to parallelize the compute intensive parts of the analysis.
-HiMach~~\cite{tiankai2008scalable} extends Google's MapReduce and defines Map and Reduce methods.
-nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
-The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
-
-%HiMach~\cite{tiankai2008scalable} was developed by D. E. Shaw Research group to provide a parallel analysis framework for MD simulations, and extends Google's MapReduce.
-%HiMach API defines trajectories, does per frame data acquisition (Map) and cross-frame analysis (Reduce).
-%HiMach's runtime is responsible to parallelize and distribute Map and Reduce phases to resources.
-%Data transfers are done through a communication protocol created specifically for HiMach.
-
-%Pteros-2.0~\cite{yesylevskyy2015pteros} is a open-source library that is used for modeling and analyzing MD trajectories, providing a plugin for each supported algorithm.
-%The execution is done by a user defined driver application, which setups trajectory  I/O and frame dispatch for analysis.
-%It offers a C++ and Python API.
-%Pteros 2.0 parallelizes computational intensive algorithms via OpenMP and Multithreading.
-%As a result, it is bounded to execute on a single node, making any analysis execution highly dependent on memory size.
-%Through RADICAL-Pilot, Spark and Dask, we avoided recompiling every time there is a change to the underlying resource, ensuring the application's execution.
-
-%MDTraj~\cite{mcgibbon2015mdtraj} is a Python package for analyzing MD trajectories.
-%It links MD data and Python statistical and visualization software.
-%MDTraj proposes parallelizing the execution by using the parallel package of IPython as a wrapper along with an out-of-core trajectory reading method.
-%Our approach allows data parallelization on any level of the execution, not only in data read.
-
-%nMoldyn-3~\cite{hinsen2012nmoldyn} parallelizes the execution through a Master Worker architecture.
-%The master defines analysis tasks, submits them to a task manager, which then are executed by the worker process.
-%In addition, it provides adaptability, allowing on-the-fly addition of resources, and execution fault tolerance when worker processes disconnect.
-
-A common denominator of most approaches is that they do not use general purpose frameworks for parallelizing the execution.
-Although, they are optimized to get as much performance as possible from the environments they are developed for, their portability is limited.
-CPPTraj~\cite{roe2018parallelization} and Pteros~\cite{yesylevskyy2015pteros}, for example, are highly dependent on the underlying low level libraries of the resource they use.
-HiMach~\cite{tiankai2008scalable} is build specifically for the Antons Supercomputer.
-
-In contrast, our approach utilizes more general purpose frameworks for parallelization.
-%Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
-The frameworks used provide higher level abstractions, e.g machine learning, so any  integration with other data analysis methods can be fast and easier.
-In addition, resource acquisition and management is done transparently.
 
 \section{Task-Parallel Frameworks: RADICAL-Pilot, Spark, Dask}
 \label{sec:frameworks}
