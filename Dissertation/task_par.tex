@@ -855,7 +855,9 @@ We also identified a limitation in Dask and Spark: while both frameworks provide
 They required workarounds and utilization of out-of-framework functions to read and partition data (Table~\ref{tab:app_operators}). 
 Although, none of these frameworks outperformed MPI, their scaling capabilities along with their high-level APIs create a strong case on utilizing them for data analytics of HPC applications.
 
-These results allow us to utilize a well-suited task-parallel framework based on the characteristics of the data-intensive workflows of a computational campaign.
-However, there is a set of data analysis workflows that do not necessarily conform with the MapReduce abstraction, such as the PSA analysis or earth science workflows that analyze imagery.
-As a result, the framework used to execute them should be able to effectively and efficiently execute such workflows.
-In the next chapter we discuss architectural equivalent designs of task-parallel frameworks to execute data analysis such workflows.
+Our results allow users to utilize a well-suited task-parallel framework based on the characteristics of the data-intensive workflows of a computational campaign.
+This in turn reduces the time to define the data-intensive workflows of a computational campaign.
+Further, it allows the scalable execution of such workflows without significant, if any effort from users, reducing the time to optimize a workflow.
+However, there is a set of data analysis workflows that do not necessarily conform with the MapReduce abstraction, such as the PSA analysis or earth science workflows that analyze imagery, as they have both data and compute intensive characteristics.
+As a result, the selected framework should efficiently and effectively perform data transfers and execution while offering the necessary abstractions.
+In the next chapter we discuss architectural equivalent designs of task-parallel frameworks to execute such workflows.
