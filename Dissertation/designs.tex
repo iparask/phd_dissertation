@@ -1,10 +1,10 @@
 % !TEX root = main.tex
 \label{ch:designs}
 
-In addition to the MapReduce style data-analytics, there is a set of data analysis workflows that do not necessarily conform to the MapReduce abstraction.
-Their tasks can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
+This far, we have discussed how to efficiently and scalably support the execution of MapReduce workflows, as part of a computational campaign, on High Performance Computing (HPC) resources.
+There are, though, computational campaigns whose workflows do not necessarily conform to the MapReduce abstraction.
+The tasks of such workflows can be heterogeneous, implementing a diverse set of functionalities that are compute-intensive.
 As a consequence, data-parallel frameworks, like Spark and Dask may not be the most suitable choice for their execution.
-%Furthermore, the volume and scale of data justifies the use to parallelism and High Performance Computing (HPC) resources.
 From a middleware perspective, the design and architectural space is large and the lack of performance analysis makes it difficult to select among equivalent implementations.
 
 From a design perspective, a promising approach is isolating tasks from execution management.
@@ -25,6 +25,43 @@ The chapter is organized as follows.
 Section~\ref{sec:ucase} presents the use case and discusses it computational requirements as well as its task-based workflow.
 In \S~\ref{sec:design}, we discuss the three architecturally equivalent design to support task-based workflows.
  \S\ref{sec:des_experiments} presents a performance evaluation of the designs and discusses the lessons learned.
+ 
+ \section{Related Work}
+Several tools and frameworks are available for image analysis based on diverse designs and programming paradigms, and implemented for specific resources.
+Numerous image analytics frameworks for medical, astronomical, and other domain specific imagery provide MapReduce implementations.
+MaReIA~\cite{vo2018mareia}, built for medical image analysis, is based on Hadoop and Spark~\cite{zaharia2010spark}.
+Kira~\cite{zhang2016kira}, built for astronomical image analysis, is also built on top of Spark and pySpark, allowing users to define custom analysis applications.
+Further, Ref.~\cite{yan2014large} proposes a Hadoop-based cloud Platform as a Service, utilizing Hadoop's streaming capabilities to reduce filesystem reads and writes.
+These frameworks support clouds and/or commodity clusters for execution.
+ 
+BIGS~\cite{ramos2012bigs} is a framework for image processing and analysis.
+BIGS is based on the master-worker model and supports heterogeneous resources, such as clouds, grids and clusters.
+The user is responsible to define the input, processing pipeline, and launch BIGS workers.
+BIGS utilizes a database to perform data transfers between workers.
+In addition, BIGS offers a diverse set of APIs for developers.
+BIGS approach is very close to Design 1 we described in~\S\ref{des1}.
+
+Image analysis libraries, frameworks and applications have been proposed for HPC resources.
+PIMA(GE)\textsuperscript{2} Library~\cite{galizia2015mpicuda} provides a low-level API for parallel image processing using MPI and CUDA.
+SIBIA~\cite{gholami2017framework} is a framework for coupling biophysical models with medical image analysis, and provides parallel computational kernels through MPI and vectorization.
+Tomosaic~\cite{vescovi2018tomosaic} is a Python framework, used for medical imaging, employing MPI4py to parallelize different parts of the workflow.
+ 
+Petruzza et al.~\cite{petruzza2017isavs} describe a scalable image analysis library.
+Their approach defines pipelines as data-flow graphs, with user defined functions as tasks.
+Charm++ is used as the workflow management layer, by abstracting the execution level details, allowing execution on local workstations and HPC resources.
+Teodoro et al.~\cite{teodoro2013highthroughput} define a master-worker framework supporting image analysis pipelines on heterogeneous resources.
+The user defines an abstract dataflow and the framework is responsible to schedule tasks on CPU or GPUs.
+Data communication and coordination is done via MPI.
+ 
+Our approach proposes designs for image analysis pipelines that are domain independent.
+In addition, the workflow and runtime systems we use allow  execution on multiple HPC resources with no change in our approach. 
+Furthermore, parallelization is inferred in one of the proposed designs,  allowing correct execution regardless of the multi-core or multi-GPU  capabilities of the used resource.
+ 
+All the above, except Ref.~\cite{zhang2016kira}, focus on characterizing the performance of the proposed solution.
+Ref.~\cite{zhang2016kira} compares different implementations, one with Spark, one with pySpark, and an MPI C-based implementation.
+This comparison is based on the weak and strong scaling properties of the approaches.
+Our approach offers a well-defined methodology to compare different designs for task-based and data-driven pipelines with heterogeneous tasks.
+ 
 
 \section{Satellite Imagery Analysis Application}
 \label{sec:ucase}
@@ -587,8 +624,6 @@ In addition, our overheads characterization provides us with a baseline to evalu
 %Infrastructure-wise, our experiments show the limits imposed by an unbalance between number of CPU cores and available memory.
 %Given data-driven computation where multi GB images need processing, we were able to use just $10\%$ of the available cores due to the amount of RAM required.
 %This applies also to the unbalance between CPUs and GPUs: use cases with heterogeneous tasks would benefit from a n higher GPU/CPU ratio.
-
-
 
 %These results apply to the evaluation of the design of existing and future computing frameworks. 
 %For example, we are extending both EnTK and RADICAL-Pilot to implement Design~2.A.
