@@ -1,21 +1,34 @@
 % !TEX root = main.tex
 \label{ch:pilot-data-hadoop}
 
-Computational campaigns on High Performance Computing (HPC) resources can execute compute- or data- intensive workflows and applications.
-On one hand, compute-intensive applications and workflows are associated with either a single long running executable or an ensemble of compute-intensive tasks~\cite{balasubramanian2018harnessing}.
-On the other hand, data-intensive applications are associated with multiple stages of execution which can be I/O, memory and compute bound.
-While MPI is the most common programming model for compute-intensive applications, the MapReduce~\cite{dean2004mapreduce} abstraction is commonly used for data-intensive applications~\cite{hellerstein2012science}.
+Computational campaigns on High Performance Computing (HPC) resources can
+execute compute- or data- intensive workflows and applications. On one hand,
+compute-intensive applications and workflows are associated with either a single
+long running executable or an ensemble of compute-intensive
+tasks~\cite{balasubramanian2018harnessing}. On the other hand, data-intensive
+applications are associated with multiple stages of execution which can be I/O,
+memory and compute bound. While MPI is the most common programming model for
+compute-intensive applications, the MapReduce~\cite{dean2004mapreduce}
+abstraction is commonly used for data-intensive
+applications~\cite{hellerstein2012science}.
 
 %However, HPC resources are designed to support mainly compute-intensive long-running MPI applications, as they offer
 %Not surprisingly, HPC resource architectures offer large number of computing resources, e.g., CPUs and GPUs, connected by high-end networks (e.g., Infiniband) and filesystems, such as Lustre and PVFS.
 %They have however limitations in supporting data-intensive and I/O bound workflows.
 
-Hadoop~\cite{hadoop} popularized the use of MapReduce~\cite{dean2004mapreduce} for data-intensive applications.
-Hadoop's distirbuted filesystem (HDFS) automatically partitions data and distributes them to different nodes of a cluster machine.
-In addition, Hadoop's engine takes advantage of data-locality and transfers computations to nodes, allowing to process data in parallel while reducing data transfers.
-While Hadoop simplified the processing of vast volumes of data, it has limitations in its expressiveness~\cite{yelick2011magellan,isard2007dryad}.
-The complexity of creating sophisticated applications such as, for example, iterative machine learning algorithms \mtnote{add a reference here?}, required multiple MapReduce jobs and persistence to Hadoop's Filesystem (HDFS) after each iteration.
-This led to devise several higher-level abstractions and the development of processing frameworks to implement sophisticated data pipelines.
+Hadoop~\cite{hadoop} popularized the use of MapReduce~\cite{dean2004mapreduce}
+for data-intensive applications. Hadoop's distirbuted filesystem (HDFS)
+automatically partitions data and distributes them to different nodes of a
+cluster machine. In addition, Hadoop's engine takes advantage of data-locality
+and transfers computations to nodes, allowing to process data in parallel while
+reducing data transfers. While Hadoop simplified the processing of vast volumes
+of data, it has limitations in its
+expressiveness~\cite{yelick2011magellan,isard2007dryad}. The complexity of
+creating sophisticated applications such as, for example, iterative machine
+learning algorithms \mtnote{add a reference here?}, required multiple MapReduce
+jobs and persistence to Hadoop's Filesystem (HDFS) after each iteration. This
+led to devise several higher-level abstractions and the development of
+processing frameworks to implement sophisticated data pipelines.
 
 Spark~\cite{zaharia2010spark} is the most well-known processing framework in the Hadoop ecosystem.
 In contrast to MapReduce, Spark provides a richer API, more language bindings and a memory-centric processing engine that can utilize distributed memory and retain resources across multiple task generations.
@@ -33,7 +46,7 @@ To the best of our knowledge, there does not exist a solution that provides the 
 % Solution
 In this chapter, we explore the integration between Hadoop~\cite{hadoop}, Spark~\cite{zaharia2010spark} and HPC resources.
 We utilize the Pilot-Abstraction~\cite{luckow2012pstar}, allowing to manage HPC and data-intensive applications in a uniform way.
-We explore two extensions to RADICAL-Pilot~\cite{merzky2018design}, a Pilot-Job~\cite{luckow2012pstar} runtime system designed for implementing task-parallel applications on HPC: 
+We explore two extensions to RADICAL-Pilot~\cite{merzky2018design}, a Pilot-Job~\cite{luckow2012pstar} runtime system designed for implementing task-parallel applications on HPC:
 \begin{inparaenum}[1)]
     \item the ability to spawn and manage Hadoop/Spark clusters on HPC infrastructures on demand (Mode I); and
     \item to connect and utilize Hadoop and Spark clusters for HPC applications (Mode II)
@@ -77,7 +90,7 @@ Nevertheless, in some cases, e.g., processing many small files, random data acce
 For this purpose, many parallel filesystems provide a special client library which improves the interoperability with Hadoop, but limits data locality and any data placement optimization.
 
 Another challenge is the integration between both HPC and Hadoop environments.
-Rather than preserving HPC and Hadoop ``environments'' as software silos, there is a need for an approach that integrates them. 
+Rather than preserving HPC and Hadoop ``environments'' as software silos, there is a need for an approach that integrates them.
 We utilize the Pilot-Abstraction as a unifying concept to efficiently support the integration, and not just the interoperability between HPC and Hadoop.
 By utilizing the multi-level scheduling capabilities of YARN, the Pilot-Abstraction can efficiently manage Hadoop resources providing an application with the means to reason about data, compute resources and allocation.
 In addition, we show how the Pilot-Abstraction can be used to manage Hadoop applications on HPC environments.
@@ -118,7 +131,7 @@ Using these new capabilities, applications can seamlessly connect HPC stages (e.
 
 With the introduction of YARN, a broader set of applications can be executed within a Hadoop cluster than earlier.
 However, developing and deploying YARN applications potentially side-by-side with HPC applications remains a difficult task.
-Established abstractions which are easy to use while enabling users to reason about compute and data resources across infrastructure types (i.e., Hadoop, HPC and clouds) are missing. 
+Established abstractions which are easy to use while enabling users to reason about compute and data resources across infrastructure types (i.e., Hadoop, HPC and clouds) are missing.
 
 Schedulers such as YARN effectively facilitate application-level scheduling.
 Although, the development efforts for YARN applications are still high.
@@ -282,7 +295,7 @@ The novel capabilities of executing HPC tasks and YARN tasks within the same app
 
 \subsection{K-Means Performance Characterization}
 \label{ssec:kmeans}
-We compare the time to completion of the K-Means algorithm using two configurations: RADICAL-Pilot on HPC and RADICAL-Pilot in HPC/YARN mode. 
+We compare the time to completion of the K-Means algorithm using two configurations: RADICAL-Pilot on HPC and RADICAL-Pilot in HPC/YARN mode.
 We use three different scenarios: 10,000 points and 5,000 clusters, 100,000 points / 500 clusters and 1,000,000 points / 50 clusters.
 Each point belongs to a three dimensional space.
 The compute requirements depend on the product of the number of points and clusters, thus it is constant for all three scenarios.
