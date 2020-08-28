@@ -292,11 +292,13 @@ When the plan is ready, the execution of the campaign begins with the Bookkeeper
 As the Enactor executes the workflow, it pushes state updates to the Bookkeeper via callbacks.
 The Bookkeeper continues to pass workflows to the Enactor as resources become available and as long as there are still workflows to execute.
 
-The execution of a campaign can span from months to a year and any experimentation with an actual campaign is almost unfeasible.
-For this reason, we utilize the resource emulator proposed in Ref.~\cite{balasubramanian2019programming} and extended it to use a discrete time simulator, SimPy~\cite{simpy}.
-
-The simulator advances time which, in turn, allows the CM's components to recognize the state of the execution and take the necessary actions.
-As a result, we are able to test the prototype with different campaigns and resources without necessarily having access to them as long as we can model their performance.
+Instead of an actual workflow management framework (WMF), the Enactor utilizes the workload emulator proposed in Ref.~\cite{balasubramanian2019programming}.
+The emulator allows us to define heterogeneous resources and emulate the execution of workflows on those resources.
+In addition, we extended the emulator execution capabilities with a discrete time simulator, SimPy~\cite{simpy}.
+Simpy executes discrete simulations by producing events as time progresses.
+These events provide information of which workflows are executing or finished execution.
+The Enactor polls these events and pushes to the Bookkeeper the state of each workflow.
+As a result, we are able to simulate the execution of a campaign and validate the correctness of our design and its implementation.
 
 \begin{figure*}[t]
     \centering
@@ -315,19 +317,15 @@ As a result, we are able to test the prototype with different campaigns and reso
     \label{fig:cm_char}
 \end{figure*}
 
-Figure~\ref{fig:cm_char} shows the performance characterization of the prototype with the simulator.
-We measure the time it takes the prototype to execute campaigns of different sizes while we kept the number of resources constant and a campaign with constant number of workflows executing on different number of resources.
-The Bookkeeper submits workflows for execution until all workflows have finished.
-As a result, the time the simulator runs is linear to the number of workflows.
-Figure~\ref{fig:SimTimeWork} shows the time it takes the simulator to execute 4 to 128 workflows on 4 resources and verifies the expectation that the execution time of the simulation is linear.
-In addition, it executes 128 workflows on less than 2 minutes.
-
-The number of resources should not affect the execution time of the simulation.
-This is generally true up to 32 resources, as we see in figure~\ref{fig:SimTimeRes}.
-Above 64 resource, the time of the simulation doubles.
-The Enactor monitors all workflows that are executing via traversing a list and uses a callback for those that finished.
-In addition, the Bookkeeper checks the state of the workflows that are executing.
-Increasing the number of resources means that the number of monitored workflows increases and above 64 resources these two checks start to dominate the execution time of the simulation.
+We validate the correctness of our design by executing campaigns of different sizes on different number of resources.
+We provided the prototype with a campaign, a set of resources and an execution plan.
+The workflows of the campaign were executed as expected and in a reasonable amount of time, since we are utilizing an emulator.
+Further, we see that the execution time of the simulation increases when more than 64 resources are utilized concurrently.
+Both the Enactor and the Bookkeeper have monitoring methods that traverse a list of the workflows that are executing.
+In addition, the Enactor uses callbacks to inform the Bookkeeper about the state of the workflows.
+Above 64 resources these two checks start to dominate the execution time of the simulation.
+Nonetheless, the prototype executed 128 workflows on 128 resources in around 15 minutes and thus we conclude that this increase will not affect the execution of an actual campaign.
+As a result, we conclude that the design and functionalities of the prototype satisfy the requirements and correctly execute a computational campaign.
 
 
 \section{Conclusions}
@@ -337,16 +335,11 @@ We described the design and the basic components of the campaign manager, a Book
 Based on the selected design, we implemented a software prototype that simulates the execution of a campaign on resources.
 The prototype allows us to understand and correctly implement the necessary functionality of the campaign manager.
 
-We used the prototype to simulate the execution of campaigns with different number of workflows and different number of resources.
-Based on our simulation results, we see that we are able to simulate a campaign of 128 workflows to 128 resources in around 15 minutes.
-In addition, we saw that the execution times are linearly proportional to the number of workflows.
-Further, we saw that the number of resources can affect the execution time of the simulation when the number of resources is more than 64.
-The increased execution time of the simulation will not affect the execution of an actual campaign as it will run for several days.
-
-When executing campaigns, the execution plan can significantly affect the total time to completion of the campaign.
-With the campaign manager prototype we are able to simulate the execution of the campaign with different plans using different planning algorthims.
-In the next chapter, we explore planning algorithms and evaluate the plans they produce.
-
+The campaign manager is not only responsible to execute a campaign based on an execution plan that is provided by the user.
+It offers a class, the Planner, that can produce execution plans for executing a computational campaign.
+The Planner is able to support several planning algorithms.
+Although using any planning algorithm would satisfy the requirement of creating an execution plan without user intervention, it is important to utilize an algorithm that is able to achieve the campaigns objective.
+In the next chapter, we investigate planning algorithms and evaluate the plans they produce for executing campaigns.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ------------------------------------- Requirements --------------------------
