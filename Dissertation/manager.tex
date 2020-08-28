@@ -8,35 +8,19 @@
 In the previous chapters, we discussed the requirements and support of data-intensive workloads and workflows on high performance computing (HPC) resources. 
 When considering actual research, scientific projects require to execute multiple workflows at scale and potentially for long period of time.
 Usually, workflows are first developed, tested and executed for small scale problems which can be verified theoretically.
-When ready, multiple workflows are executed, potentially concurrently, at production scale for long periods of time on the target HPC machine(s). 
+When ready, multiple workflows are executed, potentially concurrently, at production scale for long periods of time on the target HPC machine(s) while trying to achieve an objective.
 This poses unprecedented computing challenges, shifting the problem from enabling the effective and efficient execution of a single workflow at scale, to managing the execution of a computational campaign.
 
 The challenges users face when executing a computational campaign include, but are not limited to, deciding an execution plan, submitting, executing and monitoring workflows, and potentially transferring data between resources.
 Workflow submission requires from users to have knowledge of submission systems, which generally are different between HPC resources.
 Furthermore, users have to connect to those resources to get information of the execution of a workflow or workflows.
-Lastly, users decide an execution plan which defines when each workflow will be executed and on which HPC resource.
-Although, this is feasible a small numbers of workflows and resources, it becomes non-trivial for campaigns with hundreds of workflows on hundreds of resources~\cite{smith2020molssi}.
+Lastly, users decide an execution plan which defines when each workflow will be executed and on which HPC resource, with workflows potentially executing concurrently.
 To address these challenges, a campaign manager which given a computational campaign and a set of resources creates an execution plan, submits, executes and monitors workflows on HPC resources, is desirable.
 
-Currently, there are software systems which support computational campaigns, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others.
-PanDA WMS~\cite{maeno2008panda}, is built to support the ATLAS experiment~\cite{atlas} at LHC, and is able to execute several thousand jobs concurrently processing million of tasks per week~\cite{de2015future}.
-DIRAC~\cite{tsaregorodtsev2003dirac} is LHCb Monte Carlo production system at CERN.
-QCFractal~\cite{qcfractal} is a campaign manager to execute upon large scale quantum chemistry data.
-GlideInWMS~\cite{sfiligoi2008glidein} is a more general purpose campaign manager as it was designed to support different use cases.
-These are domain specific campaign managers and make assumptions about the underlying software stack, and the type of workflows to be executed.
-
-The existing campaign managers also support a plethora of computing resources, including Grid resources, HPCs and Cloud.
-PanDA~\cite{maeno2008panda}, glideinWMS~\cite{sfiligoi2008glidein}, and DIRAC~\cite{casajus2010dirac} mainly support grid resources.
-PanDA has been extended to support HPC resources~\cite{de2015future, de2016accelerating}, and clouds~\cite{de2016accelerating}, while glideinWMS~\cite{sfiligoi2008glidein} supports clouds.
-QCFractal~\cite{qcfractal} supports a set of heterogeneous resources including local campus clusters, HPC resources and clouds.
-In addition, there are workflow management systems on HPCs, like Pegasus~\cite{deelman2015pegasus}, and Balsam~\cite{salim2019balsam}, that support the execution of multiple workflows on HPC resources, but not specifically campaigns.
-
-Existing campaign managers are making assumptions about the resources and middleware they are utilizing.
+Existing campaign managers make assumptions about the resources and middleware they are utilizing.
 In addition, they are monolithic software systems, despite their modular design, and tend to be domain specific.
 For example, PanDA~\cite{maeno2008panda}, Pegasus~\cite{deelman2015pegasus}, and glideinWMS~\cite{sfiligoi2008glidein} are not easily extensible to use other capabilities or runtime systems.
-QCFractal is built to be extensible and be able to interface with different workflow and workload management systems.
-Currently, it supports multiple execution engines.
-As a consequence, domain scientists and users either build custom tools to support their needs or fit their campaigns to a selected software system.
+QCFractal is built to be extensible and be able to interface with different workflow and workload management systems, but remains domain specific.
 
 In response to these limitations --- monolithic designs, domain specific support and resource and middleware assumptions --- we design and prototype a new campaign manager (CM).
 As our campaign manager supports use cases from different scientific domains, such as molecular dynamics, earth sciences and high energy physics, the design and functionality space explodes.
@@ -54,6 +38,27 @@ Section~\ref{sec:cm_des} describes the building blocks approach and the design o
 We continue, section~\ref{sec:cm_impl}, with the implementation of the campaign manager prototype and a performance characterization to create a baseline of its performance.
 We close the chapter with our conclusions in section~\ref{sec:cm_concl}.
 
+\section{Related Work}
+Currently, there are software systems which support computational campaigns, such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others.
+
+These campaign managers, apart from GlideInWMS~\cite{sfiligoi2008glidein}, are domain specific and make assumptions about the underlying software stack and type of workflows to be executed.
+PanDA WMS~\cite{maeno2008panda} mainly supports the distributed data analysis of data produced by the ATLAS experiment~\cite{atlas} at LHC.
+It has been adapted for other use cases and project, but PanDA requires changes that does not allow it to be used out of the box.
+This is also true for DIRAC~\cite{tsaregorodtsev2003dirac}, which supports the LHCb Monte Carlo simulation production system at CERN.
+QCFractal~\cite{qcfractal} is a campaign manager to execute upon large scale quantum chemistry data.
+It allows users to define workflows based on the geometry of physical systems and execute calculations, hiding the specifics of the software used.
+GlideInWMS~\cite{sfiligoi2008glidein} is a more general purpose campaign manager as it was designed to support different use cases.
+
+The existing campaign managers also support a plethora of computing resources, including Grid resources, HPCs and Cloud.
+PanDA~\cite{maeno2008panda}, glideinWMS~\cite{sfiligoi2008glidein}, and DIRAC~\cite{casajus2010dirac} mainly support grid resources.
+PanDA has been extended to support HPC resources~\cite{de2015future, de2016accelerating}, and clouds~\cite{de2016accelerating}, while glideinWMS~\cite{sfiligoi2008glidein} supports clouds.
+QCFractal~\cite{qcfractal} supports a set of heterogeneous resources including local campus clusters, HPC resources and clouds.
+
+Further, there are workflow management frameworks, such as Pegasus~\cite{deelman2015pegasus} and Balsam~\cite{salim2019balsam}, that support the concurrent execution of multiple workflows on HPC.
+Both frameworks allow users to submit multiple workflows concurrently for execution.
+Furthermore, Balsam provide user multitenancy capabilities, where multiple users can submit jobs for execution under the same workflow.
+Despite this capability, both frameworks execute workflows as independent entities but not as part of a computational campaign with a single well defined objective.
+
 \section{Campaign Manager Requirements}
 \label{sec:cm_req}
 
@@ -66,20 +71,24 @@ These campaigns execute thousands of workflows, with up to 1000 executing at any
 The workflows execution time varies between half-core hours up to 100-core hours with different levels of concurrency.
 In addition, users have access to resources with several capabilities and not every workflow can be executed on every resource.
 During the campaign definition, the users may provide an initial workflow priority.
-Furthermore, users may want to early bind workflows to resources, as some resources may already support the required software for a workflow, or have the necessary data there.
+Furthermore, users have a specific amount of core-hours on resources and they want their campaign to finish executing before that amount finishes.
+As a result, the objective of such campaigns is the total time to completion of the campaign.
 
 Earth science campaigns analyze imagery acquired via sensors from different calendar years~\cite{paraskevakos2019workflow} to create time series of ecological events, executing one workflow per imagery from a calendar year.
 Their execution time varies from hours to a couple of days.
 Due to the volume of the data, users have access to a small number of resources where imagery is stored.
 While workflows analyze datasets based on the year they represent, a specific order is not necessary as long as all datasets are analyzed.
+The objective of this campaign is to analyze as many years of imagery as possible, thus they target for high throughput in imagery per unit of time.
 
 The third use case supports the execution of data analysis workflows from the ATLAS experiment~\cite{atlas}.
 The large hadron collider produces data as particles collide inside its particle detector.
 These data are then analyzed by executing hundreds to thousands workflows with different timescales and frequencies~\cite{borodin2015big}.
 In addition, the analysis needs to happen in specific time scales while the detector is not operational.
 For example, one of the use cases described in Ref.~\cite{borodin2015big} analyzes thousands of different datasets with workflows running for months every yearly quarter.
+As a result, the objective of this use case campaign is to finish all of its workflows on a specific amount of time.
 
-Based on these use cases we derive a set of fuctional requirements for the campaign manager prototype. 
+
+Based on these use cases we derive a set of functional requirements for the campaign manager prototype. 
 Table~\ref{tab:fun_reqs} shows a summary of the functional requirements.
 The table defines a requirement identification number, states the requirement and provides a description of each requirement.
 In addition to this information it shows from which use case the requirement is derived with ``G'' being a requirement that supports all three use cases. 
@@ -168,53 +177,63 @@ Furthermore, its components are designed to be general enough so that they can e
 \subsection{Campaign Manager Components}
 \label{ssec:cm_arch}
 
-Figure~\ref{fig:refarch} shows a reference architecture of the campaign manager prototype.
-It has three components:
+We define three components as part of the campaign manager prototype (see Figure~\ref{fig:refarch}):
 \begin{inparaenum}[(1)]
     \item a Planner;
     \item an Enactor; and
     \item a Bookkeeper. 
 \end{inparaenum}
 Workflow execution will be managed by an existing workflow management framework (WMF) on HPC resources.
-Each of these components support a basic functionality the campaign manager needs to support, such creating an execution, execute individual workflows and execute and monitor the campaign.
+Each of these components support a basic functionality the campaign manager needs to support, such as creating an execution, execute individual workflows and execute and monitor the campaign.
 
 \begin{figure*}[t]
     \centering
     \includegraphics[width=.75\textwidth]{figures/manager/CEM_design.pdf}
     \caption{Reference Architecture of a Campaign Manager. Basic 
-        components of Campaign Manager (CM): 1) Planner, 2) Enactor and 3) Bookkeeper. 
+        components of Campaign Manager (CM): a) Planner, b) Enactor and c) Bookkeeper. 
         CM communicates decisions to Workflows Management Framework. CM communicates with HPCs to 
         execute parts of the campaign.}\label{fig:refarch}
 \end{figure*}
 
-The planner derives an execution plan based on a planning algorithm and calculates the makespan for a campaign on a set of resources.
-It receives information about available resources and the workflows of the campaign from the bookkeeper component.
-The planner does not adhere to a specific planning algorithm allowing different algorithms to be used based on the campaign's requirements and objective.
+The Planner derives an execution plan based on a planning algorithm and calculates the makespan for a campaign on a set of resources.
+It receives information about available resources and the workflows of the campaign from the Bookkeeper component.
+The Planner does not adhere to a specific planning algorithm allowing different algorithms to be used based on the campaign's requirements and objective.
 
 The Bookkeeper component is responsible for monitoring the execution of the campaign.
 This component holds information about the state of the campaign, the execution plan, the availability of resources, and the campaign's objective.
-The state of the campaign is based on information about workflow execution provided by the enactor.
-In addition, the bookkeeper knows the state of the resources the campaign is utilizing at runtime and the state of the resources that are planned to be used.
-Based on this set of information, the bookkeeper checks whether the campaign's objective can be achieved.
-The bookkeeper will request the planner to update the plan when changes in the campaign happen that affect the effectiveness of a current plan or make the objective not achievable.
+The state of the campaign is based on information about workflow execution provided by the Enactor.
+In addition, the Bookkeeper knows the state of the resources the campaign is utilizing at runtime and the state of the resources that are planned to be used.
+Based on this set of information, the Bookkeeper checks whether the campaign's objective can be achieved.
+The Bookkeeper will request the Planner to update the plan when changes in the campaign happen that affect the effectiveness of a current plan or make the objective not achievable.
 For example, the availability of one or more resources can change during runtime requiring a revision of the execution plan.
 
-The last component is the enactor which is responsible to execute the campaign's workflows by interfacing with a workflow management system (WMF).
-The enactor receives from the bookkeeper a set of workflows along with the resources they will execute upon.
+The last component is the Enactor which is responsible to execute the campaign's workflows by interfacing with a workflow management system (WMF).
+The Enactor receives from the Bookkeeper a set of workflows along with the resources they will execute upon at a given point in time.
 Based on this information, it translates the workflow from the user's specification and submits it to the WMF for execution.
-Further, it communicates to the bookkeeper of the state of the workflows that are executing.
+
+Initially, the Bookkeeper receives the description of a campaign (Figure~\ref{fig:refarch} step 1) and passes information about resources and worklfows to the Planner (Figure~\ref{fig:refarch} step 2).
+As soon as, a plan is calculated it is passed to the Bookkeeper (Figure~\ref{fig:refarch} step 3).
+Then, the Bookkeeper passes workflows and resources to the Enactor (Figure~\ref{fig:refarch} step 4) and the Enactor to the selected WMF (Figure~\ref{fig:refarch} step 5).
+When a worklfow finishes, the Enactor gets notified (Figure~\ref{fig:refarch} step 6) and informs the Bookkeeper (Figure~\ref{fig:refarch} step 7).
+Steps 4,5,6, and 7 continue happening until all the workflows have finished executing.
 
 \section{Prototype Implementation and Performance Evaluation}
 \label{sec:cm_impl}
 
 The campaign manager prototype in accordance with its design defines three major classes.
-A bookkeeper class implements the capabilities of the bookkeeper component, an enactor class interacts with a selected workflow engine to execute workflows on resources and a planner class implements planning algorithms.
+A Bookkeeper class implements the capabilities of the Bookkeeper component, an Enactor class interacts with a selected workflow engine to execute workflows on resources and a Planner class implements planning algorithms.
 In addition, the prototype defines a state model for the campaign and the workflows.
 Figure~\ref{fig:rcm_class_diagram} shows the class diagram of the prototype.
 Each class also defines a set of data structures to support the execution.
 
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=.95\textwidth]{figures/manager/class_diagram.png}
+    \caption{Class diagram of campaign manager prototype}\label{fig:rcm_class_diagram}
+\end{figure*}
+
 The states models provide information about the state of the execution.
-The campaign state model has six states: 1) \textit{new}, 2) \textit{planning}, 3) \textit{executing}, 4) \textit{done}, 5) \textit{canceled} and 6) \textit{failed}.
+The campaign state model (Figure~\ref{fig:CampaignStates}) has six states: 1) \textit{new}, 2) \textit{planning}, 3) \textit{executing}, 4) \textit{done}, 5) \textit{canceled} and 6) \textit{failed}.
 A campaign is considered \textit{new} when it is defined and no further action is taken.
 The campaign transitions to state \textit{planning} when a plan for its execution is derived.
 As soon as the execution of the campaign starts, the state transitions to \textit{executing}.
@@ -223,29 +242,40 @@ When the campaign execution ends and the campaign objective is achieved, the sta
 If the objective cannot be achieved or there is a failure during the execution, the state changes to \textit{failed}.
 Lastly, the campaign state goes to \textit{canceled} when the user cancels the execution of the campaign.
 
-The workflows state model defines five states: 1) \textit{new}, 2) \textit{executing}, 3) \textit{done}, 4) \textit{canceled} and 5) \textit{failed}.
-A workflow is in \textit{new} state when it is received by the bookkeeper.
-Its state transitions to \textit{executing} when the enactor submits the workflow for execution to the selected workflow management system.
-A workflow state transitions to one of the final states,  \textit{done}, \textit{canceled} or \textit{failed}, based on the final state the workflow management system reports.
-
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=.95\textwidth]{figures/manager/class_diagram.png}
-    \caption{Class diagram of campaign manager prototype}\label{fig:rcm_class_diagram}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/manager/campaign-state-model.pdf}
+        \caption{}
+        \label{fig:CampaignStates}
+    \end{subfigure}
+    ~ 
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=.95\textwidth]{figures/manager/workflow-state-model.pdf}
+        \caption{}
+        \label{fig:WorkflowStates}
+    \end{subfigure}
+    \caption{State diagrams for : ~\ref{fig:CampaignStates}) a campaign;~\ref{fig:WorkflowStates}) each workflow of a campaign.}
+    \label{fig:StateDiagrams}
 \end{figure*}
+
+The workflows state model  (Figure~\ref{fig:WorkflowStates}) defines five states: 1) \textit{new}, 2) \textit{executing}, 3) \textit{done}, 4) \textit{canceled} and 5) \textit{failed}.
+A workflow is in \textit{new} state when it is received by the Bookkeeper.
+Its state transitions to \textit{executing} when the Enactor submits the workflow for execution to the selected workflow management system.
+A workflow state transitions to one of the final states,  \textit{done}, \textit{canceled} or \textit{failed}, based on the final state the workflow management system reports.
 
 The Bookkeeper class defines the several methods to execute a campaign.
 The most important ones are \textit{run}, \textit{work} and \textit{monitor}.
 Method \textit{run} initializes the campaign state to \textit{new} and sets up the environment for executing the campaign.
-\textit{Work} calls the planner to produce a plan transitioning the state of the campaign to \textit{planning}.
-After a plan is produced, \textit{work} calls \textit{\_verify\_objective} to verify if the objective of the campaign can be achieved, and either starts submitting workflows to the enactor or transitions the campaign to the \textit{failed} state.
+\textit{Work} calls the Planner to produce a plan transitioning the state of the campaign to \textit{planning}.
+After a plan is produced, \textit{work} calls \textit{\_verify\_objective} to verify if the objective of the campaign can be achieved, and either starts submitting workflows to the Enactor or transitions the campaign to the \textit{failed} state.
 In addition, it pushes the submitted workflows to a data structure that the \textit{monitor} method reads.
-The \textit{monitor} method checks the state of the workflow which are executing and receives information from the enactor via callbacks.
+The \textit{monitor} method checks the state of the workflow which are executing and receives information from the Enactor via callbacks.
 
-The planner and enactor classes define the methods for planning the execution of a campaign, executing workflows on resource and monitoring their execution.
-The planner defines a \textit{plan} method which implements a planning algorithm and returns a plan.
-The enactor's \textit{enact} method submits a workflow to the selected WMF.
-The \textit{monitor} method of the enactor checks periodically the state of the workflows that are executing and calls bookkeepr's callback when a state update happens.
+The Planner and Enactor classes define the methods for planning the execution of a campaign, executing workflows on resource and monitoring their execution.
+The Planner defines a \textit{plan} method which implements a planning algorithm and returns a plan.
+The Enactor's \textit{enact} method submits a workflow to the selected WMF.
+The \textit{monitor} method of the Enactor checks periodically the state of the workflows that are executing and pushes state updates to the Bookkeeper via a callback.
 
 \begin{figure*}[t]
     \centering
@@ -256,14 +286,15 @@ The \textit{monitor} method of the enactor checks periodically the state of the 
 
 During the execution of a campaign there is a specific sequence of actions that happen.
 Figure~\ref{fig:seq_diag} shows the sequence diagram of the execution.
-Before the execution of a campaign the bookkeeper gets as input a campaign (a set of workflows) and a set of resources.
-As the user requests from the prototype to execute the campaign, the bookkeeper passes to the planner the information it needs.
-When the plan is ready, the execution of the campaign begins with the bookkeeper passing a workflow along with the resource that it will execute upon to the enactor.
-As the enactor executes the workflow, it pushes state updates to the bookkeeper via callbacks.
-The bookkeeper continues to pass workflows to the enactor as resources become available and as long as there are still workflows to execute.
+Before the execution of a campaign the Bookkeeper gets as input a campaign (a set of workflows) and a set of resources.
+As the user requests from the prototype to execute the campaign, the Bookkeeper passes to the Planner the information it needs.
+When the plan is ready, the execution of the campaign begins with the Bookkeeper passing a workflow along with the resource that it will execute upon to the Enactor.
+As the Enactor executes the workflow, it pushes state updates to the Bookkeeper via callbacks.
+The Bookkeeper continues to pass workflows to the Enactor as resources become available and as long as there are still workflows to execute.
 
 The execution of a campaign can span from months to a year and any experimentation with an actual campaign is almost unfeasible.
-For this reason, we utilize a discrete time simulator, SimPy~\cite{simpy}.
+For this reason, we utilize the resource emulator proposed in Ref.~\cite{balasubramanian2019programming} and extended it to use a discrete time simulator, SimPy~\cite{simpy}.
+
 The simulator advances time which, in turn, allows the CM's components to recognize the state of the execution and take the necessary actions.
 As a result, we are able to test the prototype with different campaigns and resources without necessarily having access to them as long as we can model their performance.
 
@@ -286,7 +317,7 @@ As a result, we are able to test the prototype with different campaigns and reso
 
 Figure~\ref{fig:cm_char} shows the performance characterization of the prototype with the simulator.
 We measure the time it takes the prototype to execute campaigns of different sizes while we kept the number of resources constant and a campaign with constant number of workflows executing on different number of resources.
-The bookkeeper submits workflows for execution until all workflows have finished.
+The Bookkeeper submits workflows for execution until all workflows have finished.
 As a result, the time the simulator runs is linear to the number of workflows.
 Figure~\ref{fig:SimTimeWork} shows the time it takes the simulator to execute 4 to 128 workflows on 4 resources and verifies the expectation that the execution time of the simulation is linear.
 In addition, it executes 128 workflows on less than 2 minutes.
@@ -294,15 +325,15 @@ In addition, it executes 128 workflows on less than 2 minutes.
 The number of resources should not affect the execution time of the simulation.
 This is generally true up to 32 resources, as we see in figure~\ref{fig:SimTimeRes}.
 Above 64 resource, the time of the simulation doubles.
-The enactor monitors all workflows that are executing via traversing a list and uses a callback for those that finished.
-In addition, the bookkeeper checks the state of the workflows that are executing.
+The Enactor monitors all workflows that are executing via traversing a list and uses a callback for those that finished.
+In addition, the Bookkeeper checks the state of the workflows that are executing.
 Increasing the number of resources means that the number of monitored workflows increases and above 64 resources these two checks start to dominate the execution time of the simulation.
 
 
 \section{Conclusions}
 \label{sec:cm_concl}
 In this chapter, we motivated and discussed a prototype for a software system that supports the execution of computational campaigns on HPC resources based on a set of use cases.
-We described the design and the basic components of the campaign manager, a bookkeeper, a planner and an enactor.
+We described the design and the basic components of the campaign manager, a Bookkeeper, a Planner and an Enactor.
 Based on the selected design, we implemented a software prototype that simulates the execution of a campaign on resources.
 The prototype allows us to understand and correctly implement the necessary functionality of the campaign manager.
 
