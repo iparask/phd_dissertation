@@ -17,7 +17,7 @@ High Performance Computing (HPC) resources, a campaign can utilize, offer the co
 Different types of computational resources can be offered by the same HPC resource or different HPC resources.
 
 Uncertainty in the execution of a campaign can arise for several reasons, including resource dynamism and workflow runtime uncertainty.
-HPC resources are governed via policies that affect their performance, such as power regulating policies~\cite{inadomi2015analyzing} and filesystem and network  multitenacy~\cite{brown2018interference}.
+HPC resources are governed via policies that affect their performance, such as power regulating policies~\cite{inadomi2015analyzing} and filesystem and network  multitenancy~\cite{brown2018interference}.
 As a consequence, their performance changes over time and is dynamic, which in turn creates uncertainty on the makespan of a campaign.
 Further, accurately estimating the runtime of each workflow in a campaign is challenging, as each workflow can have different inputs or datasets to analyze.
 Instead, users offer an estimation in the form of a range of possible values.
@@ -368,7 +368,7 @@ The second configuration increases the number of resources from 4 up to 256 reso
 
 We measure the makespan of executing a homogeneous campaign, workflows with runtime of 75000 seconds, on homogeneous resources with performance of 1 petaFLOP.
 In this case, an algorithm produces the minimum makespan when it equally distributes workflows to resources.
-Figure~\ref{fig:st_homog_analysis} shows the makespan for a campaign with homogeneous workflows and homogeneous resources a plan which uses HEFT, GA (50\% of the workflows are placed randomly), L2FF and random (RA).
+Figure~\ref{fig:st_homog_analysis} shows the makespan for a campaign with homogeneous workflows and homogeneous resources a plan which uses HEFT, GA (50\% of the workflows are placed randomly), L2FF and Random (RA).
 Figure~\ref{fig:StHomoCampaigns_4StHomoResources} varies the campaign size from 4 to 2048 workflows while the number of resources is equal to 4 and figure~\ref{fig:StHomoResources_StHomoCampaigns} varies the number of resources from 4 to 256 resources while the campaign size equals to 1024 workflows.
 
 \begin{figure}[ht!]
@@ -471,9 +471,8 @@ As a result, the characteristics of the selected algorithms that affect the make
 \subsection{Experiment 2: Sensitivity of Makespan to Resource Dynamism}
 
 High performance computing (HPC) resources show performance variations for multiple reasons, including power constrained operations~\cite{inadomi2015analyzing}, network and shared filesystem congestion~\cite{brown2018interference} and performance degradation~\cite{wu2017survey}.
-In addition, the timescales of the variations span from days to years~\cite{skinner2005understanding}.
-We model resource dynamism as a normal distribution with a mean value equal to the performance of a resource and sigma to 6~\% of the mean, resulting up to $\pm$ 20~\% change in resource performance.
-Further, we assume that the performance changes daily and as a result affects the execution of the workflows of the selected use case.
+In addition, the rate at which the performance of a resource changes is days to years~\cite{skinner2005understanding}.
+As a result, we model resource dynamism as the daily change in the performance of a resource with the performance values drawn from a normal distribution with a mean value equal to the performance of that resource and sigma to 6~\% of the mean.
 Figure~\ref{fig:dynamic_res} shows a histogram of a dynamic resource performance with a mean value equal to 1 petaFLOP.
 
 \begin{figure}[t]
@@ -483,18 +482,11 @@ Figure~\ref{fig:dynamic_res} shows a histogram of a dynamic resource performance
     \label{fig:dynamic_res}
 \end{figure}
 
-In this experiment, we measure the sensitivity of the makespan using HEFT, L2FF, GA-50 and Random on homogeneous and heterogeneous resources.
-We define as makespan sensitivity the difference between the makespan measured via executing a campaign and the expected makespan given by the execution plan.
-In addition, all workflows are assigned to a resource before executing the campaign and that assignment does not change during runtime.
+In this experiment, we measure the sensitivity of the makespan using HEFT, L2FF, GA and Random to resource dynamism on homogeneous and heterogeneous resources.
+We define as makespan sensitivity the difference between the makespan measured via executing a campaign, $TTX_{C, Exec}$, and the expected makespan given by the execution plan, $TTX_{C}(M)$, thus $Sens = TTX_{C, Exec} - TTX_{C}(M)$.
 Based on our understanding from experiment 1, we expect the sensitivity to be similar between algorithms on homogeneous resources, as all three algorithms produce similar plans.
+While on heterogeneous resources, we expect HEFT and L2FF to show higher sensitivity than GA and Random, as GA and Random may produce a plan that does not utilize a resource which performance is significantly slower than the expected.
 Figures~\ref{fig:dyn_homog_sens_analysis} and~\ref{fig:dyn_hetero_sens_analysis} show the results for homogeneous workflows/ homogeneous resources and heterogeneous workflows/ heterogeneous resources respectively.
-
-As per our expectation, the sensitivity of makespan among the three algorithms is similar and it is between 1~\% and 10~\% (see Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} and~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
-In addition, we observe a drop in GA-50 sensitivity at 128 resources.
-GA-50 produces different plans at every realization of the experiment, since it places a number of workflows to resources randomly, and as a result some plans are affected less from resource dynamism.
-In addition, the sensitivity drops as the number of workflows increase and the number of resources is constant ( Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens}) and increases when the number of resources increase and the number of workflows is constant (Fig.~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
-Thus, as the average number of workflows per resource increases the sensitivity decreases regardless how workflows are placed onto resource by a plan.
-
 
 \begin{figure}[ht!]
     \centering
@@ -514,17 +506,27 @@ Thus, as the average number of workflows per resource increases the sensitivity 
     \label{fig:dyn_homog_sens_analysis}
 \end{figure}
 
+As per our expectation, the sensitivity of makespan among the three algorithms is similar and it is between 1~\% and 10~\% (see Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens} and~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
+In addition, we observe a drop in GA sensitivity at 128 resources.
+GA produces different plans at every realization of the experiment, since it places a number of workflows to resources randomly, and as a result some plans are affected less from resource dynamism.
+In addition, the sensitivity drops as the number of workflows increase and the number of resources is constant ( Fig.~\ref{fig:StHomoCampaigns_4DyHomoResourcesSens}) and increases when the number of resources increase and the number of workflows is constant (Fig.~\ref{fig:DyHomoResources_StHomoCampaignsSens}).
+Thus, as the average number of workflows per resource increases the sensitivity decreases regardless how workflows are placed onto resource by a plan.
 
 Figure~\ref{fig:dyn_hetero_sens_analysis} shows the makespan sensitivity as a percentage for a campaign of heterogeneous workflows and heterogeneous resources.
-We excluded the case of homogeneous workflows as it is similar in terms of makespan to executing heterogeneous workflows on heterogeneous resources.
-Based on the two subplots, we see that sensitivity decreases as the number of workflows increase and increase as the number of resources increase.
-This further supports our conclusion that as the average number of workflows per resource increases the sensitivity decreases.
-Makespan sensitivity shows similar values for all three algorithms in figure~\ref{fig:StHeteroCampaigns_4DyHeteroResourcesSens}, except HEFT for more than 512 workflows.
+Makespan sensitivity shows similar values---from 3\% to less than 1\%---for all three algorithms in figure~\ref{fig:StHeteroCampaigns_4DyHeteroResourcesSens}, except HEFT for more than 512 workflows contrary to our expectation.
+As more workflows are placed on each resource is more probable that the effect of a potential slowdown of a workflow is reduced as some workflows will finish faster and reduce the sensitivity of the plan.
+
+
+Figure~\ref{fig:DyHeteroResources_StHeteroCampaignsSens}, though, shows different sensitivity values for each algorithm.
+HEFT is at least two times more sensitive than GA and L2FF.
 HEFT places workflows on resources so that all resources are used for the least possible amount of time.
-As a result, a slow down on a resource will affect the makespan more than GA-50 and L2FF which produce plans that overutilize some resources.
+As a result, a slow down on a resource will affect the makespan more than GA and L2FF which produce plans that overutilize some resources.
+Further, the sensitivity values are significantly lower than those observed when homogeneous resources were used, as a potential slowdown on a performant resource will not significantly affect the makespan of the campaign.
+In addition, we see that sensitivity decreases as the number of workflows increase and increase as the number of resources increase.
+This further supports our conclusion that as the average number of workflows per resource increases the sensitivity decreases.
 
 Based on the results in figure~\ref{fig:DyHeteroResources_StHeteroCampaignsSens}, we see that the number of resources is a more dominant factor than resource heterogeneity for makespan sensitivity.
-HEFT-based plan is more sensitive that GA-50, L2FF and Random up to 64 resources.
+HEFT-based plan is more sensitive that GA, L2FF and Random up to 64 resources.
 L2FF becomes more sensitive for more than 128 resources and is more sensitive to changes on less performant resources.
 
 \begin{figure}[ht!]
@@ -545,9 +547,9 @@ L2FF becomes more sensitive for more than 128 resources and is more sensitive to
     \label{fig:dyn_hetero_sens_analysis}
 \end{figure}
 
-This experiment measured how sensitive are plans using HEFT, GA-50, L2FF and Random to resource dynamism.
+This experiment measured how sensitive are plans using HEFT, GA, L2FF and Random to resource dynamism.
 On homogeneous resources, all algorithms show similar levels of sensitivity.
-GA-50 sensitivity drops from more than 64 resources as some resources are overutilized.
+GA sensitivity drops from more than 64 resources as some resources are overutilized.
 On heterogeneous resources, HEFT is generally more sensitive as it tries to place a workflow to a resource with the least impact on the campaign makespan.
 L2FF becomes more sensitive than HEFT after 128 resources as it places equal number of workflows to resources overutilizing less performant resources.
 In addition, sensitivity is proportional to the number of resources and inverse proportional to the number of workflows, since it decreases as the number of workflows increase when using constant number of resources and increases when number of resources increases and campaign size is constant.
@@ -556,30 +558,31 @@ Finally, we observed that for a 6~\% temporal resource variation causes less tha
 
 \subsection{Experiment 3: Sensitivity of Makespan to Workflow Runtime Estimation Uncertainty}
 
-All selected algorithms, HEFT, GA-50 and L2FF, require an estimation about the runtime of each workflow of the campaign.
-Users usually offer this information as a range of values drawn by empirical data.
-As a result, there is a level of uncertainty in the workflow runtime estimation.
-This experiment measures how sensitive are the plans produced by the selected algorithms for different levels of uncertainty.
+All selected algorithms, HEFT, GA and L2FF, require an estimation about the runtime of each workflow of the campaign.
+Users usually offer this information as a range of values drawn by empirical data and as a result there is a level of uncertainty in the workflow runtime estimation.
+All selected algorithm require information about workflow runtime to produce their plans.
+When the information is uncertain, the makespan of a plan will be affected.
 
 We introduce workflow runtime estimation uncertainty as the difference between the estimated and actual runtime of a workflow on a 1 petaFLOP resource.
 Specifically, we denote as $u$ the level of uncertainty between $[0,1)$, $u'$ the uncertainty for a workflow drawn randomly from the range $[-u,u]$ and $Tx_{w}$ the mean estimated runtime of a workflow.
 Thus, the actual runtime of a workflow is $Tx_{w'}$ is $ Tx_{w'} = Tx_{w} \times (1-u')$.
 
 In this experiment, we measure the sensitivity of makespan to workflow runtime estimation uncertainty for level of uncertainty from 10~\% to 50~\%.
-As shown in experiment 2, the makespan sensitivity of plans using HEFT, L2FF and GA-50 on homogeneous resources is similar.
+Sensitivity is defined as in experiment 2.
+As shown in experiment 2, the makespan sensitivity of plans using HEFT, L2FF and GA on homogeneous resources is similar.
 As a result, we expect the sensitivity to workflow runtime estimation uncertainty for campaigns executing on homogeneous resources to be similar across algorithms and we show only the results for heterogeneous workflows executing on heterogeneous resources.
 Similar to sensitivity to resource dynamism, we expect sensitivity to workflow runtime estimation uncertainty to decrease as the number of workflows increase and increase as the number of resources decrease and increase as the level of uncertainty increase by a constant factor.
 Figure~\ref{fig:inaccur_st} shows the results with figure~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens} varying the number of workflows and~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens} varying the number of resources.
 
 \begin{figure}[ht!]
     \centering
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.95\textwidth}
         \includegraphics[width=.95\textwidth]{figures/campaign/InaccurStHeteroCampaigns_4StHeteroResourcesSens.pdf}
         \caption{}
         \label{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens}
     \end{subfigure}\\
     ~ 
-    \begin{subfigure}[b]{0.85\textwidth}
+    \begin{subfigure}[b]{0.95\textwidth}
         \includegraphics[width=0.95\textwidth]{figures/campaign/InaccurStHeteroResources_StHeteroCampaignsSens.pdf}
         \caption{}
         \label{fig:InaccurStHeteroResources_StHeteroCampaignsSens}
@@ -593,21 +596,21 @@ As per our expectation, sensitivity to workflow uncertainty shows similar behavi
 Sensitivity decreases when the number of workflows increase (Fig.~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens}) and increases as the number of resources increase (Fig.~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens}).
 This verifies our conclusion from experiment 2 that sensitivity is proportional to the number of resources and inverse proportional to the number of workflows.
 
-Sensitivity to makespan runtime uncertainty shows a wide range of values for HEFT and L2FF, but significantly smaller range for GA-50 and random.
+Sensitivity to makespan runtime uncertainty shows a wide range of values for HEFT and L2FF, but significantly smaller range for GA and random.
 Specifically, the sensitivity of plans using HEFT is between almost 0~\% for 2048 workflows on 4 resource and 25~\% for 1024 workflows on 256 resources.
 The sensitivity of plans using L2FF show similar range with using HEFT, with L2FF reaching 35~\% for 1024 workflows on 256 resources.
-GA-50 plans show increased sensitivity for small number of workflows when the number of resources is constant, around 13~\%, and quickly drop close to 0~\%.
+GA plans show increased sensitivity for small number of workflows when the number of resources is constant, around 13~\%, and quickly drop close to 0~\%.
 
-HEFT shows higher sensitivity than GA-50 and L2FF above 128 workflows/4 resources and when the number of resources change and the campaign size is 1024 workflows.
-In addition, we see higher sensitivity for plans that use HEFT and L2FF than plans that use GA-50 when the number of resources increase.
-Both HEFT and L2FF create priority lists for the workflows and GA-50 does not.
+HEFT shows higher sensitivity than GA and L2FF above 128 workflows/4 resources and when the number of resources change and the campaign size is 1024 workflows.
+In addition, we see higher sensitivity for plans that use HEFT and L2FF than plans that use GA when the number of resources increase.
+Both HEFT and L2FF create priority lists for the workflows and GA does not.
 As a result, HEFT and L2FF place large workflows on less perfomant resources.
-GA-50 does not prioritize workflows and places a subset of workflows to resources randomly.
+GA does not prioritize workflows and places a subset of workflows to resources randomly.
 As a consequence, the random order of the workflows with the random placement reduces the effect of the workflow runtime uncertainty.
 
 This experiment studies how sensitive are plans using HEFT, GA and L2FF are when the workflow runtime estimation is uncertain.
 Algorithms that prioritize workflows, HEFT and L2FF, tend to be more sensitive to workflow runtime estimation uncertainty than algorithms that do not create a priority list, such as GA and random.
-HEFT and L2FF are more sensitive than GA-50 and random when the number of resources increase and show similar sensitivity to GA-50 and random when the number of workflows increase --- 25~\% and 35~\% compared to less than 10~\% for 1024 workflows and 256 resources.
+HEFT and L2FF are more sensitive than GA and random when the number of resources increase and show similar sensitivity to GA and random when the number of workflows increase --- 25~\% and 35~\% compared to less than 10~\% for 1024 workflows and 256 resources.
 In addition, sensitivity remains proportional to the number of resources and inverse proportional to the number of workflows.
 This in conjunction with experiment 2 allows us to conclude that the sensitivity slope is independent from the type of uncertainty.
 
@@ -619,7 +622,7 @@ Our experimental methodology allows us to compare plans in terms of makespan per
 
 Based on our analysis, we conclude that there are three factors which affect the performance and sensitivity of planning algorithms.
 The first factor is whether the algorithm uses an expectation of when a resource will be available.
-HEFT and the genetic algorithm, specifically GA-25 and GA-50, use an expectation of resource availability and show better performance on homogeneous and heterogeneous resources than L2FF and random.
+HEFT and the genetic algorithm, specifically GA-25 and GA, use an expectation of resource availability and show better performance on homogeneous and heterogeneous resources than L2FF and random.
 The second factor is whether the algorithm uses a deterministic or randomized heuristic.
 GA shows performance similar to random plans when all workflows were initially placed randomly to resources.
 In addition, GA shows worse performance than L2Ff when 50~\% of the workflows were not placed randomly above 128 resources as it underutilized some of the resources.
@@ -628,10 +631,10 @@ HEFT and L2FF sort workflows based on their runtime and they place first the lar
 This priority list allows L2FF to place larger workflows to more performant resources and as a result L2Ff outperforms GA for large number of resources.
 
 Our analysis on makespan sensitivity to resource dynamism also shows that deterministic algorithms are more sensitive to resource dynamism or workflow runtime uncertainty than non-deterministic algorithms.
-HEFT and L2FF provide more sensitive plans than GA-50 and random.
+HEFT and L2FF provide more sensitive plans than GA and random.
 Further, sensitivity is proportional to the number of resources and inverse proportional to the number of workflows.
 Sensitivity to resource dynamism or workflow runtime uncertainty decreases as the number of workflows increase when using constant number of resources and increases when number of resources increases and campaign size is constant.
-When variation originates from workflow runtime uncertainty, both HEFT and L2FF were more sensitive than GA-50 since they prioritize workflows based on their runtime estimation.
+When variation originates from workflow runtime uncertainty, both HEFT and L2FF were more sensitive than GA since they prioritize workflows based on their runtime estimation.
 
 When selecting a planning algorithm for a campaign, users should consider the following factors:
 \begin{inparaenum}[1)]
@@ -763,8 +766,8 @@ Although a genetic algorithm may provide plans with worse makespan than an algor
 %    \label{fig:InaccurStHeteroResources_StHeteroCampaignsSensFactor}
 %\end{figure}
 
-%As the level of uncertainty increases the sensitivity increases proportionally for L2FF and GA-50 and not for HEFT regardless of whether the number of workflows or the number of resources changes.
+%As the level of uncertainty increases the sensitivity increases proportionally for L2FF and GA and not for HEFT regardless of whether the number of workflows or the number of resources changes.
 %HEFT shows an increase larger than the expected multiplicative factor when the number of workflows over the number of resources is between 8 and 128.
 %As an example, figure~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSensFactor} shows the increase factor of 30~\% uncertainty compared to 10~\% for different number of resources and 1024 workflows.
-%L2FF, GA-50 and random increase is relatively close to 3 compared to the increase observed for HEFT which reaches more than 4 times.
+%L2FF, GA and random increase is relatively close to 3 compared to the increase observed for HEFT which reaches more than 4 times.
 %We believe that this unexpected behavior from HEFT is a consequence of prioritizing workflows and placing a workflow on the resource that will finish it earlier.
