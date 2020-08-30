@@ -31,41 +31,57 @@ Some of the most important common characteristics of these campaigns are:
     \item well defined computational objectives.
 \end{inparaenum}
 
-%Scientific workflows are mainly executed by utilizing dedicated workflow management frameworks (WMFs), such as RADICAL-Ensemble Toolkit~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus} and others.
-%These frameworks offer runtime capabilities, such as task execution, data dependency resolution, and workflow definition and monitoring.
-%Some WMFs, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}, provide capabilities to elastically adapt resources, by scaling up or down, based on the current state of execution.
-%In addition, some  WMFs~\cite{deelman2015pegasus} may also support the concurrent execution of multiple workflows as independent entities.
-%Furthermore, these WMFs support the execution of either only compute-based, such as RADICAL-EnTK~\cite{balasubramanian2018harnessing}, Pegasus~\cite{deelman2015pegasus}, or data-based workflows, such as Dask~\cite{rocklin2015dask} and Airflow~\cite{airflow}.
+Based on the above discussion, it becomes important to efficiently and effectively support the execution of data-driven computational campaigns as the first order of execution.
+This has the potential to increase overall resource utilization across all resources that are available to a campaign.
+Further, increased resource utilization will allow computational scientists to execute computational campaigns to larger scales, leading to new scientific discoveries and innovations.
+As a result, we focus our research on supporting the efficient execution of data-driven computational campaigns on HPC resources.
+It is important to note that our solutions and results are applicable and extensible to other scientific domains.
 
-Compute-based workflows are in the epicenter of scientific computing that utilizes HPC resources.
-These workflows are either defined as a single large application or as an ensemble of compute intensive tasks~\cite{balasubramanian2018harnessing}.
-In both cases, MPI is the most common programming model to implement either the whole application or the tasks of a workflows.
-In addition, HPC resources are being designed to support and optimize the execution of such workflows.
+\section{Challenges}
 
-Data-intensive workflows and applications are associated with a wide variety of characteristics and properties~\cite{fox2014towards,fox2014big}.
-Their complexity and characteristics are distinct from compute intensive applications.
-They often comprise of multiple stages such as, data ingest, pre-processing, feature-extraction and advanced analytics.
-While some of these stages are I/O bound, often with different patterns (random/sequential access), other stages are compute-/memory-bound.
-As a consequence, a diverse set of tools for data processing (e.\,g.\ MapReduce~\cite{dean2004mapreduce}, Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask}), access to data sources and data formats have emerged and often need to be combined in order to support the end-to-end needs of applications.
-However, this type of tools are not fully supported on HPC resources and it becomes challenging to execute both compute and data intensive applications on the same HPC resources.
+The effective and efficient execution of data-driven computational campaigns poses three main computational challenges:
+\begin{inparaenum}[1)]
+    \item support the efficient execution of data-intensive workflows and applications;
+    \item managing the execution of a computational campaign; and
+    \item creating an execution plan for executing the campaign.
+\end{inparaenum}
 
-There are workflows however which cannot easily classify as compute- or data-intensive.
-In fact, there are classes of scientific applications, such as bio-molecular dynamics~\cite{dror2012biomolecular} and image analysis~\cite{goncalves2020sealnet}, that have strong characteristics of both compute- and data-intensive and do not always conform to the HPC or MapReduce style of execution.
-From a workflow management framework perspective, the design and architectural space is large and the lack of performance analysis make it difficult to select among equivalent implementations.
+Data-intensive workflows and applications are not well supported on HPC resources, reducing resource utilization and increasing their execution time.
+Although, there are several frameworks which provide the necessary abstraction to execute data analytics at scale, their support and interoperability with HPC is limited.
+In addition, there are data analysis workflows which cannot easily classify as compute- or data-intensive.
+As these workflows do not always conform to the HPC or MapReduce style of execution, the capabilities of the workflow execution engine can affect their efficient execution.
+In addition, it becomes important to support the execution of computational campaigns as the first order of execution.
 
-Based on the above discussion, it becomes important to support the execution of computational campaigns as the first order of execution.
-There is, thus, a need to design and offer a campaign manager that supports a diverse set of computational campaigns.
+%Compute-based workflows are in the epicenter of scientific computing that utilizes HPC resources.
+%These workflows are either defined as a single large application or as an ensemble of compute intensive tasks~\cite{balasubramanian2018harnessing}.
+%In both cases, MPI is the most common programming model to implement either the whole application or the tasks of a workflows.
+%In addition, HPC resources are being designed to support and optimize the execution of such workflows.
+
+%Data-intensive workflows and applications are associated with a wide variety of characteristics and properties~\cite{fox2014towards,fox2014big}.
+%Their complexity and characteristics are distinct from compute intensive applications.
+%They often comprise of multiple stages such as, data ingest, pre-processing, feature-extraction and advanced analytics.
+%While some of these stages are I/O bound, often with different patterns (random/sequential access), other stages are compute-/memory-bound.
+%As a consequence, a diverse set of tools for data processing (e.\,g.\ MapReduce~\cite{dean2004mapreduce}, Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask}), access to data sources and data formats have emerged and often need to be combined in order to support the end-to-end needs of applications.
+%However, this type of tools are not fully supported on HPC resources and it becomes challenging to execute both compute and data intensive applications on the same HPC resources.
+%
+%There are workflows however which cannot easily classify as compute- or data-intensive.
+%In fact, there are classes of scientific applications, such as bio-molecular dynamics~\cite{dror2012biomolecular} and image analysis~\cite{goncalves2020sealnet}, that have strong characteristics of both compute- and data-intensive and do not always conform to the HPC or MapReduce style of execution.
+%From a workflow management framework perspective, the design and architectural space is large and the lack of performance analysis make it difficult to select among equivalent implementations.
+%
+
+Supporting the execution of a computational campaign creates a need to design and offer a campaign manager that supports a diverse set of computational campaigns.
 Currently, campaign managers are making assumptions about the resources and the middleware they are utilizing, are monolithic software systems, and tend to be domain specific.
-In contrast, a software system designed and engineered following the building blocks approach~\cite{turilli2019middleware} is agnostic of the middleware used to execute the campaign.
-In addition, it is domain and workflow type agnostic.
+In contrast, a software system designed and engineered following the building blocks approach~\cite{turilli2019middleware} is agnostic of the middleware used to execute the campaign and domain agnostic.
 This, in turn, will allow the campaign manager to make no assumptions about the resources on which the campaign workflows will be mapped and executed.
 
-Designing and implementing such a campaign manager poses the following challenges:
-\begin{inparaenum}[1)]
-    \item support data intensive scientific workflows in a domain agnostic manner;
-    \item provide a modular and extensible design to support any campaign; and
-    \item define and enact upon a plan that will achieve the objective of the campaign.
-\end{inparaenum}
+Finally, the effective and efficient execution of a campaign requires an execution plan to map workflows on resources.
+While computational campaigns can utilize multiple resources concurrently, the effectiveness of a plan is not guaranteed.
+Actual HPC resources performance is affected by several factors and can change significantly during the execution of a campaign.
+It is important, then, this execution plan to efficiently map the workflows of the campaign, so as to increase resource utilization and achieve the objective of the campaign.
+
+In response to these challenges, we design a campaign manager prototype which plans and executes computational campaigns on HPC resources.
+Further, we provide the necessary extensions and understanding to efficiently and effectively execute data-driven workflows on HPC resources.
+Our work is designed and engineered to be domain and resource agnostic.
 
 
 \section{Contributions of the Dissertation}
