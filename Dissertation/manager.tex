@@ -302,28 +302,18 @@ As a result, we are able to simulate the execution of a campaign and validate th
 
 \begin{figure*}[t]
     \centering
-    \begin{subfigure}[b]{0.75\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/manager/SimTimeWork.pdf}
-        \caption{}
-        \label{fig:SimTimeWork}
-    \end{subfigure}\\
-    ~ 
-    \begin{subfigure}[b]{0.75\textwidth}
-        \includegraphics[width=.95\textwidth]{figures/manager/SimTimeRes.pdf}
-        \caption{}
-        \label{fig:SimTimeRes}
-    \end{subfigure}
-    \caption{Execution time of simulating the execution of a computational campaign with: ~\ref{fig:SimTimeWork}) different number of workflows on 4 resources;~\ref{fig:SimTimeRes}) campaign with 128 workflows and different number of resources.}
+    \includegraphics[width=.95\textwidth]{figures/manager/SimTimeWork.pdf}
+    \caption{Execution time of simulating the execution of computational campaign with different number of workflows on different number of resources, $N_R$.}
     \label{fig:cm_char}
 \end{figure*}
 
 We validate the correctness of our design by executing campaigns of different sizes on different number of resources.
 We provided the prototype with a campaign, a set of resources and an execution plan.
-The workflows of the campaign were executed as expected and in a reasonable amount of time, since we are utilizing an emulator.
+The workflows of the campaign were executed as expected and in a reasonable amount of time, since we are utilizing an emulator, as shown in Figure~\ref{fig:cm_char}.
 Further, we see that the execution time of the simulation increases when more than 64 resources are utilized concurrently.
 Both the Enactor and the Bookkeeper have monitoring methods that traverse a list of the workflows that are executing.
 In addition, the Enactor uses callbacks to inform the Bookkeeper about the state of the workflows.
-Above 64 resources these two checks start to dominate the execution time of the simulation.
+Above 64 resources these two checks start to dominate the execution time of the simulation, as shown by the .
 Nonetheless, the prototype executed 128 workflows on 128 resources in around 15 minutes and thus we conclude that this increase will not affect the execution of an actual campaign.
 As a result, we conclude that the design and functionalities of the prototype satisfy the requirements and correctly execute a computational campaign.
 
