@@ -321,7 +321,7 @@ engine to execute workflows on resources and a Planner class implements
 planning algorithms. In addition, the prototype defines a state model for the 
 campaign and the workflows. Figure~\ref{fig:rcm_class_diagram} shows the class 
 diagram of the prototype. Each class also defines a set of data structures to 
-support the execution.
+support the execution. 
 
 \begin{figure*}[t]
     \centering
@@ -341,7 +341,8 @@ states. When the campaign execution ends and the campaign objective is
 achieved, the state transitions to \textit{done}. If the objective cannot be 
 achieved or there is a failure during the execution, the state changes to 
 \textit{failed}. Lastly, the campaign state goes to \textit{canceled} when the 
-user cancels the execution of the campaign.
+user cancels the execution of the campaign. The code of the prototype is
+available via Github~\cite{cm_git}.
 
 \begin{figure*}[t]
     \centering
