@@ -1,55 +1,97 @@
 % !TEX root = main.tex
 \label{ch:conclusions}
-This dissertation research our understanding of executing computational campaigns with data-intensive workflows on HPC resources.
-This will offer scientists the capabilities to efficiently and effectively execute computational campaigns on HPC resources.
-This enables scientists to remove themselves from monitoring and executing a campaign and focus more on scientific innovations.
-This research make the following contributions.
+This dissertation research our understanding of executing computational 
+campaigns with data-intensive workflows on HPC resources. This will offer 
+scientists the capabilities to efficiently and effectively execute 
+computational campaigns on HPC resources. This enables scientists to remove 
+themselves from monitoring and executing a campaign and focus more on 
+scientific innovations. This research make the following contributions.
 
 %% Chapter 2
-Data-intensive workflows have different characteristics from compute-based workflows which are in the epicenter of scientific computing that utilizes HPC resources.
-As data-intensive workflows and applications are not well supported on HPC, we motivated the use of the Pilot-Abstraction as an integrating concept between HPC and data analytics.
-As a result, we extended RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop and Spark on HPC resources.
-Through our analysis, we demonstrated that the Pilot-Abstraction increases HPC resources utilization in conjunction with emerging data analytics frameworks.
+Data-intensive workflows have different characteristics from compute-based 
+workflows which are in the epicenter of scientific computing that utilizes HPC 
+resources. As data-intensive workflows and applications are not well supported 
+on HPC, we motivated the use of the Pilot-Abstraction as an integrating 
+concept between HPC and data analytics. As a result, we extended 
+RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop 
+and Spark on HPC resources. Through our analysis, we demonstrated that the 
+Pilot-Abstraction increases HPC resources utilization in conjunction with 
+emerging data analytics frameworks.
 
-Data analytics frameworks offer different abstractions and capabilities and selecting a suitable framework is necessary to increase resource utilization.
-As a result, we investigated the use of three different task-parallel frameworks, Spark, Dask and RADICAL-Pilot, for implementing a range of algorithms for MD trajectory analysis. 
-We found that for embarrassingly parallel applications with coarse grained-tasks the framework selection does not affect the performance, while for fine-grained data-parallel applications a data-parallel framework is more suitable, with Spark offering linear speedups.
-Based on our analysis, we provide a conceptual framework that enables application developers to evaluate task parallel frameworks with respect to application requirements.
+Data analytics frameworks offer different abstractions and capabilities and 
+selecting a suitable framework is necessary to increase resource utilization.
+As a result, we investigated the use of three different task-parallel 
+frameworks, Spark, Dask and RADICAL-Pilot, for implementing a range of 
+algorithms for MD trajectory analysis. We found that for embarrassingly 
+parallel applications with coarse grained-tasks the framework selection does 
+not affect the performance, while for fine-grained data-parallel applications 
+a data-parallel framework is more suitable, with Spark offering linear 
+speedups. Based on our analysis, we provide a conceptual framework that 
+enables application developers to evaluate task parallel frameworks with 
+respect to application requirements.
 
 %% Chapter 4
-However, there are some data-analysis workflows and applications that show both data and compute-intensive characteristics and are not necessarily well supported by data-parallel frameworks.
-We investigated three architecturally equivalent designs to execute a data-driven compute intensive workflow.
-We saw that such workflows benefit from early binding of data to compute nodes maximizing data and compute affinity and equally balancing input across nodes.
-This approach minimizes the overall time to completion of this type of workflows while maximizing resource utilization compared to late binding tasks to compute nodes.
-In presence of large amount of data, late binding implies copying, replicating or accessing data over network and at runtime.
-We showed that, in contemporary HPC infrastructures, this is too costly both for resource utilization and total time to completion.
+However, there are some data-analysis workflows and applications that show 
+both data and compute-intensive characteristics and are not necessarily well 
+supported by data-parallel frameworks. We investigated three architecturally 
+equivalent designs to execute a data-driven compute intensive workflow. We saw 
+that such workflows benefit from early binding of data to compute nodes 
+maximizing data and compute affinity and equally balancing input across nodes.
+This approach minimizes the overall time to completion of this type of 
+workflows while maximizing resource utilization compared to late binding tasks 
+to compute nodes. In presence of large amount of data, late binding implies 
+copying, replicating or accessing data over network and at runtime. We showed 
+that, in contemporary HPC infrastructures, this is too costly both for 
+resource utilization and total time to completion.
 
 %% Chapter 5
-Having established our understanding on how to effectively and efficiently execute data-driven workflows on HPC, we discussed three scientific computational campaigns.
-Based on requirements elicited from theses scientific use case, we designed and implemented a campaign manager prototype which is domain agnostic and adheres to the building blocks approach.
-The campaign manager prototype creates an execution plan and executes the campaign on HPC resources.
-We validated the design by simulating the execution of computational campaigns.
-Finally, we investigated three planning algorithms, HEFT, a genetic algorithm (GA) and L2FF, to plan the execution of a campaign and experimentally compared their plan performance in terms of makespan.
-As computational campaigns utilize heterogeneous resources, we saw through our experimentation that HEFT provided better makespan than GA and L2FF.
-In addition, we measured how sensitive are plans using HEFT, GA and L2FF to resource performance changes and to uncertain information about workflow runtime.
-Based on our experimental analysis, we derive the algorithmic characteristics that affect the plan performance and its sensitivity to resource dynamism and workflow runtime estimation uncertainty.
-We conclude by providing a conceptual model where users can select a planning algorithm based on their campaign characteristics, the resources they have access and their computational objective.
+Having established our understanding on how to effectively and efficiently 
+execute data-driven workflows on HPC, we discussed three scientific 
+computational campaigns. Based on requirements elicited from theses scientific 
+use case, we designed and implemented a campaign manager prototype which is 
+domain agnostic and adheres to the building blocks approach. The campaign 
+manager prototype creates an execution plan and executes the campaign on HPC 
+resources. We validated the design by simulating the execution of 
+computational campaigns. Finally, we investigated three planning algorithms, 
+HEFT, a genetic algorithm (GA) and L2FF, to plan the execution of a campaign 
+and experimentally compared their plan performance in terms of makespan. As 
+computational campaigns utilize heterogeneous resources, we saw through our 
+experimentation that HEFT provided better makespan than GA and L2FF. In 
+addition, we measured how sensitive are plans using HEFT, GA and L2FF to 
+resource performance changes and to uncertain information about workflow 
+runtime. Based on our experimental analysis, we derive the algorithmic 
+characteristics that affect the plan performance and its sensitivity to 
+resource dynamism and workflow runtime estimation uncertainty. We conclude by 
+providing a conceptual model where users can select a planning algorithm based 
+on their campaign characteristics, the resources they have access and their 
+computational objective.
 
 
 \section{Future Work}
-The work of this dissertation is invariant of the scientific domain and HPC resources that a campaign can utilize.
-As we move forward to support actual computational campaigns on HPC resources, we see three strands of research and development that can be pursued.
+The work of this dissertation is invariant of the scientific domain and HPC 
+resources that a campaign can utilize. As we move forward to support actual 
+computational campaigns on HPC resources, we see three strands of research and 
+development that can be pursued.
 
-First, the campaign manager and specifically its planner, assumes that all workflows are able to execute on all available resources.
-In reality, workflows may have different resource requirements, number and type of resources, and cannot execute on all resources.
-We plan to extend the set of algorithms the planner uses with algorithms that define resource requirements for workflows and evaluate their makesan performance and sensitivity to resource dynamism.
+First, the campaign manager and specifically its planner, assumes that all 
+workflows are able to execute on all available resources. In reality, 
+workflows may have different resource requirements, number and type of 
+resources, and cannot execute on all resources. We plan to extend the set of 
+algorithms the planner uses with algorithms that define resource requirements 
+for workflows and evaluate their makespan performance and sensitivity to 
+resource dynamism.
 
-Second, all planning algorithms we currently use early-bind workflows on resources.
-Contrary, late binding algorithms respond to events during runtime and their execution plan evolves as the campaign executes.
-Late binding algorithms can offer the same performance as early-bind algorithm on homogeneous resources and we believe that they can offer similar performance with HEFT on heterogeneous resources.
-As a result, we plan to investigate the performance of a late binding algorithm and compare it with HEFT's performance.
+Second, all planning algorithms we currently use early-bind workflows on 
+resources. Contrary, late binding algorithms respond to events during runtime 
+and their execution plan evolves as the campaign executes. Late binding 
+algorithms can offer the same performance as early-bind algorithm on 
+homogeneous resources and we believe that they can offer similar performance 
+with HEFT on heterogeneous resources. As a result, we plan to investigate the 
+performance of a late binding algorithm and compare it with HEFT's performance.
 
-Finally, the campaign manager prototype does not support yet the actual execution of campaigns.
-As we have an understanding of the requirements to support the execution of a campaign, we want to investigate what are the requirements to utilize an actual workflow management framework (WMF).
-RADICAL-EnTK will be our first choice, as it fits the requirements of the target use cases, and utilizes a pilot framework as runtime system.
-
+Finally, the campaign manager prototype does not support yet the actual 
+execution of campaigns. As we have an understanding of the requirements to 
+support the execution of a campaign, we want to investigate what are the 
+requirements to utilize an actual workflow management framework (WMF).
+RADICAL-EnTK will be our first choice, as it fits the requirements of the 
+target use cases, and utilizes a pilot framework as runtime system.
