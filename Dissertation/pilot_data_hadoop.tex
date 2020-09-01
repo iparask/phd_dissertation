@@ -334,62 +334,88 @@ LRM stops the Hadoop and YARN daemons and removes the associated data files. In
 Mode II (Hadoop on HPC), the LRM solely collects the Hadoop cluster resource
 information.
 
-The \emph{scheduler} is another extensible component of the RADICAL-Pilot-Agent responsible for queuing compute units and assigning them to resources.
-To support YARN, we created a special scheduler that utilizes the cluster state information (e.g., the amount of available cores, memory, queue information, application quotas etc.) obtained via the YARN's Resource Manager's REST API.
-In contrast to other RADICAL-Pilot schedulers, it specifically utilizes memory in addition to cores for assigning resources to Compute Units.
+The \emph{scheduler} is another extensible component of the RADICAL-Pilot-Agent
+responsible for queuing compute units and assigning them to resources. To
+support YARN, we created a special scheduler that utilizes the cluster state
+information (e.g., the amount of available cores, memory, queue information,
+application quotas etc.) obtained via the Resource Manager's REST API of YARN.
+In contrast to other RADICAL-Pilot schedulers, our scheduler specifically
+utilizes memory in addition to cores for assigning resources to Compute Units.
 
-The \emph{Task Spawner} is responsible for managing and monitoring the execution of a Compute Unit.
-The \emph{Launch Method} component encapsulates resource/launch-method specific operations, e.g., the usage of the \texttt{yarn} command line tool for submitting and monitoring applications.
-After the launch of a Compute Unit, the Task Spawner periodically monitors its execution and updates its state in the shared MongoDB instance by utilizing the application log file.
+The \emph{Task Spawner} is responsible for managing and monitoring the execution
+of a Compute Unit. The \emph{Launch Method} component encapsulates
+resource/launch-method specific operations, e.g., the usage of the \texttt{yarn}
+command line tool for submitting and monitoring applications. After the launch
+of a Compute Unit, Task Spawner periodically monitors its execution and updates
+its state in a shared MongoDB instance by utilizing the application log file.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=.65\textwidth]{figures/data_analytics_hpc/hpc_hadoop/yarn.pdf}
     \caption{RADICAL-Pilot YARN Agent Application.}
-%    \caption{\textbf{RADICAL-Pilot YARN Agent Application: }
-%        RADICAL-Pilot provides a YARN application that manages the execution of Compute Units.
-%        The application is initialized with parameters defined in the Compute Unit Description and started by the Task Spawner (step 1/2).
-%        The Application Master requests resources from the Resource Manager and starts a container running the Compute Unit (step 3/4).}
     \label{fig:figures_yarn}
 \end{figure}
 
-\emph{RADICAL-Pilot Application Master:}
-A particular integration challenge is the multi-step resource allocation process imposed by YARN depicted in Figure~\ref{fig:figures_yarn}, which differs significantly from HPC schedulers.
-The central component of a YARN application is the Application Master, which is responsible for negotiating resources with the YARN Resource Manager as well as managing the execution of an application in the assigned resources.
-The unit of allocation in YARN is a container~\cite{murthy2014apache}.
-The YARN client (part of the YARN Launch Method) implements a YARN Application Master, which is the central instance for managing the resource requirements of an application.
-RADICAL-Pilot utilizes a managed application master that is run inside a YARN container.
-Once the Application Master container is started, it is responsible for requesting a YARN container meeting the resource requirements of the Compute Unit from the YARN's Resource Manager.
-Once YARN allocates a set of containers, the CU starts inside these containers.
-A wrapper script responsible for setting up a RADICAL-Pilot environment, staging of the specified files and running the executable defined in the Compute Unit Description, is used for this purpose.
-Every Compute Unit is mapped to a YARN application consisting of an Application Master and a container of the size specified in the Compute Unit Description.
+\emph{RADICAL-Pilot Application Master:} YARN's multi-step resource allocation
+process depicted in Figure~\ref{fig:figures_yarn} differs significantly from HPC
+schedulers and, as such, poses an integration challenge. The central component
+of a YARN application is the Application Master, which negotiates resources
+assignment with the YARN Resource Manager and manages the execution of an
+application in the assigned resources. The unit of allocation in YARN is a
+container~\cite{murthy2014apache} (not to be confused with a Docker container).
+The YARN client is part of the YARN Launch Method and implements a YARN
+Application Master, which is the central instance for managing the resource
+requirements of an application. RADICAL-Pilot utilizes a managed application
+master that runs inside a YARN container. Once the Application Master container
+is started, the managed application master requests a YARN container that meets
+the resource requirements of the Compute Unit from the YARN's Resource Manager.
+Once YARN allocates a container, the CU starts inside that container. A wrapper
+script sets up a RADICAL-Pilot environment, staging the specified files and
+running the executable defined in the Compute Unit Description. Every Compute
+Unit is mapped to a YARN application consisting of an Application Master and a
+container of the size specified in the Compute Unit Description.
 
 \subsubsection*{RADICAL-Pilot and Spark Integration}
 \label{sssec:rp_spark}
-Spark offers multiple deployment modes: standalone, YARN and Mesos.
-While it is possible to support Spark on top of YARN, this approach is associated with significant complexity and overhead as two instead of one framework need to be configured and bootstrapped.
-Since RADICAL-Pilot operates in user-space and single-user mode, no advantages with respect to using a multi-tenant YARN cluster environment exist.
-Thus, we support Spark via the standalone deployment mode.
 
-Similar to the YARN integration, the necessary changes for Spark are confined to the RADICAL-Pilot-Agent.
-Similarly, the Local Resource Manager is responsible for initialization and deployment of the Apache Spark environment.
-In the first step the LRM detects the number of cores, memory and nodes provided by the Resource Management System, verifies and downloads necessary dependencies (e.g., Java, Scala, and the necessary Spark binaries).
-It then creates the necessary configuration files, e.g., \texttt{spark-env.sh}, \texttt{slaves} and \texttt{master} files, for running a multi-node, standalone Spark cluster.
+Spark offers multiple deployment modes: standalone, YARN and Mesos. While it is
+possible to support Spark on top of YARN, the YARN and Mesos approaches incur
+into significant complexities and overheads as they require for two frameworks
+to be configured and bootstrapped. Since RADICAL-Pilot operates in user-space
+and single-user mode, no advantages with respect to using a multi-tenant YARN
+cluster environment exist. Thus, we support Spark via the standalone deployment
+mode.
 
-Finally, the LRM starts the Spark cluster using the previously generated configuration.
-Similar to YARN, a Spark RADICAL-Pilot-Agent scheduler is used for managing Spark resource slots and assigning CUs.
-During the termination of the RADICAL-Pilot-Agent, the LRM is shutting down the Spark cluster using Spark’s termination script, which stops both the master and the slave nodes.
-Similarly, the Spark specific methods for launching and managing Compute Units on Spark are encapsulated in a Task Spawner and Launch Method component.
+Similar to the YARN integration, the necessary changes for Spark are confined to
+the RADICAL-Pilot-Agent. Local Resource Manager (LRM) initializes and deploys
+the Apache Spark environment. In the first step, LRM detects the number of
+cores, memory and nodes provided by Resource Management System, and verifies and
+downloads necessary dependencies (e.g., Java, Scala, and Spark binaries). In the
+second step, LRM creates the necessary configuration files to runs a multi-node,
+standalone Spark cluster (e.g., \texttt{spark-env.sh}, \texttt{slaves} and
+\texttt{master} files). Finally, LRM starts a Spark cluster, using the
+previously generated configuration.
+
+Similar to YARN, a Spark RADICAL-Pilot-Agent scheduler is used
+for managing Spark resource slots and assigning CUs. During the termination of
+the RADICAL-Pilot-Agent, LRM shuts down the Spark cluster using
+Spark’s termination script, which stops both the master and the slave nodes.
+Similarly, the Spark specific methods for launching and managing Compute Units
+on Spark are encapsulated in a Task Spawner and Launch Method component.
 
 \section{Experiments and Evaluation}
 \label{sec:rph-exps}
 
-To evaluate the RADICAL-Pilot YARN and Spark extension, we conduct two experiments.
-In \S~\ref{ssec:startup_pilot_unit}, we analyze and compare RADICAL-Pilot and RADICAL-Pilot-YARN with respect to startup times of both the Pilot and the Compute Units.
-We use the well-known K-Means algorithm to investigate the performance and runtime trade-offs of a typical data-intensive application, in \S~\ref{ssec:kmeans}.
-Experiments are performed on two different XSEDE allocated machines: Wrangler~\cite{wrangler} and Stampede~\cite{stampede}.
-On Stampede every node had 16 cores and 32 GB of memory; on Wrangler 48 cores and 128 GB of memory.
-For our experiments we used RADICAL-Pilot v0.45, Hadoop v2.6 and Spark v2.0.2.
+To evaluate the RADICAL-Pilot YARN and Spark extension, we conduct two
+experiments. In \S\ref{ssec:startup_pilot_unit}, we analyze and compare
+RADICAL-Pilot and RADICAL-Pilot-YARN with respect to startup times of both the
+Pilot and the Compute Units. In \S\ref{ssec:kmeans}, we use the well-known
+K-Means algorithm to investigate the performance and runtime trade-offs of a
+typical data-intensive application. We performed our experiments on two XSEDE
+machines: Wrangler~\cite{wrangler} and Stampede~\cite{stampede}. On Stampede,
+every node has 16 cores and 32 GB of memory; on Wrangler 48 cores and 128 GB of
+memory. For our experiments, we used RADICAL-Pilot v0.45, Hadoop v2.6 and Spark
+v2.0.2.
 
 \subsection{Pilot Startup and Compute Unit Submission Characterization}
 \label{ssec:startup_pilot_unit}
@@ -399,84 +425,118 @@ For our experiments we used RADICAL-Pilot v0.45, Hadoop v2.6 and Spark v2.0.2.
     \includegraphics[width=0.75\textwidth]{figures/data_analytics_hpc/hpc_hadoop/pilot_unit_startup.pdf}
     \caption{RADICAL-Pilot and RADICAL-Pilot-YARN startup overheads.
         \label{fig:startup_yarn}}
-%    \caption{\textbf{RADICAL-Pilot and RADICAL-Pilot-YARN startup overheads:}
-%        The agent startup time is higher for YARN due to the overhead for spawning the YARN cluster.
-%        The inset shows that the Compute Unit startup time (time between application submission to YARN and startup) is also significantly higher for YARN.
-%        \label{fig:startup_yarn}}
 \end{figure}
 
-In Figure~\ref{fig:startup_yarn} we analyze the measured overheads when starting RADICAL-Pilot and RADICAL-Pilot-YARN, and when submitting Compute Units.
-The agent startup time for RADICAL-Pilot-YARN is defined as the time between RADICAL-Pilot-Agent starts and the processing of the first Compute Unit.
-On Wrangler, we compare both Mode I (Hadoop on HPC) and Mode II (HPC on Hadoop).
-For Mode I the startup time is higher compared to the normal RADICAL-Pilot startup time and also compared to Mode II.
-This can be explained by the necessary steps required tp download, configure and start the YARN cluster.
-For a single node YARN environment, the overhead for Mode I (Hadoop on HPC) is between 50-85\,sec depending upon the resource selected.
-The startup times for Mode II on Wrangler---using the dedicated Hadoop environment provided via the data portal---are comparable to the normal RADICAL-Pilot startup times as it is not necessary to spawn a Hadoop cluster.
+In Figure~\ref{fig:startup_yarn} we analyze the measured overheads when starting
+RADICAL-Pilot and RADICAL-Pilot-YARN, and when submitting Compute Units. The
+agent startup time for RADICAL-Pilot-YARN is defined as the time between when
+RADICAL-Pilot-Agent starts and when the first Compute Unit is processed. On
+Wrangler, we compare both Mode I (Hadoop on HPC) and Mode II (HPC on Hadoop).
+For Mode I, the startup time is higher compared to the startup time of
+RADICAL-Pilot and of Mode II. This can be explained by the necessary steps
+required to download, configure and start the YARN cluster. For a single node
+YARN environment, the overhead for Mode I (Hadoop on HPC) is between 50-85\,sec,
+depending on the selected resource. The startup times for Mode II on
+Wrangler---using the dedicated Hadoop environment provided via the data
+portal---are comparable to the normal RADICAL-Pilot startup times as it is not
+necessary to spawn a Hadoop cluster.
 
-The inset of Figure~\ref{fig:startup_yarn} shows the time taken to start Compute Units via RADICAL-Pilot to a YARN cluster.
-For each CU, resources have to be requested in two stages: first the application master container is allocated followed by the containers for the actual compute tasks.
-For short-running jobs this represents a bottleneck.
+The inset of Figure~\ref{fig:startup_yarn} shows the time taken to start Compute
+Units via RADICAL-Pilot to a YARN cluster. For each CU, resources have to be
+requested in two stages: first the application master container is allocated
+and, second, the containers for the actual compute tasks are made available. For
+short-running jobs, that represents a bottleneck.
 
-In summary, while there are overheads associated with executing inside of YARN, we believe these are acceptable, in particular for long-running tasks.
-The novel capabilities of executing HPC tasks and YARN tasks within the same application has significant benefits for which measured overheads are likely acceptable.
+In summary, while there are overheads associated with executing Compute Units
+inside of YARN, we believe these are acceptable, in particular for long-running
+Compute Units. The novel capabilities of executing HPC tasks and YARN tasks
+within the same application has significant benefits for which the overheads we
+measured are likely acceptable. \mtnote{why?}
 
 \subsection{K-Means Performance Characterization}
 \label{ssec:kmeans}
-We compare the time to completion of the K-Means algorithm using two configurations: RADICAL-Pilot on HPC and RADICAL-Pilot in HPC/YARN mode.
-We use three different scenarios: 10,000 points and 5,000 clusters, 100,000 points / 500 clusters and 1,000,000 points / 50 clusters.
-Each point belongs to a three dimensional space.
-The compute requirements depend on the product of the number of points and clusters, thus it is constant for all three scenarios.
-We use an optimized version of K-Means in which the sum and number of points are precomputed in the map phase, thus only these two attributes per cluster need to be shuffled.
-The shuffle traffic depends on the number of clusters and decreases with the number of clusters.
-For the purpose of this benchmark, we run two iterations of K-Means.
 
-We utilize up to 3 nodes on Stampede and Wrangler.
-Experiments are performed with the following configurations: 8 tasks on 1 node, 16 tasks on 2 nodes and 32 tasks on 3 nodes.
-For RADICAL-Pilot-YARN, we use Mode II (Hadoop on HPC): the YARN Resource Manager is deployed on the node running the RADICAL-Pilot-Agent.
+We compare the time to completion of the K-Means algorithm using two
+configurations: RADICAL-Pilot on HPC and RADICAL-Pilot in HPC/YARN mode. We use
+three different scenarios: 10,000 points and 5,000 clusters, 100,000 points and
+500 clusters, and 1,000,000 points and 50 clusters. Each point belongs to a
+three dimensional space. The compute requirements depend on the product of the
+number of points and clusters, thus it is constant for all three scenarios. We
+use an optimized version of K-Means in which the sum and number of points are
+precomputed in the map phase, thus only these two attributes per cluster need to
+be shuffled. The shuffle traffic depends on the number of clusters and decreases
+with the number of clusters. For the purpose of this benchmark, we run two
+iterations of K-Means.
 
-Figure~\ref{fig:experiments_kmeans_rpyarnkmeans} shows the results of executing K-Means over different scenarios and configurations.
-For RADICAL-Pilot-YARN the runtimes include the time required to download and start the YARN cluster on the allocated resources.
+We utilize up to 3 nodes on Stampede and Wrangler. Experiments are performed
+with the following configurations: 8 tasks on 1 node, 16 tasks on 2 nodes and 32
+tasks on 3 nodes. For RADICAL-Pilot-YARN, we use Mode II (Hadoop on HPC): the
+YARN Resource Manager is deployed on the node running the RADICAL-Pilot-Agent.
+
+Figure~\ref{fig:experiments_kmeans_rpyarnkmeans} shows the results of executing
+K-Means over different scenarios and configurations. For RADICAL-Pilot-YARN,
+runtimes include the time required to download and start the YARN cluster on the
+allocated resources.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=.75\textwidth]{figures/data_analytics_hpc/hpc_hadoop/kmeans.pdf}
     \caption{RADICAL-Pilot and YARN-based K-Means time to completion on Stampede and Wrangler.}
-%\caption{\textbf{RADICAL-Pilot and YARN-based K-Means on Stampede and Wrangler:}
-%        Across all configurations the performance of the YARN backend is in average 13\,\% better.
-%        On Wrangler a significant better performance and scalability (higher speedups) were observed.}
     \label{fig:experiments_kmeans_rpyarnkmeans}
 \end{figure}
 
-Independent of the scenario, the runtimes decrease with the number of tasks.
-In particular, in the 8 task scenarios the overhead of YARN is visible on Wrangler.
-For larger number of tasks, we observed on average 13~\% shorter runtimes for RADICAL-Pilot-YARN.
-Also, RADICAL-Pilot-YARN achieves better speedups, e.\,g., 3.2 for 32 tasks for the 1 million points scenario, which is significantly higher than the RADICAL-Pilot speedup of 2.4 (both on Wrangler and compared to base case of 8 tasks).
-One of the reasons is that for RADICAL-Pilot-YARN uses the local file system, while for RADICAL-Pilot uses the Lustre filesystem.
+Independent of the scenario, runtimes decrease with the number of tasks. In
+particular, for the 8 task scenarios the overhead of YARN is visible on Wrangler
+\mtnote{I do not understand what "is visiable" means}. For larger number of
+tasks, we observed on average 13~\% shorter runtimes for RADICAL-Pilot-YARN.
+Also, RADICAL-Pilot-YARN achieves better speedups, e.g., 3.2 for 32 tasks for
+the 1 million points scenario, which is significantly higher than the
+RADICAL-Pilot speedup of 2.4 (both on Wrangler and compared to base case of 8
+tasks). One of the reasons of that performance difference, is that
+RADICAL-Pilot-YARN uses the local file system, while RADICAL-Pilot uses the
+Lustre filesystem.
 
-For similar scenarios and task/resource configuration, the runtimes on Wrangler show a significant performance improvements over Stampede.
-This is attributed to the better hardware (CPUs, memory) of Wrangler than Stampede.
-In particular for RADICAL-Pilot-YARN we observed on average higher speedups on Wrangler, indicating that we saturated the 32 GB of memory available on each Stampede node.
+For similar scenarios and task/resource configuration, the runtimes show a
+significant performance improvements on Wrangler over Stampede. This is
+attributed to the better hardware (CPUs, memory) of Wrangler than Stampede. In
+particular, for RADICAL-Pilot-YARN we observed on average higher speedups on
+Wrangler, indicating that we saturated the 32 GB of memory available on each
+Stampede node.
 
-In summary, despite the overheads of RADICAL-Pilot-YARN with respect to Pilot and Compute Unit startup time, we were able to observe performance improvements (on average 13~\% better time to completion) mainly due to the better performance of the local disks.
+In summary, despite the overheads of RADICAL-Pilot-YARN with respect to Pilot
+and Compute Unit startup time, we were able to observe performance improvements
+(on average 13~\% better time to completion than RADICAL-pilot) mainly due to
+the better performance of the local disks.
 
 
 \section{Conclusions}
 \label{sec:hpc_hadoop_concl}
 
-Hadoop and Spark are used by increasing number of scientific applications mainly due to accessible abstractions they provide.
-HPC and Hadoop environments are converging, for example, MLLib/Spark utilize BLAS, Hadoop frameworks adopt parallel and in-memory computing concepts that originated in HPC.
-Currently, traditional HPC applications lack the ability to access and use Hadoop and other Hadoop tools, without sacrificing the advantages of HPC environments.
-One prominent reason behind the limited uptake, is finding effective and scalable resource management techniques usable for Hadoop frameworks on HPC infrastructure.
+An increasing number of scientific applications use Hadoop and Spark mainly due
+to the accessible abstractions they provide. HPC and Hadoop environments are
+converging: For example, MLLib/Spark utilize BLAS, and Hadoop frameworks adopt
+parallel and in-memory computing concepts that originated in HPC. Currently,
+traditional HPC applications lack the ability to use Hadoop and other Hadoop
+tools, without sacrificing the advantages of HPC environments. One prominent
+reason for the limited uptake of Hadoop-based technologies on HPC
+infrastructures is the lack of effective, scalable and usable resource
+management techniques.
 
-This chapter motivates the use of the Pilot-Abstraction as an integrating concept, discusses the design and implementation of RADICAL-Pilot extensions for Hadoop and Spark, and validates them with scalability analysis on two supercomputers.
-Our experiments use RADICAL-Pilot, and introduce two extensions to RADICAL-Pilot to better integrate Hadoop on HPC.
-We demonstrate that the Pilot-Abstraction strengthens the state of practice in utilizing HPC resources in conjunction with emerging Hadoop frameworks by allowing users to combine a diverse set of best-of-breed tools running on heterogeneous infrastructure consisting of HPC.
-Using these capabilities, complex data campaigns can utilize a diverse set of Hadoop and HPC frameworks enabling scalable data ingests and analytics workflows.
-Providing both a unifying and powerful abstraction that enables all parts of such a data pipeline to co-exist is critical.
+This chapter shows how the Pilot abstraction can be used as an integrating
+concept, discussing the design and implementation of RADICAL-Pilot extensions
+for Hadoop and Spark, and validating those extensions with scalability analysis
+on two HPC infrastructures. The Pilot abstraction enables users to combine the
+capabilities of best-of-breed tools which run on heterogeneous HPC
+infrastructures. Using these capabilities, data-intensive computational
+campaigns can utilize diverse Hadoop and HPC frameworks, enabling
+scalable data workflows and analytics pipelines.
 
-While we demonstrated the importance of integrated capabilities for supporting data analytics on HPC, we want to understand their performance impact on scientific task-based data analytics scientific workflows.
-This is important when executing computational campaigns on HPC resources, as selecting a suitable capability to execute data-intensive workflows is desirable.
-Thus, we continue our work with integrating and measuring the performance of molecular dynamics data-analysis workflows utilizing these capabilities on HPC resources.
+In this chapter we demonstrated the importance of integrated capabilities for
+supporting data-intensive workflows on HPC infrastructures. In the next chapter,
+we move forward by characterizing the performance of those capabilities for
+paradigmatic molecular dynamics workflows. When executing computational
+campaigns on HPC resources is paramount to understand the performance tradeoffs
+among application, middleware, executable and system capabilities.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
