@@ -1,8 +1,54 @@
-Scientific applications, with constant streams of data or simulations, are benefiting from executing computational campaigns, instead of executing a single workflow.
-A computational campaign is a set of heterogeneous workflows, with or without dependencies amongst them, that need to be executed.
-Computational campaigns enact an execution plan to achieve an objective under given requirements and constraints.
-HPC resources, used by domain scientists, are dynamic as their availability changes in time.
-Calculating the makespan of the campaign means finding the execution plan that satisfies the computational objective.
-In this proposal, we present current research to address the challenges of: (1) supporting the efficient and scalable data-parallel application on HPC resources; (2) understanding resource dynamicity; and (3) supporting computational campaigns on HPC resources.
-We summarize research results from our publications, and propose a campaign manager, which given a campaign, an objective, and a set of constraints, can derive an execution plan by utilizing a makespan calculation method.
-We include a work plan to investigate, formulate and implement the proposed campaign and evaluate foreseen challenges and risks.
+% !TEX root = main.tex
+Computational sciences such as biomolecular 
+sciences~\cite{cheatham2015impact, dakka2018concurrent}, ecological 
+sciences~\cite{goncalves2020sealnet, paraskevakos2019workflow} and physics 
+depending on large scale experiments~\cite{atlas} are benefiting from 
+executing multiple workflows, with or without dependencies amongst them, to 
+achieve scientific insight. Users submit multiple workflows for execution and 
+monitor their execution while managing data transfers and analysis. This way 
+of execution is called a computational campaign.
+
+This dissertation addresses the problem of efficiently and effectively 
+executing a computational campaign on High Performamce Computing
+(HPC) resources. Specifically, it focuses on computational campaigns
+with data-intensive workflows utilizing HPC resources. Data-intensive
+workflows and applications have distinct characteristics from 
+compute intensive workflows, which are at the epicenter of HPC.
+
+As data-intensive workflows are not well supported on HPC resources,
+we propose the extension of the Pilot-Abstraction to provide a unifying
+resource management layer between HPC and MapReduce task-parallel
+frameworks. We further experimentally investigate the suitability of 
+task-parallel frameworks for the execution of data-intensive analytics
+on HPC. This experimental analysis provides the information to
+produce a conceptual model as to which framework is more suitable
+based on the characteristics of the data analysis application.
+
+In addition to MapReduce data-intensive workflows there are workflows that
+do not necessarily conform to MapReduce. These workflows
+are data-driven and compute-intensive requiring efficient data management
+and utilization of heterogeneous resources, such CPUs and GPUs. From
+the middleware prespective, there are architecturally equivalent
+task-parallel designs to support such workflows. We experimentally
+characterize such designs and show which design approach is best suited
+in scientific workflows with similar characteristics.
+
+Having established the methodology to effectively and efficiently execute
+data-driven workflows on HPC, we design and implement a campaign manager
+prototype. The campaign manager prototype creates an execution plan and
+executes the campaign. Further, we investigate three algorithms to derive an
+execution plan and characterize their performance in terms of makespan and
+the plans sensitivity to resource performance changes and workflow runtime
+estimation uncertainty. Based on our analysis, we provide a conceptual model
+for selecting a suitable planning algorithm based on characteristics of a
+computational campaign and resources.
+
+The research of this dissertation makes the following contributions:
+\begin{inparaenum}
+    \item Integrate MapReduce frameworks and HPC to offer unified environment for compute and data intensive applications
+    \item Provide a conceptual model for selecting a task-parallel framework based on the application requirements and framework abstractions and performance
+    \item Provide design guidelines for supporting data-based compute-intensive workflows on HPC and an experimental methodology to compare equivalent designs
+    \item Design and implement a campaign manager prototype to plan and execute computational campaigns
+    \item Provide a conceptual model for selecting a planning algorithm based on campaign, resources and algorithm characteristics
+    
+\end{inparaenum}
