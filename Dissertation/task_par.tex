@@ -59,7 +59,7 @@ several approaches to support scalable MD trajectory data analytics.
 ~\S\ref{sec:md_use_cases} describes the MD analysis algorithms investigated
 and reviews different MD analysis frameworks with respect to their ability to
 support scalable analytics of large volumes of MD trajectories.
-~\S\\ref{sec:frameworks} describes RP, Spark and  Dask, the three
+~\S\ref{sec:frameworks} describes RP, Spark and  Dask, the three
 frameworks used for our performance comparison and evaluation.
 ~\S\ref{sec:impl_exp} provides a description of the implementation of the
 MD algorithms on top of those three frameworks, as well as a performance
@@ -153,11 +153,10 @@ lipids by identifying the lipid leaflets in a lipid bilayer.
 We discuss two of those methods---a PSA algorithm that uses the Hausdorff
 distance and a Leaflet identification algorithm---implementated in
 MDAnalysis~\cite{michaud2011mdanalysis,gowers2016mdanalysis}.
-Section~\ref{ssec:mda} discusses the reasons for selecting these two algorithms
-in more detail.
+%Section~\ref{ssec:mda} discusses the reasons for selecting these two algorithms
+%in more detail.
 %In addition, we implemented the PSA algorithm using CPPTraj~\cite{roe2013ptraj}.
 %Furthermore, we explore the applications' Ogres Facets and Views~\cite{fox2014towards}, which provide a more systematic characterization.
-
 %Big Data Ogres~\cite{fox2014towards} are organized into four classes, called \emph{views}.
 %The possible features of a view are called \emph{facets}.
 %A combination of facets from all views defines an Ogre.
@@ -168,11 +167,8 @@ in more detail.
 %    \item processing - describes algorithms and kernels used for computation, and
 %    \item problem architecture - describes the application architecture.
 %\end{inparaenum}
-
-
-\subsection{Applications and Algorithms}
-\label{ssec:mda}
-
+%\subsection{Applications and Algorithms}
+%\label{ssec:mda}
 MDAnalysis is a Python library~\cite{michaud2011mdanalysis,gowers2016mdanalysis}
 that provides a comprehensive environment for filtering, transforming and
 analyzing MD trajectories. MDAnalysis provides
@@ -189,7 +185,10 @@ metric~\cite{huttenlocher1993comparing}) between members of an ensemble of
 trajectories, and cluster the trajectories based on their distance matrix. Each
 trajectory is represented as a two dimensional array: The first dimension
 corresponds to time frames of the trajectory; the second to the $N$ atom
-positions in a 3-dimensional space.
+positions in a 3-dimensional space. Algorithm~\ref{alg:hausdorff} describes 
+PSA with the Hausdorff metric over multiple trajectories. We apply a 2-dimensional 
+data partitioning over the output matrix to parallelize, shown in 
+algorithm~\ref{alg:partition}.
 
 \begin{algorithm}[t]
     \scriptsize
@@ -224,11 +223,6 @@ positions in a 3-dimensional space.
         \EndProcedure
     \end{algorithmic}
 \end{algorithm}
-
-Algorithm~\ref{alg:hausdorff} describes PSA with the Hausdorff metric over
-multiple trajectories. We apply a 2-dimensional data partitioning over the
-output matrix to parallelize, shown in algorithm~\ref{alg:partition}. Our
-Hausdorff metric calculation is based on a naive algorithm.
 
 
 \begin{algorithm}[t]
@@ -341,7 +335,7 @@ as Dataframes, Datasets and Arrays.
 Figure~\ref{fig:figures_bigdata_framework_stack} visualizes the components of
 RP, Spark and Dask.
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/bigdata_framework_stack.pdf}
     \caption{Architecture of RADICAL-Pilot, Spark and Dask.}
@@ -943,7 +937,6 @@ BallTree~\cite{omohundro89five}. The algorithm:
     \item constructs of a tree; and
     \item queries for neighboring atoms.
 \end{inparaenum}
-
 Using tree-search, the computational complexity can be reduced from $n^2$ to
 $log$. We use a BallTree as offered by Scikit-Learn~\cite{scikit-nearest} for
 our implementation.
