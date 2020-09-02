@@ -15,7 +15,7 @@ function that satisfies a lower or upper bound of a metric. Among the many
 metrics that can be considered, the most common one is the total time taken to
 execute all workflows of a campaign, also known as makespan. An execution plan
 of a campaign is a mapping between workflows and resources on which to execute
-execute those workflows. Calculating the makespan of a campaign for a given plan
+those workflows. Calculating the makespan of a campaign for a given plan
 means verifying if said execution plan satisfies the computational objective
 function, within the given constraints.
 
@@ -35,7 +35,7 @@ consider infrastructures with homogeneous and heterogeneous resources, depending
 on the type of computational capabilities they offer, e.g., number of operations
 per second. Each HPC infrastructure can offer a set of homogeneous or
 heterogeneous resources and a set of HPC infrastructures can also be homogeneous
-or heterogeneous. \mtnote{I rewrote the paragraph, please check.}
+or heterogeneous.
 
 % Uncertainty in the execution of a campaign can arise for several reasons,
 % including resource dynamism and workflow runtime uncertainty. HPC resources
@@ -59,7 +59,7 @@ uncertainty about the makespan of a campaign. Further, accurately estimating the
 runtime of each workflow of a campaign is challenging at best, impossible at
 worse. Users offer an estimation of each workflow runtime in the form of a range
 of possible values which, in turn, also creates uncertainty about the makespan
-of a campaign. \mtnote{I heavily edited the paragraph.}
+of a campaign.
 
 % Deriving an execution plan for a campaign before its execution on dynamic and
 % heterogeneous resources, while workflows runtime are uncertain, is challenging.
@@ -81,10 +81,11 @@ workflows runtime estimation uncertainty. We select three algorithms, each
 representing a family of algorithms, and compare their performance in respect to
 the makespan of the plans they produce as well as how sensitive they are on
 resource dynamism and workflows runtime uncertainty. Based on the comparison, we
-make a case about which algorithm to select given a computational campaign, its
-execution environment and objective. \mtnote{Did we loose the constraints?}
+make a case about which algorithm to select given a computational campaign, the
+execution environment, constraints and objective.
 
-The chapter is organized as follows:~\S\ref{sec:makespan_calc} discusses the
+The chapter is organized as follows:~\S\ref{sec:camp_rw} discusses related
+work. ~\S\ref{sec:makespan_calc} discusses the
 calculation of the makespan of a campaign given the set of assumptions of this
 work. Section~\S\ref{sec:algo} discusses three makespan calculation algorithms
 and~\S\ref{sec:algo_perf_comp} compares their performance. Finally,
@@ -101,7 +102,7 @@ offers the two main contributions:
 
 
 \section{Related Work}
-
+\label{sec:camp_rw}
 Several methods compare and evaluate algorithms that calculate and optimize the
 makespan of a workflow~\cite{lu2019review}, including queuing
 networks~\cite{yao2019throughput,bao2019performance}, domain specific
@@ -287,13 +288,13 @@ tasks and assign a task to a resource that can execute it. HEFT is a list
 scheduling algorithm~\cite{dong2006scheduling} and calculates the makespan of a
 workflow on heterogeneous resources to produce its plan.
 
-HEFT has been implemented as part of the planning capabilities in
 Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon}
-amongst other algorithms \mtnote{other frameworks or other algorithms?}. HEFT
+utilize HEFT to derive workflow execution plans amongst other algoirthms, such 
+as Round Robin, a genetic algorithm and a myopic algorithm. HEFT
 has been shown to provide better performance in terms of makespan minimization
 compared to other mapping
 algorithms~\cite{topcuoglu2002performance,canon2008comparative}, e.g., genetic
-algorithms~\cite{fahringer2005askalon}. Furthermore, there has been some initial
+algorithms~\cite{fahringer2005askalon}. Furthermore, there is initial
 research to extend HEFT to dynamic resources~\cite{dong2007pfas}, and to
 resources that provide CPU and GPUs~\cite{shetti2013optimization}.
 
