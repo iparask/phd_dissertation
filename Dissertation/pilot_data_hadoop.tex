@@ -54,8 +54,8 @@ data analysis, such as
 MDAnalysis~\cite{michaud2011mdanalysis,gowers2016mdanalysis},
 CPPTraj~\cite{roe2013ptraj} and HiMach~\cite{tiankai2008scalable}. Although
 these tools offer domain-specific analytics, scaling them to high data volumes
-remains a challenge, especially when the scale of teh computation erquires the
-use of high performance computing (HPC) infrastructures. This is therefore a
+remains a challenge, especially when the scale of the computation requires the
+use of high performance computing (HPC) infrastructures. There is therefore a
 need for computing environments that support scalable data processing while
 preserving the ability to run simulations at large scale. To the best of our
 knowledge, there does not exist a solution that provides the integrated
@@ -94,7 +94,7 @@ There are several frameworks which explored the usage of Hadoop on HPC
 resources, e.g., Hadoop on Demand~\cite{hod}, JUMMP~\cite{moody2013jummp},
 MagPie~\cite{chu2015magpie}, MyHadoop~\cite{krishnan2011myhadoop} and
 MyCray~\cite{mycray}. These frameworks provide users with a set of scripts that
-can spawn and manage an Hadoop cluster on HPC resources. As soon as Hadoop is
+can spawn and manage a Hadoop cluster on HPC resources. As soon as Hadoop is
 started, users can either submit their MapReduce jobs interactively or via a
 script.
 
@@ -132,7 +132,7 @@ consider a more diverse set of applications on top of YARN.
 
 A particular challenge for Hadoop on HPC deployment is the choice of storage and
 filesystem backend. Typically, when using Hadoop local storage is preferred.
-Nevertheless, in some cases, like when processing many small files or when or
+Nevertheless, in some cases, like when processing many small files or when
 the number of parallel tasks is low to medium, random data access is required.
 In those cases, using a parallel filesystem can yield a better performance. For
 this purpose, many parallel filesystems provide a special client library which
@@ -196,17 +196,12 @@ cloud environments (e.g., Amazon's Elastic MapReduce) and an emerging class of
 HPC machines with new architectures and usage modes, such as
 Wrangler~\cite{wrangler}, that support Hadoop natively. For example, Wrangler
 supports dedicated Hadoop environments (based on Cloudera Hadoop 5.3) via a
-reservation mechanism.
-%We discuss, the integration of Hadoop and Spark runtimes into RADICAL-Pilot,
-%which enables both the interoperable use of HPC and Hadoop, as well as the
-%integration of HPC and Hadoop applications (Mode I and II).
-Using these new capabilities, applications can seamlessly connect HPC stages
-(e.g., simulation stages) with analysis stages, using the Pilot-Abstraction to
-provide unified resource management.
-%\subsection{Mode I---II: } \label{ssec:rp-impl}
+reservation mechanism. Using these new capabilities, applications can seamlessly 
+connect HPC stages (e.g., simulation stages) with analysis stages, using the 
+Pilot-Abstraction to provide unified resource management.
 
-With the introduction of YARN, a broader set of applications can be executed
-within a Hadoop cluster than earlier. However, developing and deploying YARN
+With the introduction of YARN, Hadoop can execute a broader set of applications
+than before. However, developing and deploying YARN
 applications, potentially side-by-side with HPC applications, remains a
 difficult task. Established abstractions which are easy to use and that enable
 users to reason about compute and data resources across infrastructure types
@@ -264,7 +259,7 @@ U.1--U.7)~\cite{merzky2019using}.
 RP-Agent has a modular and extensible architecture, and consists of
 the following components: Agent Execution Component, Heartbeat Monitor, Agent
 Update Monitor, and Stage In and Stage Out Workers. The main integration of YARN
-and RP is done in Agent Execution Component. This component
+and RP is done in Agent Execution Component. The Agent Execution component
 consist of four sub-components:
 \begin{inparaenum}[a)]
     \item the \textit{scheduler} is responsible for monitoring the resource
@@ -279,7 +274,7 @@ consist of four sub-components:
     applications, machine-specific launch methods (e.g. \texttt{aprun} on Cray
     machines) or the usage of YARN.
 \end{inparaenum}
-After unit completes its execution, the Task Spawner collects the exit code,
+After a unit completes its execution, the Task Spawner collects the exit code,
 standard output, and informs the scheduler about the freed cores.
 
 \subsubsection*{RADICAL-Pilot and YARN Integration}
@@ -299,17 +294,16 @@ are very difficult to implement via the SAGA API.
 
 The second approach encapsulates YARN specifics at resource-level, enabling the
 decentralized provision of a YARN cluster. Units are scheduled and submitted to
-the YARN cluster via Unit-Manager and the RP-Agent scheduler. By
-integrating RADIAL-Pilot and YARN at the RP-Agent level,
-RP can support both Mode I and II, as outlined in
-Figure~\ref{fig:figures_hadoop-on-hpc-viceverse}.
+the YARN cluster via the Unit-Manager and RP-Agent scheduler. By
+integrating RP and YARN at the RP-Agent level, RP can support both Mode I 
+and II, as outlined in Figure~\ref{fig:figures_hadoop-on-hpc-viceverse}.
 
 As illustrated in Figure~\ref{fig:comp_rp_arch}, RP (steps P.1--P.2)
 starts on the remote resource using SAGA. In Mode I, during the launch of
 RP-Agent a YARN cluster is spawned on the allocated resources (Hadoop
 on HPC), while in Mode II, RP-Agent connects to a YARN cluster that
-runs on the resources managed by RP-Agent. Once RP-Agent
-is started, it accepts CUs submitted via Unit-Manager (step U.1).
+runs on the resources managed by RP-Agent. Once started, RP-Agent
+ accepts CUs submitted via Unit-Manager (step U.1).
 Unit-Manager queues new CUs using a shared MongoDB (step U.2)
 database. RP-Agent periodically checks for new CUs (step
 U.3) and queues them in the scheduler (step U.4). Finally, the Executor manages
@@ -326,10 +320,10 @@ downloads Hadoop and creates the necessary configuration files, i.e., the
 \texttt{mapred-site.xml}, \texttt{core-site.xml}, \texttt{hdfs-site.xml},
 \texttt{yarn-site.xml} and the slaves and master file containing the allocated
 nodes. The node that is running the Agent, runs the master daemons of Hadoop:
-the HDFS Namenode and the YARN Resource Manager. After the configuration files
-are written, HDFS and YARN are started and meta-data about the cluster, i.e.,
-the number of cores and memory, are provided to the scheduler. They remain
-active until all the tasks are executed. Before termination of the agent, the
+the HDFS Namenode and the YARN Resource Manager. 
+As soon as HDFS and YARN area active, the scheduler receives meta-data about 
+the cluster, i.e., the number of cores and memory. HDFS and YARN remain
+active until all tasks are executed. Before termination of the agent, the
 LRM stops the Hadoop and YARN daemons and removes the associated data files. In
 Mode II (Hadoop on HPC), the LRM solely collects the Hadoop cluster resource
 information.
@@ -391,7 +385,7 @@ the RP-Agent. Local Resource Manager (LRM) initializes and deploys
 the Apache Spark environment. In the first step, LRM detects the number of
 cores, memory and nodes provided by Resource Management System, and verifies and
 downloads necessary dependencies (e.g., Java, Scala, and Spark binaries). In the
-second step, LRM creates the necessary configuration files to runs a multi-node,
+second step, LRM creates the necessary configuration files to run a multi-node,
 standalone Spark cluster (e.g., \texttt{spark-env.sh}, \texttt{slaves} and
 \texttt{master} files). Finally, LRM starts a Spark cluster, using the
 previously generated configuration.
@@ -430,7 +424,7 @@ v2.0.2.
 In Figure~\ref{fig:startup_yarn} we analyze the measured overheads when starting
 RP and RP-YARN, and when submitting CUs. The
 agent startup time for RP-YARN is defined as the time between when
-RP-Agent starts and when the first CU is processed. On
+RP-Agent starts and when the first CU starts executing. On
 Wrangler, we compare both Mode I (Hadoop on HPC) and Mode II (HPC on Hadoop).
 For Mode I, the startup time is higher compared to the startup time of
 RP and of Mode II. This can be explained by the necessary steps
@@ -438,13 +432,13 @@ required to download, configure and start the YARN cluster. For a single node
 YARN environment, the overhead for Mode I (Hadoop on HPC) is between 50-85\,sec,
 depending on the selected resource. The startup times for Mode II on
 Wrangler---using the dedicated Hadoop environment provided via the data
-portal---are comparable to the normal RP startup times as it is not
-necessary to spawn a Hadoop cluster.
+portal---are comparable to the normal RP startup times as RP does not
+spawn a Hadoop cluster.
 
 The inset of Figure~\ref{fig:startup_yarn} shows the time taken to start Compute
 Units via RP to a YARN cluster. For each CU, resources have to be
 requested in two stages: first the application master container is allocated
-and, second, the containers for the actual compute tasks are made available. For
+and, second, the containers for the actual compute tasks becomes available. For
 short-running jobs, that represents a bottleneck. In summary, while there are 
 overheads associated with executing CUs inside of YARN, we believe 
 these are acceptable, in particular for long-running CUs.
@@ -460,15 +454,15 @@ configurations: RP on HPC and RP in HPC/YARN mode. We use
 three different scenarios: 10,000 points and 5,000 clusters, 100,000 points and
 500 clusters, and 1,000,000 points and 50 clusters. Each point belongs to a
 three dimensional space. The compute requirements depend on the product of the
-number of points and clusters, thus it is constant for all three scenarios. We
+number of points and clusters, thus the requirements are constant for all three scenarios. We
 use an optimized version of K-Means in which the sum and number of points are
 precomputed in the map phase, thus only these two attributes per cluster need to
 be shuffled. The shuffle traffic depends on the number of clusters and decreases
 with the number of clusters. For the purpose of this benchmark, we run two
 iterations of K-Means.
 
-We utilize up to 3 nodes on Stampede and Wrangler. Experiments are performed
-with the following configurations: 8 tasks on 1 node, 16 tasks on 2 nodes and 32
+We utilize up to 3 nodes on Stampede and Wrangler. We use the following 
+configurations for our experiments: 8 tasks on 1 node, 16 tasks on 2 nodes and 32
 tasks on 3 nodes. For RP-YARN, we use Mode II (Hadoop on HPC): the
 YARN Resource Manager is deployed on the node running the RP-Agent.
 
@@ -486,8 +480,7 @@ allocated resources.
 
 Independent of the scenario, runtimes decrease with the number of tasks. In
 particular, for the 8 task scenarios the overhead of YARN on Wrangler is 
-enough to produce higher runtimes for RP-YARN than RP.
-For larger number of
+enough to produce higher runtimes for RP-YARN than RP. For larger number of
 tasks, we observed on average 13~\% shorter runtimes for RP-YARN.
 Also, RP-YARN achieves better speedups, e.g., 3.2 for 32 tasks for
 the 1 million points scenario, which is significantly higher than the
@@ -497,7 +490,7 @@ RP-YARN uses the local file system, while RP uses the
 Lustre filesystem.
 
 For similar scenarios and task/resource configuration, the runtimes show a
-significant performance improvements on Wrangler over Stampede. This is
+significant performance improvement on Wrangler over Stampede. This is
 attributed to the better hardware (CPUs, memory) of Wrangler than Stampede. In
 particular, for RP-YARN we observed on average higher speedups on
 Wrangler, indicating that we saturated the 32 GB of memory available on each

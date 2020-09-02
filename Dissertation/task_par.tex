@@ -125,13 +125,13 @@ frameworks for parallelizing the execution. Although they are optimized to get
 as much performance as possible from the environments they are developed for,
 their portability is limited. For example, CPPTraj~\cite{roe2018parallelization}
 and Pteros~\cite{yesylevskyy2015pteros} are highly dependent on the low level
-libraries of the resource they use., while HiMach~\cite{tiankai2008scalable} is
+libraries of the resource they use, while HiMach~\cite{tiankai2008scalable} is
 build specifically for the Antons Supercomputer.
 
-In contrast, our analysis focuses on frameworks that offer more general purpose approaches to the
-parallelization of MD analysis algorithms.
+In contrast, our analysis focuses on frameworks that offer more general 
+purpose approaches to the parallelizing MD analysis algorithms.
 %Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
-These frameworks provide higher-level abstractions that facilitates the
+These frameworks provide higher-level abstractions that facilitate the
 integration with other data analysis methods. In addition, resource acquisition
 and management is done transparently.
 
@@ -175,7 +175,7 @@ in more detail.
 
 MDAnalysis is a Python library~\cite{michaud2011mdanalysis,gowers2016mdanalysis}
 that provides a comprehensive environment for filtering, transforming and
-analyzing MD trajectories in all commonly used file formats. MDAnalysis provides
+analyzing MD trajectories. MDAnalysis provides
 a common object-oriented API to trajectory data and leverages existing libraries
 of the scientific Python software stack, such as NumPy~\cite{numpy} and
 Scipy~\cite{scipy}.
@@ -229,7 +229,7 @@ Algorithm~\ref{alg:hausdorff} describes PSA with the Hausdorff metric over
 multiple trajectories. We apply a 2-dimensional data partitioning over the
 output matrix to parallelize, shown in algorithm~\ref{alg:partition}. Our
 Hausdorff metric calculation is based on a naive algorithm.
-%Recently, an algorithm was introduced that uses early break to speedup execution~\cite{taha2015efficient}, although we are not aware of a parallel implementation of this algorithm.
+
 
 \begin{algorithm}[t]
     \scriptsize
@@ -247,13 +247,9 @@ Hausdorff metric calculation is based on a naive algorithm.
 
 The algorithm is embarrassingly parallel, has complexity $O(n^2)$ and its input
 data volume is medium to large while the output is small.
-%Specific execution environments, such as HPC nodes, and Python arithmetic
-%libraries, e.g., NumPy, are used (execution view). Input data are produced by
-%HPC simulations, and are stored on HPC storage systems, such as parallel
-%filesystem like Lustre (data source \& style view).
 Embarrassingly parallel algorithms are good candidates for task parallelization.
-The dataset is partitioned and each partition is assigned to a task. Given
-enough resources, task can execute concurrently as a bag of tasks, using a task
+Each task analyzes a partition of the dataset. Given
+enough resources, tasks can execute concurrently as a bag of tasks, using a task
 management API or a map-only application in a MapReduce-style API. Spark, Dask
 and RP support the execution of bag of tasks, with RP and
 Dask offering specific abstractions (as discussed in~\S\ref{sec:frameworks}).
@@ -303,12 +299,6 @@ In both alternatives, the input data volume is medium size and the output is
 smaller than the input. The complexity of connected components is: $O(|V|+|E|)$
 ($V$: Vertices, $E$: Edges), i.e., it greatly depends on the characteristics of
 the graph.
-%The application typically uses HPC nodes as the execution environment, and
-%NumPy arrays. It uses matrices to represent the physical system and the
-%distance matrix. The output data representation is a graph. Leaflet Finder can
-%be efficiently implemented using the MapReduce abstraction. It uses graph
-%algorithms and linear algebra kernels (processing view facets). The data source
-%\& style view facets are the same as the PSA algorithm.
 
 LF is more complex than PSA as it requires two stages. It is possible to
 implement LF with a simple task-management API, although the MapReduce
@@ -335,7 +325,7 @@ RP~\cite{merzky2019using} for MD data analytics.
 
 Spark and Dask provide APIs, caching and other capabilities that are critical to
 develop analytics applications. Spark is considered the standard solution for
-iterative data-parallel applications, while Dask is quickly gaining support by
+iterative data-parallel applications. Dask is quickly gaining support by
 the scientific community, since it offers a sought-after Python environment.
 RP also offers a Python-only programming API, supporting task-level
 parallelism on HPC resources. In this way, RP adds parallelization
@@ -403,10 +393,10 @@ Spark's Scheduler translates the workflow specified via RDD transformations and
 actions to an execution plan. Its distributed execution engine handles the
 low-level details of task execution, which is triggered by actions. Spark can
 read data from different sources, such as HDFS, blob storage, parallel and local
-filesystems. While Spark caches loaded data in memory, it offloads to disk when
-there is not enough free memory on a node. Persisted RDDs remain in memory,
+filesystems. Spark offloads data to disk when there is not enough free memory 
+on a node. Persisted RDDs remain in memory,
 unless specified to use the disk either complementary or as a single target. In
-addition, Spark writes data that are used in a shuffle to disk. As a result, it
+addition, Spark writes data that are used in a shuffle to disk. As a result, Spark
 allows quick access to those data when transmitted to an executor.
 %Finally, Spark provides a set of actions that write text files, Hadoop sequence files or object files to local filesystems, HDFS or any filesystem that supports Hadoop.
 %In addition, Spark supports higher-level data abstractions for processing structured data, such as dataframes, Spark-SQL, datasets, and data streams.
@@ -428,8 +418,8 @@ analyze semi-structured data, like JSON files. Dask Dataframes are distributed
 collections of Pandas dataframes that can be analyzed in parallel.
 
 Dask also offers three schedulers: multithreading, multiprocessing and
-distributed. The multithreaded and multiprocessing schedulers can be used only
-on a single node and the parallel execution is done via threads and processes
+distributed. The multithreaded and multiprocessing schedulers support only
+single node execution and the parallel execution is done via threads and processes
 respectively. The distributed scheduler creates a cluster with a scheduling
 process and multiple worker processes. A client process creates and communicates
 a workflow as a direct acyclic graph to the scheduler. Finally, the scheduler
@@ -539,15 +529,15 @@ RP provides a low-level API for executing tasks onto resources. While
 this API can be used to implement high-level capabilities, e.g.,
 MapReduce~\cite{mantha2012pilot}, they are not provided out-of-the box. Both
 Spark and Dask provide such capabilities. Dask's API is generally lower level
-than Spark's, i.e., it allows specifying arbitrary task graphs. Although data
-partition size is automatically decided, in many cases it is necessary to tune
+than Spark's, i.e., it allows specifying arbitrary task graphs. Although Spark
+decides the partition size automatically, in many cases it is necessary to tune
 parallelism by specifying the number of partitions.
 
 Another important aspect is the availability of high-level abstractions.
 High-level abstractions for RP, such as 
 Pipelines~\cite{balasubramanian2018harnessing} and 
-Replicas~\cite{dakka2018concurrent}, are designed for compute-oriented 
-tasks. Contrary, Spark and Dask already offer a set of
+Replicas~\cite{dakka2018concurrent}, support compute-oriented 
+tasks and workflows. Contrary, Spark and Dask already offer a set of
 high-level data-oriented abstractions, such as Dataframes. 
 
 %\mtnote{I am not sure
@@ -559,13 +549,13 @@ high-level data-oriented abstractions, such as Dataframes.
 \subsubsection*{Scheduling}
 
 Both Spark and Dask create a Direct Acyclic Graph (DAG) based on operations over
-data, which is then executed using their execution engine. Spark jobs are
-separated into stages. When a stage is completed, the scheduler executes the
+data, which their respective execution engine executes. Spark jobs are
+separated into stages. When a stage finishes, the scheduler executes the
 next stage.
 
-Dask's DAGs are represented by a tree where each node is a task. Leaf tasks do
-not depend on other task for execution. Dask tasks are executed when their
-dependencies are satisfied, starting from leaf tasks. When a task is reached
+Dask's DAGs have a tree representation where each node is a task. Leaf tasks do
+not depend on other task for execution. Dask tasks execute when their
+dependencies are satisfied, starting from leaf tasks. When the scheduler reaches a task
 with unsatisfied dependencies, the scheduler executes the dependent task first.
 Dask's scheduler does not rely on synchronization points that Spark's
 stage-oriented scheduler introduces. RP does not provide a DAG-based
@@ -584,7 +574,7 @@ RP, Spark and Dask and measure the execution time on a single node.
 For RP, all tasks were submitted simultaneously. RP's
 backend database was running on the same node to avoid communication
 latencies. For Spark, we created an RDD with as many partitions as the number of
-tasks as each partition is mapped to a task by Spark. For Dask, we created tasks
+tasks, as each task maps to a partition by Spark. For Dask, we created tasks
 using \texttt{delayed} functions that were executed by the Distributed
 scheduler. We used TACC Wrangler and SDSC Comet for this experiment. SDSC Comet
 is a 2.7 petaFLOSP cluster with 24 Haswell cores/node and 128\,GB memory/node
@@ -669,26 +659,26 @@ We employed up to $10$ nodes on Comet and Wrangler.
 \label{sec:psa}
 
 The PSA algorithm is embarrassingly parallel and can be implemented using simple
-task-level parallelism or a map-only MapReduce application. The input data,
-i.e., a set of trajectory files, is equally distributed over the cores,
+task-level parallelism or a map-only MapReduce application. We equally distribute
+the input data, i.e., a set of trajectory files, over the cores,
 generating one task per core. Each task reads its respective input files in
 parallel, executes and writes the result to a file.
 
-For RP, we define a Compute-Unit for each task and execute them using
-a Pilot-Job. For Spark, we create an RDD with one data partition per task, which
-are executed in a \texttt{map} function. In Dask, tasks are defined as
+For RP, we define a CU for each task and execute them using
+a Pilot-Job. For Spark, we create an RDD with one data partition per task which
+is a \texttt{map} function. In Dask, tasks are defined as
 \texttt{delayed} functions and in MPI, each task is executed by an MPI process.
 The dataset used for the experiments consists of three atom count trajectories:
 \begin{inparaenum}[1)]
-    \item small ($3341$ atoms/frame);
-    \item medium ($6682$ atoms/frame); and
-    \item large ($13364$ atoms/frame).
+    \item small (3341 atoms/frame);
+    \item medium (6682 atoms/frame); and
+    \item large (13364 atoms/frame).
 \end{inparaenum}
-We used $102$ frames, and $128$ and $256$ trajectories of each size.
+We used 102 frames, and 128 and 256 trajectories of each size.
 
 Figure~\ref{fig:HausdorffWrangler} shows the runtime for 128 and 256
 trajectories on Wrangler, while Figure~\ref{fig:comet_wrangler_haus} compares
-the execution times on Comet and Wrangler for $128$ large trajectories. The
+the execution times on Comet and Wrangler for 128 large trajectories. The
 three frameworks show similar performance in terms of runtime on both systems,
 as well as with MPI4py. Wrangler gives smaller speedup than Comet
 despite using the same number of cores. Wrangler uses hyperthreading and, as a
@@ -715,7 +705,7 @@ MPI4py, RP, Spark and Dask have similar performance when used to
 execute embarrassingly parallel algorithms. All frameworks achieved similar
 speedups as the number of cores increased, scaling by a factor of 6 from 16 to
 256 cores, which are lower than MPI4py. Although the frameworks' overheads are
-comparably low in relation to the overall runtime, overheads were significant
+comparably low in relation to the overall runtime, the overheads were significant
 enough to impact the frameworks' speedup. Note that RP's large
 deviation is due to sensitivity to communication delays with the database.
 
@@ -726,22 +716,6 @@ integrate-ability are more important considerations when comparing the three
 frameworks. Both RP and Dask are native Python frameworks, making the
 integration with other Python tools easier and more efficient than with
 frameworks which are based on other languages like Spark.
-
-%\begin{figure}[ht]
-%    \centering
-%    \includegraphics[width=.95\textwidth]{figures/data_analytics_hpc/task_par/cpptrajHausdorff.pdf}
-%    \caption{\label{fig:cpptraj_resutls}\textbf{Hausdorff Distance using CPPTraj:}
-%    Runtimes and Speedup over different number of cores.}
-%\end{figure}
-
-%CPPTraj~\cite{roe2018parallelization} provides an optimized C++ implementation of the 2D-RMSD, which is Algorithm~\ref{alg:hausdorff} with no $\min-\max$ operations.
-%The 2D-RMSD between trajectories was executed in parallel.
-%The results were gathered and the Hausdorff distance was calculated.
-%CPPTraj~\cite{roe2018parallelization} was compiled with GNU C++ compiler and no optimizations, and with Intel's compiler O3 optimization enabled.
-%An experiment was run with 20-core Haswell nodes and 128 small trajectories; number of cores ranging from 1 up to 240.
-%Figure~\ref{fig:cpptraj_resutls} shows the runtimes and speedup.
-%MPI C++ provides lower execution times.
-%However, we are interested in scalable solutions, that may offer worse performance in absolute numbers, but allows easier integration, i.e., less lines of code, and/or less engineering time.
 
 \subsection{Leaflet Finder (LF)}
 \label{sec:leaflet}
@@ -796,19 +770,18 @@ We developed five approaches to implement the LF algorithm using RP,
 Spark, Dask, and MPI4py (see Fig~\ref{fig:lf_approaches} and
 Table~\ref{tab:app_operators}):
 \begin{enumerate}[1)]
-    \item \textbf{Broadcast and 1-D Partitioning:} The physical system is
-    broadcasted and partitioned through a data abstraction. Use of RDD API
+    \item \textbf{Broadcast and 1-D Partitioning:} Broadcast and partition 
+    through a data abstraction the physical system. Use of RDD API
     (broadcast), Dask Bag API (scatter), and MPI Bcast to distribute data to all
     nodes. A \texttt{map} function calculates the edge list using \texttt{cdist}
-    from SciPy~\cite{scipy}, realized as a loop for MPI. The list is collected
-    to the master process (gathered to rank 0) and the connected components are
-    calculated.\label{en:1}
+    from SciPy~\cite{scipy}, realized as a loop for MPI. The master process (rank 0)
+    collects (gathers) the list and calculates the connected components.\label{en:1}
     \item \textbf{Task API and 2-D Partitioning:} Data management is done
     without using the data-parallel API. The framework is used for task
     scheduling. Data are pre-partitioned in 2-D partitions and passed to a
     \texttt{map} function that calculates the edge list using \texttt{cdist},
-    realized as a loop for MPI. The list is collected (gathered to rank 0) and
-    the connected components are calculated.\label{en:2}
+    realized as a loop for MPI.  The master process (rank 0)
+    collects (gathers) the list and calculates the connected components.\label{en:2}
     \item \textbf{Parallel Connected Components:} Data are managed as in
     approach~\ref{en:2}. Each \texttt{map} task performs edge list and connected
     components computations. The reduce phase joins the calculated components
@@ -820,17 +793,17 @@ Table~\ref{tab:app_operators}):
     adjacent atoms.\label{en:4}
 \end{enumerate}
 
-We use four physical systems with $131k$, $262k$, $524k$, and $4M$ atoms with
-$896k$, $1.75M$, $3.52M$, and $44.6M$ edges in their graphs. We utilized up to
-256 cores on Wrangler for our experiments. Data partitioning results into $1024$
-partitions for each approach, thus $1024$ \texttt{map} tasks. Due to memory
+We use four physical systems with 131k, 262k, 524k, and 4M atoms with
+896k, 1.75M, 3.52M, and 44.6M edges in their graphs. We utilized up to
+256 cores on Wrangler for our experiments. Data partitioning results into 1024
+partitions for each approach, thus 1024 \texttt{map} tasks. Due to memory
 limitations from using \texttt{cdist} -- uses double precision floating point --
-Approach \ref{en:3} data partitioning of the $4M$ atom dataset resulted to $42k$
+Approach \ref{en:3} data partitioning of the 4M atom dataset resulted to 42k
 tasks for both Spark and MPI4py.
 
 Figure \ref{fig:All4approachesNoRp} shows the runtimes for all datasets for
-Spark, Dask and MPI4py. RP's performance is illustrated in
-Figure~\ref{fig:rpLF}. We continue by analyzing the performance of each
+Spark, Dask and MPI4py. Figure~\ref{fig:rpLF} shows RP's performance.
+ We continue by analyzing the performance of each
 architectural approach and used framework in detail.
 
 \begin{figure}[t]
@@ -878,29 +851,29 @@ MPI broadcast is a fraction of the overall execution time and significantly
 smaller than Spark and Dask. MPI's broadcast times increase linearly as the
 number of processes increases, while Spark's and Dask's remain relatively
 constant for each dataset, due to more elaborate broadcast algorithms compared
-to MPI. Broadcast times are between $3\%$ and $15\%$ of the edge discovery time
-for Spark, from $40\%$ to $65\%$ for Dask, and from $<1\%$ to $10\%$ for MPI4py.
+to MPI. Broadcast times are between 3\% and 15\% of the edge discovery time
+for Spark, from 40\% to 65\% for Dask, and from <1\% to 10\% for MPI4py.
 Thus, Spark offers a more efficient communication subsystem compared to Dask. In
 addition, Dask broadcast partitions the dataset to a list where each element
 represents a value from the initial dataset. This did not allow broadcasting the
-$524k$ atom dataset. Nevertheless, the limited scalability of this approach due
+524k atom dataset. Nevertheless, the limited scalability of this approach due
 to transmitting the entire dataset makes it usable only for small datasets.
 
 Using broadcast shows the worst performance and scaling of all approaches for
-Spark, Dask and MPI4py. This approach scales only up to $262k$ atoms for Dask,
-and $524k$ atoms for Spark and MPI4py on Wrangler. Spark's performance is
-comparable to MPI4py for the $262k$, and $524k$ datasets. Spark
+Spark, Dask and MPI4py. This approach scales only up to 262k atoms for Dask,
+and 524k atoms for Spark and MPI4py on Wrangler. Spark's performance is
+comparable to MPI4py for the 262k, and 524k datasets. Spark
 also shows better performance
-for the smallest core count in the $524k$ case. Dask is at least two times
+for the smallest core count in the 524k case. Dask is at least two times
 slower than our MPI implementation.
 
 %%%%%%%%%%%%%%% APPROACH 2 %%%%%%%%%%%%%%%%%%
 \subsubsection*{Task-API and 2-D Partitioning}
 
 Approach~\ref{en:2} tries to overcome the limitations of approach 1, especially
-broadcasting and 1-D partitioning. A 2-D block partitioning is essential, as it
-evenly distributes the compute and more efficiently utilizes the available
-memory. 2-D partitioning is not well supported by Spark and Dask. Spark's RDDs
+broadcasting and 1-D partitioning. A 2-D block partitioning evenly distributes 
+the compute and utilizes  more efficiently the available memory. 
+Spark and Dask do not support well 2-D partitioning. Spark's RDDs
 are optimized for data-parallel applications with 1-D partitioning. While Dask's
 array supports 2-D block partitioning, it was not used for this implementation.
 We return the adjacency list of the graph instead of an array to fully use the
@@ -910,7 +883,7 @@ part of the input data.
 Figure~\ref{fig:All4approachesNoRp} shows the runtimes of approach~\ref{en:2}
 for Spark, Dask, and MPI4py, and Figure~\ref{fig:rpLF} shows the runtime of
 approach~\ref{en:2} for RP. As expected, this approach overcomes the
-limitations of approach 1 and can easily scale to larger datasets (e.g., $524k$
+limitations of approach 1 and can easily scale to larger datasets (e.g., 524k
 atoms) while improving the overall runtime. Dask's execution time was smaller by
 at least a factor of two compared to
 approach 1. However, we were not able to scale this implementation to the 4M
@@ -931,31 +904,31 @@ RP's performance improves dramatically.
 \end{figure}
 
 Spark and Dask did not scale as well as MPI, which achieved linear speedups of
-$\sim8$ when using $256$ cores. Spark and Dask achieved maximum speedups of
+$\sim8$ when using 256 cores. Spark and Dask achieved maximum speedups of
 $4.5$ and $\sim5$ respectively. Despite this fact, both frameworks had similar
-performance on $32$ cores for the $262k$ and $524k$ datasets.
+performance on 32 cores for the 262k and 524k datasets.
 
 %%%%%%%%%%%%%% Approach 3 %%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Parallel Connected Components}
 
 Communication between the edge discovery and connected components phases is
-another important aspect. For the $524k$ atoms dataset, the output of the edge
+another important aspect. For the 524k atoms dataset, the output of the edge
 discovery phase is $\approx$ $100\,\textup{MB}$. To reduce the amount of data
 that need to be shuffled, we refined the algorithm to compute the graph
-components on the partial dataset in the \texttt{map} phase. The partial
-components are then merged in a \texttt{reduce} phase. This reduces the amount
-of shuffle data by more than $50\%$ (e.g., to $12\textup{MB}$ for Spark and
-$48\textup{MB}$ for Dask). Figure~\ref{fig:All4approachesNoRp} shows the
+components on the partial dataset in the \texttt{map} phase. The \texttt{reduce}
+phase then merges the components. This reduces the amount
+of shuffle data by more than 50\% (e.g., to 12\textup{MB} for Spark and
+48\textup{MB} for Dask). Figure~\ref{fig:All4approachesNoRp} shows the
 improvements in runtime, by $\sim20\%$ for Spark and Dask, but not MPI4py.
 Further, we were able to run very large datasets, such as the 4M dataset, using
 this architectural approach only with Spark and MPI4py. Dask was restarting its
-worker processes because their memory utilization was reaching $95\%$.
+worker processes because their memory utilization was reaching 95\%.
 
 Spark and Dask have comparable performance with MPI on 32 cores, which utilizes
 a single node on Wrangler. However, while the MPI4py implementation scales
 almost linearly for all datasets, Spark and Dask cannot, reaching a maximum of
-$\sim5$ for the three smaller datasets. In addition, Spark is able to scale
-almost linearly for the $4M$ atoms dataset, providing comparable performance to
+$\sim5$ speedup for the three smaller datasets. In addition, Spark is able to scale
+almost linearly for the 4M atoms dataset, providing comparable performance to
 MPI4py.
 
 %%%%%%%%%%%%%% Approach 4 %%%%%%%%%%%%%%%%%%%%%%%
@@ -976,15 +949,15 @@ $log$. We use a BallTree as offered by Scikit-Learn~\cite{scikit-nearest} for
 our implementation.
 
 Figure \ref{fig:All4approachesNoRp} illustrates the performance of the
-implementation. For small datasets, i.e., $131k$ and $262k$ atoms,
+implementation. For small datasets, i.e., 131k and 262k atoms,
 approach~\ref{en:3} is faster than the tree-based approach, since the number of
 points is too small. For the large datasets, the tree approach is faster. In
-addition, the tree has a smaller memory footprint than \texttt{cdist}. This
-allowed to scale to larger problems, e.g., a $4M$ atoms and $44.6M$ edges
-dataset, without changing the total number of tasks.
+addition, the tree has a smaller memory footprint than \texttt{cdist}. 
+As a result, the tree approach scaled to larger problems, e.g., a 4M atoms 
+and 44.6M edges dataset, without changing the total number of tasks.
 
-Dask shows better scaling than Spark for $131k$, $262k$, and $524k$ atoms. This
-is not true for $4M$ atoms, indicating that Dask's communication layer is not
+Dask shows better scaling performance than Spark for 131k, 262k and 524k atoms. This
+is not true for 4M atoms, indicating that Dask's communication layer is not
 able to scale as well as Spark's one. Spark shows similar performance to MPI4py
 for the largest dataset due to minimal shuffle traffic. Thus, MPI's efficient
 communication does not become relevant.
@@ -1042,8 +1015,8 @@ than performance alone.
 
 For fine-grained data parallelism, a data-parallel framework, such as Spark and
 Dask, clearly outperforms RP
-(Figures~\ref{fig:All4approachesNoRp},~\ref{fig:rpLF}). If coupling is
-introduced, i.e., task communication is required, using Spark becomes
+(Figures~\ref{fig:All4approachesNoRp},~\ref{fig:rpLF}). If there is coupling 
+between tasks, i.e., task communication is required, using Spark becomes
 advantageous (Approaches~\ref{en:3} \& \ref{en:4}). MPI4py outperformed
 Dask and Spark, despite both frameworks scaling for the larger datasets.
 Especially Spark was able to provide linear speedup for approach~\ref{en:3} of
