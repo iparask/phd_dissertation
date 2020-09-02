@@ -46,7 +46,7 @@ type of analysis.
 
 In this chapter, we investigate three task-parallel frameworks and their
 suitability for implementing MD trajectory analysis algorithms. In addition to
-Spark and Dask, we investigate RADICAL-Pilot~\cite{merzky2019using}. We utilize
+Spark and Dask, we investigate RADICAL-Pilot (RP)~\cite{merzky2019using}. We utilize
 MPI4py~\cite{dalcin2005mpi} to provide MPI equivalent implementations of the
 algorithms. The task-parallel implementations performance and scalability
 compared to MPI is the basis of our analysis. MD trajectories are time series of
@@ -54,21 +54,21 @@ atoms/particles positions and velocities, which are analyzed using different
 statistical methods to infer certain properties, e.g., the relationship between
 distinct trajectories, snapshots of a trajectory etc.
 
-The chapter is organized as follows: Section~\ref{sec:tp_related_work} discusses
+The chapter is organized as follows: ~\S\ref{sec:tp_related_work} discusses
 several approaches to support scalable MD trajectory data analytics.
-Section~\ref{sec:md_use_cases} describes the MD analysis algorithms investigated
+~\S\ref{sec:md_use_cases} describes the MD analysis algorithms investigated
 and reviews different MD analysis frameworks with respect to their ability to
 support scalable analytics of large volumes of MD trajectories.
-Section~\ref{sec:frameworks} describes RADICAL-Pilot, Spark and  Dask, the three
+~\S\\ref{sec:frameworks} describes RP, Spark and  Dask, the three
 frameworks used for our performance comparison and evaluation.
-Section~\ref{sec:impl_exp} provides a description of the implementation of the
+~\S\ref{sec:impl_exp} provides a description of the implementation of the
 MD algorithms on top of those three frameworks, as well as a performance
 evaluation and a discussion of our findings. In
-Section~\ref{sec:task_sel_model}, we provide a conceptual analysis that allows
+~\S\ref{sec:task_sel_model}, we provide a conceptual analysis that allows
 application developers to select a framework according to their requirements.
-Finally, Section~\ref{sec:tp_concl} closes this chapter with our conclusions.
+Finally, ~\S\ref{sec:tp_concl} closes this chapter with our conclusions.
 
-\mtnote{In Chapter 2 you use \S for section, here you use "s|Section \#"}
+%\mtnote{In Chapter 2 you use \S for section, here you use "s|Section \#"}
 
 \section{Related Work}
 \label{sec:tp_related_work}
@@ -103,7 +103,7 @@ defines analysis tasks which are then executed by a set of worker processes.
 %offers a C++ and Python API. Pteros 2.0 parallelizes computational intensive
 %algorithms via OpenMP and Multithreading. As a result, it is bounded to execute
 %on a single node, making any analysis execution highly dependent on memory
-%size. Through RADICAL-Pilot, Spark and Dask, we avoided recompiling every time
+%size. Through RP, Spark and Dask, we avoided recompiling every time
 %there is a change to the underlying resource, ensuring the application's
 %execution.
 
@@ -255,7 +255,7 @@ Embarrassingly parallel algorithms are good candidates for task parallelization.
 The dataset is partitioned and each partition is assigned to a task. Given
 enough resources, task can execute concurrently as a bag of tasks, using a task
 management API or a map-only application in a MapReduce-style API. Spark, Dask
-and RADICAL-Pilot support the execution of bag of tasks, with RADICAL-Pilot and
+and RP support the execution of bag of tasks, with RP and
 Dask offering specific abstractions (as discussed in~\S\ref{sec:frameworks}).
 
 \subsubsection*{Leaflet Finder}
@@ -316,7 +316,7 @@ programming model allows for a more efficient implementation with a \texttt{map}
 for computing and filtering distances and a \texttt{reduce} for finding the
 components. The shuffling required between map and reduce is medium as the
 number of edges is a fraction of the input data. Spark and Dask natively support
-MapReduce and implementing LF is relatively straightforward. RADICAL-Pilot, on
+MapReduce and implementing LF is relatively straightforward. RP, on
 the other hand, does not natively support MapReduce. As a result, the
 application developer has to define the data shuffling between the \emph{map}
 and the \emph{reduce} phases of the algorithm.
@@ -329,7 +329,7 @@ manifold~\cite{jha2014tale,kamburugamuve2017anatomy} and has been extensively
 studied in the context of scientific~\cite{jha2017introducing} applications. In
 this section, we discuss the suitability of task-parallel frameworks such as
 Spark~\cite{zaharia2010spark}, Dask~\cite{rocklin2015dask} and
-RADICAL-Pilot~\cite{merzky2019using} for MD data analytics.
+RP~\cite{merzky2019using} for MD data analytics.
 
 \subsection{Background}
 
@@ -337,8 +337,8 @@ Spark and Dask provide APIs, caching and other capabilities that are critical to
 develop analytics applications. Spark is considered the standard solution for
 iterative data-parallel applications, while Dask is quickly gaining support by
 the scientific community, since it offers a sought-after Python environment.
-RADICAL-Pilot also offers a Python-only programming API, supporting task-level
-parallelism on HPC resources. In this way, RADICAL-Pilot adds parallelization
+RP also offers a Python-only programming API, supporting task-level
+parallelism on HPC resources. In this way, RP adds parallelization
 capabilities to MPI-based applications, enabling the concurrent and sequential
 execution of bag of MPI tasks on HPC resources.
 
@@ -349,7 +349,7 @@ top of low-level resource management capabilities, e.g., MapReduce-inspired
 APIs. These capabilities provide the foundation for analytics abstractions, such
 as Dataframes, Datasets and Arrays.
 Figure~\ref{fig:figures_bigdata_framework_stack} visualizes the components of
-RADICAL-Pilot, Spark and Dask.
+RP, Spark and Dask.
 
 \begin{figure}[ht]
     \centering
@@ -376,17 +376,17 @@ RADICAL-Pilot, Spark and Dask.
 %resources (BlueWaters and XSEDE), and European supercomputers (Archer and
 %SuperMUC).
 
-As discussed in~\S\ref{ch:pilot-data-hadoop}, RADICAL-Pilot allows concurrent
+As discussed in~\S\ref{ch:pilot-data-hadoop}, RP allows concurrent
 task execution on HPC resources. The user defines a set of Compute-Units (CU)
-which are submitted to RADICAL-Pilot. RADICAL-Pilot schedules these CUs for
+which are submitted to RP. RP schedules these CUs for
 execution on the acquired resources and uses the existing environment of the
 resource to execute tasks. Any data communication between tasks is done via an
 underlying shared filesystem, e.g., Lustre. Task execution coordination and
 communication is done through a database (MongoDB).
 
-%RADICAL-Pilot's learning curve can be quite steep at the beginning, at least
+%RP's learning curve can be quite steep at the beginning, at least
 %until the user becomes familiar with the concept and usability of Pilots and
-%CUs. Once the user is comfortable with RADICAL-Pilot's API, she can easily
+%CUs. Once the user is comfortable with RP's API, she can easily
 %develop new algorithms.
 
 \subsubsection*{Spark}
@@ -442,9 +442,9 @@ assigns tasks to workers.
 %setting up a Dask cluster on a set of resources was relatively straightforward,
 %since it provides all the binaries, e.g. \texttt(dask-ssh).
 
-%\subsubsection*{RADICAL-Pilot} RADICAL-Pilot~\cite{merzky2019using} is a Pilot
+%\subsubsection*{RP} RP~\cite{merzky2019using} is a Pilot
 %system that implements the pilot paradigm as outlined in
-%Ref.~\cite{turilli2018comprehensive}. RADICAL-Pilot (RP) is implemented in
+%Ref.~\cite{turilli2018comprehensive}. RP (RP) is implemented in
 %Python and provides a well defined API and usage modes. Although RP is vehicle
 %for research in scalable computing, it also supports production grade science.
 %Currently, it is being used by applications drawn from diverse domains, ranging
@@ -455,18 +455,18 @@ assigns tasks to workers.
 %resources (BlueWaters and XSEDE), and European supercomputers (Archer and
 %SuperMUC).
 
-%RADICAL-Pilot allows concurrent task execution on HPC resources. The user
+%RP allows concurrent task execution on HPC resources. The user
 %defines a set of Compute~-Units (CU)~- the abstraction that defines a task
-%along with its dependencies - which are submitted to RADICAL-Pilot.
-%RADICAL-Pilot schedules these CUs to be executed under the acquired resources.
+%along with its dependencies - which are submitted to RP.
+%RP schedules these CUs to be executed under the acquired resources.
 %It uses the existing environment of the resource to execute tasks. Any data
 %communication between tasks is done via an underlying shared filesystem, e.g.,
 %Lustre. Task execution coordination and communication is done through a
 %database (MongoDB).
 
-%RADICAL-Pilot's learning curve can be quite steep at the beginning, at least
+%RP's learning curve can be quite steep at the beginning, at least
 %until the user becomes familiar with the concept and usability of Pilots and
-%CUs. Once the user is comfortable with RADICAL-Pilot's API, she can easily
+%CUs. Once the user is comfortable with RP's API, she can easily
 %develop new algorithms.
 
 \subsection{Comparison}
@@ -500,7 +500,7 @@ assigns tasks to workers.
         Bag\\
         % row 5
         Higher-Level Abstractions &
-        EnTK~\cite{balasubramanian2018harnessing} &
+        Pipelines~\cite{balasubramanian2018harnessing}, Replicas~\cite{dakka2018concurrent} &
         Dataframe, ML Pipeline, MLlib~\cite{meng2016mllib} &
         Dataframe, Arrays for block computations\\
         % row 6
@@ -530,12 +530,12 @@ assigns tasks to workers.
 \end{table}
 
 Table~\ref{tab:frameworks} summarizes the properties of Spark, Dask and
-RADICAL-Pilot with respect to the abstractions and runtime systems provided to
+RP with respect to the abstractions and runtime systems provided to
 create and execute parallel data applications.
 
 \subsubsection*{API and Abstractions}
 
-RADICAL-Pilot provides a low-level API for executing tasks onto resources. While
+RP provides a low-level API for executing tasks onto resources. While
 this API can be used to implement high-level capabilities, e.g.,
 MapReduce~\cite{mantha2012pilot}, they are not provided out-of-the box. Both
 Spark and Dask provide such capabilities. Dask's API is generally lower level
@@ -544,14 +544,17 @@ partition size is automatically decided, in many cases it is necessary to tune
 parallelism by specifying the number of partitions.
 
 Another important aspect is the availability of high-level abstractions.
-High-level tools for RADICAL-Pilot, such as Ensemble
-Toolkit~\cite{balasubramanian2018harnessing}, are designed for workflows
-involving compute-intensive tasks. Spark and Dask already offer a set of
-high-level data-oriented abstractions, such as Dataframes. \mtnote{I am not sure
-those are a valid comparisons: high-level abstraction Vs. tools; dataframes Vs.
-workflows. I would eliminate tools, using only abstractions. I would then
-compare DataFrame to Pipelines, possibly adding Replicas and a reference to
-HTBAC.}
+High-level abstractions for RP, such as 
+Pipelines~\cite{balasubramanian2018harnessing} and 
+Replicas~\cite{dakka2018concurrent}, are designed for compute-oriented 
+tasks. Contrary, Spark and Dask already offer a set of
+high-level data-oriented abstractions, such as Dataframes. 
+
+%\mtnote{I am not sure
+%those are a valid comparisons: high-level abstraction Vs. tools; dataframes Vs.
+%workflows. I would eliminate tools, using only abstractions. I would then
+%compare DataFrame to Pipelines, possibly adding Replicas and a reference to
+%HTBAC.}
 
 \subsubsection*{Scheduling}
 
@@ -565,9 +568,9 @@ not depend on other task for execution. Dask tasks are executed when their
 dependencies are satisfied, starting from leaf tasks. When a task is reached
 with unsatisfied dependencies, the scheduler executes the dependent task first.
 Dask's scheduler does not rely on synchronization points that Spark's
-stage-oriented scheduler introduces. RADICAL-Pilot does not provide a DAG-based
+stage-oriented scheduler introduces. RP does not provide a DAG-based
 API and requires the user to manage the execution order and synchronization
-among tasks at application level instead of runtime level (i.e., RADICAL-Pilot).
+among tasks at application level instead of runtime level (i.e., RP).
 
 \subsection{Frameworks Evaluation}
 \label{sec:framework_eval}
@@ -576,9 +579,9 @@ As data-parallelism often involves a large number of short-running tasks, task
 throughput is a critical metric to assess the three frameworks we consider. To
 evaluate the throughput of those frameworks, we use zero workload tasks
 (\texttt{/bin/hostname}). We submit an increasing number of such tasks to
-RADICAL-Pilot, Spark and Dask and measure the execution time on a single node.
+RP, Spark and Dask and measure the execution time on a single node.
 
-For RADICAL-Pilot, all tasks were submitted simultaneously. RADICAL-Pilot's
+For RP, all tasks were submitted simultaneously. RP's
 backend database was running on the same node to avoid communication
 latencies. For Spark, we created an RDD with as many partitions as the number of
 tasks as each partition is mapped to a task by Spark. For Dask, we created tasks
@@ -598,13 +601,13 @@ and 128\,GB memory/node (120 nodes).
 
 Figure~\ref{fig:dask_spark_rp_wrangler} shows the total time to completion and
 task throughput. Dask needed the least time to schedule and execute the assigned
-tasks, followed by Spark and RADICAL-Pilot. Dask and Spark quickly reach their
+tasks, followed by Spark and RP. Dask and Spark quickly reach their
 maximum throughput, which is sustained as the number of tasks increased.
-RADICAL-Pilot showed the worst throughput and scalability, mainly due to some
-architectural limitations. Specifically, RADICAL-Pilot relies on a MongoDB
+RP showed the worst throughput and scalability, mainly due to some
+architectural limitations. Specifically, RP relies on a MongoDB
 database to communicate between Client and Agent, as well as several components
-that allow RADICAL-Pilot to move data and introduce delays in the execution of
-the tasks. As a result, we were not able to scale RADICAL-Pilot to 32k or more
+that allow RP to move data and introduce delays in the execution of
+the tasks. As a result, we were not able to scale RP to 32k or more
 tasks.
 
 \begin{figure}[t]
@@ -617,7 +620,7 @@ tasks.
 Figure~\ref{fig:RP_Dask_Spark_throughput} illustrates task throughput when
 scaling to multiple nodes, measured by submitting $100k$ tasks. Dask's
 throughput on both resources increases almost linearly to the number of nodes.
-Spark's throughput is an order of magnitude lower than Dask's. RADICAL-Pilot's
+Spark's throughput is an order of magnitude lower than Dask's. RP's
 throughput plateaus below $100 task/sec$. Wrangler and Comet show a comparable
 performance, with Comet slightly outperforming Wrangler.
 
@@ -642,7 +645,7 @@ performance, with Comet slightly outperforming Wrangler.
 
 In this section, we characterize and evaluate the performance of two algorithms
 from MDAnalysis---PSA and LF---using different real-world datasets,
-when implemented with RADICAL-Pilot, Spark and Dask. We compare the performance
+when implemented with RP, Spark and Dask. We compare the performance
 of these three task-parallel frameworks with an equivalent implementations of
 the algorithms using MPI4py. We investigate:
 \begin{inparaenum}[1)]
@@ -654,9 +657,9 @@ the algorithms using MPI4py. We investigate:
 \end{inparaenum}
 
 The experiments were executed on SDSC Comet and TACC Wrangler. Experiments were
-carried using RADICAL-Pilot and Pilot-Spark (as discussed
+carried using RP and Pilot-Spark (as discussed
 on~\S\ref{ch:pilot-data-hadoop}). We utilize a set of custom scripts to start
-the Dask cluster. We used RADICAL-Pilot 0.46.3, Spark 2.2.0, Dask 0.14.1 and
+the Dask cluster. We used RP 0.46.3, Spark 2.2.0, Dask 0.14.1 and
 Distributed 1.16.3.
 %The data presented are means over multiple runs; error bars represent the
 %standard deviation of the sample.
@@ -671,7 +674,7 @@ i.e., a set of trajectory files, is equally distributed over the cores,
 generating one task per core. Each task reads its respective input files in
 parallel, executes and writes the result to a file.
 
-For RADICAL-Pilot, we define a Compute-Unit for each task and execute them using
+For RP, we define a Compute-Unit for each task and execute them using
 a Pilot-Job. For Spark, we create an RDD with one data partition per task, which
 are executed in a \texttt{map} function. In Dask, tasks are defined as
 \texttt{delayed} functions and in MPI, each task is executed by an MPI process.
@@ -708,19 +711,19 @@ Comet.
     \label{fig:comet_wrangler_haus}
 \end{figure}
 
-MPI4py, RADICAL-Pilot, Spark and Dask have similar performance when used to
+MPI4py, RP, Spark and Dask have similar performance when used to
 execute embarrassingly parallel algorithms. All frameworks achieved similar
 speedups as the number of cores increased, scaling by a factor of 6 from 16 to
 256 cores, which are lower than MPI4py. Although the frameworks' overheads are
 comparably low in relation to the overall runtime, overheads were significant
-enough to impact the frameworks' speedup. Note that RADICAL-Pilot's large
+enough to impact the frameworks' speedup. Note that RP's large
 deviation is due to sensitivity to communication delays with the database.
 
 In summary, for embarrassingly parallel algorithms all three frameworks provide
 appropriate abstractions and runtime performance compared to MPI. Beyond
 performance considerations, aspects such as programmability and
 integrate-ability are more important considerations when comparing the three
-frameworks. Both RADICAL-Pilot and Dask are native Python frameworks, making the
+frameworks. Both RP and Dask are native Python frameworks, making the
 integration with other Python tools easier and more efficient than with
 frameworks which are based on other languages like Spark.
 
@@ -789,7 +792,7 @@ frameworks which are based on other languages like Spark.
     \caption{Architectural approaches for implementing the Leaflet finder algorithm\label{fig:lf_approaches}}
 \end{figure*}
 
-We developed five approaches to implement the LF algorithm using RADICAL-Pilot,
+We developed five approaches to implement the LF algorithm using RP,
 Spark, Dask, and MPI4py (see Fig~\ref{fig:lf_approaches} and
 Table~\ref{tab:app_operators}):
 \begin{enumerate}[1)]
@@ -826,7 +829,7 @@ Approach \ref{en:3} data partitioning of the $4M$ atom dataset resulted to $42k$
 tasks for both Spark and MPI4py.
 
 Figure \ref{fig:All4approachesNoRp} shows the runtimes for all datasets for
-Spark, Dask and MPI4py. RADICAL-Pilot's performance is illustrated in
+Spark, Dask and MPI4py. RP's performance is illustrated in
 Figure~\ref{fig:rpLF}. We continue by analyzing the performance of each
 architectural approach and used framework in detail.
 
@@ -851,12 +854,13 @@ architectural approach and used framework in detail.
 
 Approach 1 broadcasts data to nodes via the capabilities supported by Spark,
 Dask and MPI. All nodes maintain a complete copy of the dataset and each
-\texttt{map} task computes the pairwise distance on its partition. \mtnote{its
-partition of what? Note: 'its', 'it' and 'they' in English should not be used
-when it is not clear to what subject or complement they refers, especially at
-the beginning of a sentence. I have been correcting tens of those so far. In
-this sentence, it is not possible to understand to what 'its' referes: to the
-task, to the node, to the broadcast?}
+\texttt{map} task computes the pairwise distance on a partition of the dataset. 
+%\mtnote{its
+%partition of what? Note: 'its', 'it' and 'they' in English should not be used
+%when it is not clear to what subject or complement they refers, especially at
+%the beginning of a sentence. I have been correcting tens of those so far. In
+%this sentence, it is not possible to understand to what 'its' referes: to the
+%task, to the node, to the broadcast?}
 %We use 1-D partitioning.
 Figure~\ref{fig:WranglerLeafLetFinderApp1} shows the detailed results.
 
@@ -885,8 +889,8 @@ to transmitting the entire dataset makes it usable only for small datasets.
 Using broadcast shows the worst performance and scaling of all approaches for
 Spark, Dask and MPI4py. This approach scales only up to $262k$ atoms for Dask,
 and $524k$ atoms for Spark and MPI4py on Wrangler. Spark's performance is
-comparable to MPI4py for the $262k$, and $524k$ datasets. It \mtnote{I am not
-able to understand to what this 'it' refers to.} also shows better performance
+comparable to MPI4py for the $262k$, and $524k$ datasets. Spark
+also shows better performance
 for the smallest core count in the $524k$ case. Dask is at least two times
 slower than our MPI implementation.
 
@@ -905,17 +909,17 @@ part of the input data.
 
 Figure~\ref{fig:All4approachesNoRp} shows the runtimes of approach~\ref{en:2}
 for Spark, Dask, and MPI4py, and Figure~\ref{fig:rpLF} shows the runtime of
-approach~\ref{en:2} for RADICAL-Pilot. As expected, this approach overcomes the
+approach~\ref{en:2} for RP. As expected, this approach overcomes the
 limitations of approach 1 and can easily scale to larger datasets (e.g., $524k$
 atoms) while improving the overall runtime. Dask's execution time was smaller by
-at least a factor of two \mtnote{compared to another middlewre or compared to
-approach 1?}. However, we were not able to scale this implementation to the 4M
-dataset due to the memory requirements of \texttt{cdist}. For RADICAL-Pilot, we
+at least a factor of two compared to
+approach 1. However, we were not able to scale this implementation to the 4M
+dataset due to the memory requirements of \texttt{cdist}. For RP, we
 observed significant task management overheads (see also
-section~\ref{sec:framework_eval}). This is a limitation of RADICAL-Pilot with
+section~\ref{sec:framework_eval}). This is a limitation of RP with
 respect to managing large numbers of tasks, particularly visible when running on
-a single node with 32 cores. As more than 64 cores become available, performance
-\mtnote{of RADICAL-Pilot or for all the middleware?} improves dramatically.
+a single node with 32 cores. As more than 64 cores become available, 
+RP's performance improves dramatically.
 
 \begin{figure}[t]
     \centering
@@ -1026,7 +1030,7 @@ the criteria of this conceptual model and ranks the three frameworks.
 \subsubsection*{Application Perspective}
 
 We showed that we can implement applications for MD trajectory data analysis
-using Spark, Dask and RADICAL-Pilot, as well as MPI4py. Implementation aspects,
+using Spark, Dask and RP, as well as MPI4py. Implementation aspects,
 such as computational complexity, and shuffled data size greatly influence
 performance. For embarrassingly parallel applications with coarse grained tasks,
 such as PSA, the choice of the framework does not significantly influence
@@ -1037,7 +1041,7 @@ aspects such as programmability and integrate-ability, become more important
 than performance alone.
 
 For fine-grained data parallelism, a data-parallel framework, such as Spark and
-Dask, clearly outperforms RADICAL-Pilot
+Dask, clearly outperforms RP
 (Figures~\ref{fig:All4approachesNoRp},~\ref{fig:rpLF}). If coupling is
 introduced, i.e., task communication is required, using Spark becomes
 advantageous (Approaches~\ref{en:3} \& \ref{en:4}). MPI4py outperformed
@@ -1052,22 +1056,22 @@ e.g., MDAnalysis, often causes overheads due to the frequent need for
 serialization and copying data between the Python and Java space.
 
 Dask has the smallest learning curve of all three frameworks. As a result, it
-allows for faster prototyping compared to RADICAL-Pilot and Spark.
-RADICAL-Pilot's learning curve is more steep, but is more versatile than Dask
+allows for faster prototyping compared to RP and Spark.
+RP's learning curve is more steep, but is more versatile than Dask
 and Spark, by offering the lowest level abstraction. Spark had the slowest
 learning curve but it required tuning to get the number of tasks correctly, as
 well as argument passing to map and reduce functions.
 
 \subsubsection*{Framework Perspective}
 
-RADICAL-Pilot is well suited for HPC applications, e.g., ensembles (up to $50k$
+RP is well suited for HPC applications, e.g., ensembles (up to $50k$
 tasks) of parallel MPI applications, as shown in
 Ref.~\cite{merzky2018design,merzky2019using}. It has limited scalability when
 supporting large numbers of short-running tasks, as often found in
-data-intensive workloads. The file staging implementation of RADICAL-Pilot is
+data-intensive workloads. The file staging implementation of RP is
 not suitable for supporting the data exchange patterns, i.e., shuffling, required
 for these applications. However, concurrently executing MPI and Spark applications
-on the same resource makes RADICAL-Pilot particularly suitable when different
+on the same resource makes RP particularly suitable when different
 programming models need to be combined.
 
 % framework perspective
@@ -1091,7 +1095,7 @@ set of data in-memory and conduct multiple passes on that set.
 In this chapter, we investigated the use of different programming abstractions
 and frameworks for implementing a range of algorithms for MD trajectory
 analysis. We conducted an in-depth analysis of applications' characteristics and
-assessed the architectures of RADICAL-Pilot, Spark and Dask. We provided a
+assessed the architectures of RP, Spark and Dask. We provided a
 conceptual framework that enables application developers to qualitatively
 evaluate task parallel frameworks with respect to application requirements. Our
 benchmarks enable developers to quantitatively assess framework performance as
@@ -1107,7 +1111,7 @@ efficiently supports common data exchange patterns, e.g., shuffling between
 \texttt{map} and \texttt{reduce} stages. In our benchmarks, Spark outperforms
 Dask in communication-intensive tasks, such as broadcasts and shuffles. Dask
 provides more versatile low and high level APIs and integrates better with
-python frameworks. RADICAL-Pilot does not provide a MapReduce API, but is well
+python frameworks. RP does not provide a MapReduce API, but is well
 suited for coarse-grained task-level parallelism~\cite{merzky2018design,
 merzky2019using}, and when HPC and analytics frameworks need to be integrated.
 We also identified a limitation in Dask and Spark: while both frameworks provide

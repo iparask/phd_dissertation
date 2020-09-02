@@ -43,14 +43,16 @@ design uses a pipeline to independently process each image, while the second
 and third designs use the same pipeline to process a series of images with 
 differences in how images are bound to available compute nodes.
 
-The chapter is organized as follows. Section~\ref{sec:ucase} presents the use 
+The chapter is organized as follows. \S~\ref{sec:des_rw} discusses the current
+state-of-the-art in parallel image analysis. \S~\ref{sec:ucase} presents the use 
 case and discusses it computational requirements as well as its task-based 
 workflow. In \S~\ref{sec:design}, we discuss the three architecturally 
-equivalent design to support task-based workflows. \S\ref{sec:des_experiments} 
+equivalent design to support task-based workflows. \S~\ref{sec:des_experiments} 
 presents a performance evaluation of the designs and discusses the lessons 
 learned.
  
 \section{Related Work}
+\label{sec:des_rw}
 Several tools and frameworks are available for image analysis based on diverse 
 designs and programming paradigms, and implemented for specific resources.
 Numerous image analytics frameworks for medical, astronomical, and other 

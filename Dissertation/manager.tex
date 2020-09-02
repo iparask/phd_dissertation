@@ -41,32 +41,34 @@ remains domain specific.
 
 In response to these limitations---monolithic designs, domain specific support 
 and resource and middleware assumptions---we design and prototype a new 
-campaign manager (CM). As our campaign manager supports use cases from 
+campaign manager (CM). As our CM supports use cases from 
 different scientific domains, such as molecular dynamics, earth sciences and 
 high energy physics, the design and functionality space explodes. A prototype 
 allows us identify the most important components and functionality to support 
 the effectively support our use cases. Further, we can quickly implement and 
-test the campaign manager without necessarily considering any performance and 
+test the CM without necessarily considering any performance and 
 data management limitations that may arise when executing an actual campaign.
-Finally, a prototype allows us to tune parts of the campaign manager with 
+Finally, a prototype allows us to tune parts of the CM with 
 minimal engineering cost.
 
-The campaign manager prototype is domain agnostic as it supports use cases 
+The CM prototype is domain agnostic as it supports use cases 
 from different domains. In addition, it is designed by following the building 
 blocks approach~\cite{turilli2019middleware}. This way, the prototype is 
 agnostic and makes no assumptions of the workflow management framework used to 
 manage the execution of individual workflows, as well as the type of resources 
 used.
 
-The chapter is organized as follows:In section~\ref{sec:cm_req}, we discuss 
-the supported use cases and the campaign manager requirements. 
-Section~\ref{sec:cm_des} describes the building blocks approach and the design 
-of the campaign manager. We continue, section~\ref{sec:cm_impl}, with the 
-implementation of the campaign manager prototype and a performance 
+The chapter is organized as follows: \S~\ref{sec:cm_rw} discusses the current
+solutions in executing computational campaigns. In \S~\ref{sec:cm_req}, we discuss 
+the supported use cases and the CM requirements. 
+\S~\ref{sec:cm_des} describes the building blocks approach and the design 
+of the CM. We continue, \S~\ref{sec:cm_impl}, with the 
+implementation of the CM prototype and a performance 
 characterization to create a baseline of its performance. We close the chapter 
-with our conclusions in section~\ref{sec:cm_concl}.
+with our conclusions in \S~\ref{sec:cm_concl}.
 
 \section{Related Work}
+\label{sec:cm_rw}
 Currently, there are software systems which support computational campaigns, 
 such as PanDA~\cite{maeno2008panda}, DIRAC~\cite{casajus2010dirac}, 
 QCFractal~\cite{qcfractal}, glideinWMS~\cite{sfiligoi2008glidein}, and others.
@@ -109,7 +111,7 @@ as part of a computational campaign with a single well defined objective.
 The space of data analysis computational campaigns can be vast with different 
 scientific objectives, types and number of workflows and resources. We use 
 three real use cases with data analysis workflows to derive the requirements 
-of the campaign manager prototype. The first use case supports quantum 
+of the CM prototype. The first use case supports quantum 
 chemistry campaigns (UC1), the second earth science (UC2) and the third data 
 analysis campaigns which analyze the data produced for the ATLAS 
 experiment (UC3).
@@ -149,7 +151,7 @@ quarter. As a result, the objective of this use case campaign is to finish all
 of its workflows on a specific amount of time.
 
 Based on these use cases we derive a set of functional requirements for the 
-campaign manager prototype. Table~\ref{tab:fun_reqs} shows a summary of the 
+CM prototype. Table~\ref{tab:fun_reqs} shows a summary of the 
 functional requirements. The table defines a requirement identification 
 number, states the requirement and provides a description of each requirement.
 In addition to this information it shows from which use case the requirement 
@@ -165,7 +167,7 @@ is derived with ``G'' being a requirement that supports all three use cases.
          1 & 
          Support campaign with O(1k) workflows & 
          UC1 & 
-         The campaign manager should be able to support campaigns with order of thousand workflows.
+         The CM should be able to support campaigns with order of thousand workflows.
          Planning, execution and adaptation should be able to execute with such a campaign.\\
          2 & 
          The CM should support at least two different planning algorithms. & 
@@ -190,7 +192,7 @@ is derived with ``G'' being a requirement that supports all three use cases.
          6 & 
          Interface with different WMFs & 
          G & 
-         The campaign manager should be able to interface with different WMFs based on the specifics of the campaign. \\
+         The CM should be able to interface with different WMFs based on the specifics of the campaign. \\
          7 & 
          Early bind workflows to resources &
          UC1 &
@@ -216,7 +218,7 @@ is derived with ``G'' being a requirement that supports all three use cases.
 \label{sec:cm_des}
 
 This section discusses the design principles and the architecture of the 
-campaign manager prototype. The design principles of the campaign manager are 
+CM prototype. The design principles of the CM are 
 presented in~\S~\ref{ssec:building_blocks} and its architecture 
 in~\S~\ref{ssec:cm_arch}.
 
@@ -234,7 +236,7 @@ Self-sufficiency and interoperability describe the characteristics of software
 entities and functionalities. The entities are enough to stand alone and can 
 be reduced to a specific abstraction. The functionalities of each building 
 block are specific to the block and do not overlap with other blocks. As a 
-result, the campaign manager design defines a set of components and that allow 
+result, the CM design defines a set of components and that allow 
 it to execute a campaign to HPC resources without providing capabilities to 
 execute the individual workflows of the campaign or acquire the necessary 
 resources.
@@ -243,7 +245,7 @@ Composability and extensibility describe the communication and coordination
 between building blocks and the generality of the generality of the blocks 
 components respectively. Blocks communicate information about their state, 
 events and errors. Based on this information alone building blocks are 
-coordinating with each other. As a result, the campaign manager uses only the 
+coordinating with each other. As a result, the CM uses only the 
 state of the workflow execution to create the campaign state. Furthermore, its 
 components are designed to be general enough so that they can extended and 
 interface with different workflow execution engines as well as software 
@@ -252,7 +254,7 @@ systems that execute computational campaigns.
 \subsection{Campaign Manager Components}
 \label{ssec:cm_arch}
 
-We define three components as part of the campaign manager prototype (see 
+We define three components as part of the CM prototype (see 
 Figure~\ref{fig:refarch}):
 \begin{inparaenum}[(1)]
     \item a Planner;
@@ -261,7 +263,7 @@ Figure~\ref{fig:refarch}):
 \end{inparaenum}
 Workflow execution will be managed by an existing workflow management 
 framework (WMF) on HPC resources. Each of these components support a basic 
-functionality the campaign manager needs to support, such as creating an 
+functionality the CM needs to support, such as creating an 
 execution, execute individual workflows and execute and monitor the campaign.
 
 \begin{figure*}[t]
@@ -314,7 +316,7 @@ all the workflows have finished executing.
 \section{Prototype Implementation and Performance Evaluation}
 \label{sec:cm_impl}
 
-The campaign manager prototype in accordance with its design defines three 
+The CM prototype in accordance with its design defines three 
 major classes. A Bookkeeper class implements the capabilities of the 
 Bookkeeper component, an Enactor class interacts with a selected workflow 
 engine to execute workflows on resources and a Planner class implements 
@@ -451,12 +453,12 @@ requirements and correctly execute a computational campaign.
 In this chapter, we motivated and discussed a prototype for a software system 
 that supports the execution of computational campaigns on HPC resources based 
 on a set of use cases. We described the design and the basic components of the 
-campaign manager, a Bookkeeper, a Planner and an Enactor. Based on the 
+CM, a Bookkeeper, a Planner and an Enactor. Based on the 
 selected design, we implemented a software prototype that simulates the 
 execution of a campaign on resources. The prototype allows us to understand 
-and correctly implement the necessary functionality of the campaign manager.
+and correctly implement the necessary functionality of the CM.
 
-The campaign manager is not only responsible to execute a campaign based on an 
+The CM is not only responsible to execute a campaign based on an 
 execution plan that is provided by the user. It offers a class, the Planner, 
 that can produce execution plans for executing a computational campaign. The 
 Planner is able to support several planning algorithms. Although using any 
