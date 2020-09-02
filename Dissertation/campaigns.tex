@@ -137,42 +137,48 @@ resource dynamism and workflow runtime estimation uncertainty.
 
 The way workflows of a given campaign are mapped to resources can affect the
 makespan calculation. Figure~\ref{fig:example_makespan} shows an example of a
-campaign with workflows of different size and execution times, and the
-makespans that two different mappings produce. The makespan of the campaign on
-the left sub~-figure is $20$, while on the right it is $16$. In addition, the
-size of the workflows, i.e., the number of resources they require, becomes
-relevant and resources may be underutilized, as shown in
-Figure~\ref{fig:example_makespan}.
+campaign with workflows of different size and execution times, and the makespans
+that two different mappings produce. The makespan of the campaign on the left
+sub~-figure is $20$, while that on the right it is $16$. In addition,
+Figure~\ref{fig:example_makespan} also shows the relevance of the size of the
+workflows, i.e., the number of resources they require, and that resources may be
+underutilized.
 
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=.99\textwidth]{figures/campaign/plan_comp.pdf}
-    \caption{Comparison of different campaign execution plans. Based on workflow mapping on resources makespan and resource utilization is different.}\label{fig:example_makespan}
+    \caption{Comparison of different campaign execution plans. Makespan and
+    resource utilization is different, based on workflow mapping on
+    resources.}\label{fig:example_makespan}
 \end{figure*}
 
-We make a set of assumptions which we do not relax during the definition of a
-campaign makespan calculation model. These are:
+We make a set of assumptions when defining a model for the calculation of a
+campaign makespan:
 \begin{inparaenum}[(1)]
-    \item a workflow is an atomic unit and cannot be decomposed;
-    \item workflow resource request is sufficient to execute the workflow;
+    \item a workflow is an atomic unit;
+    \item a workflow resource request is always sufficient to execute the
+    workflow;
     \item a resource is an aggregate of computing capabilities;
-    \item every workflow of a given campaign can be executed on the given resources;
+    \item every workflow of a given campaign can be executed on the given
+    resources;
     \item random resource selection is based on a uniform distribution;
-    \item only one workflow can be executed on a resource at any point in time; and
-    \item workflows can be homogeneous or heterogeneous in time---the amount of time they are executing--- and space---the amount of resources they require.
+    \item only one workflow can be executed on a resource at any point in time;
+    and
+    \item workflows can be homogeneous or heterogeneous in time---the amount of
+    time they are executing---and space---the amount of resources they require.
 \end{inparaenum}
 
 We denote a computational campaign as $C = [w_{i}: 1 \leq i \leq N_{C}]$,
 where $w_{i}$ is a workflow and $N_{C}$ is the total number of workflows,
 $R = [ r_{j}: 1 \leq j \leq N_{R}]$ is a set of available resources, where
 $r_{j}$ is a resource and $N_{R}$ is the total number of available resources
-before the execution of the campaign, and $ M(C,R) $ is a mapping function
+before the execution of the campaign. $M(C,R)$ is a mapping function
 which produces a map $ [(w_i, r_j): 1 \leq i \leq N_{C}, r_j \in R] $ of
 workflows onto resources. In addition, we denote the execution time of a
 workflow as $Tx_{w_{i}}$, the makespan of campaign $C$ as $TTX_{C}$, and the
 makespan of campaign $C$ for a given mapping function $ M $ as $TTX_{C}(M)$.
 
-With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign will be
+With a single resource, i.e., $N_{R} = 1$, the workflows of a campaign are
 executed sequentially, regardless of the execution order or whether the
 workflows are homogeneous or heterogeneous. As a result the makespan of the
 campaign is:
@@ -180,25 +186,26 @@ campaign is:
    TTX_{C} = \sum_{i=1}^{N_{C}}Tx_{w_{i}}
 \end{equation}
 
-With multiple resources, i.e., $1 < N_{R} < N_{C}$, the workflows of a
-campaign can be executed concurrently. With homogeneous resources, this is
-semantically equivalent to executing on a single resource large enough to
-allow concurrent workflow execution, where each workflow executes on a
-resource partition. Because of assumptions~\#4 and~\#7, the execution of
-spatially homogeneous or heterogeneous workflows has the same makespan. A
-random mapping of workflows onto resource will have a makespan:
+With multiple resources, i.e., $1 < N_{R} < N_{C}$, the workflows of a campaign
+can be executed concurrently. With homogeneous resources, this is semantically
+equivalent to executing the campaign on a single resource large enough to allow
+concurrent workflow execution, where each workflow executes on a resource
+partition. Because of assumptions~\#4 and~\#7, the execution of spatially
+homogeneous or heterogeneous workflows has the same makespan. A random mapping
+of workflows onto resource has a makespan:
 \begin{equation}
    TTX_{C}(Random) \geq \frac{1}{N_{R}}\sum_{i=1}^{N_{C}} Tx_{w_{i}}
 \end{equation}
+
 Given multiple homogeneous resources, when executing workflows that are
 heterogeneous in time and that can be spatially homogeneous or heterogeneous,
-the makespan of the campaign for a given mapping function $ M $ is:
+the makespan of the campaign for a given mapping function $M$ is:
 \begin{equation}
 TTX_{C}(M) = \max_{r_{j}\in R}\Big\{\sum_{w_{i}\in M(C,r_{j})}Tx_{w_{i}}\Big\}
 \label{eq:makespan}
 \end{equation}
 Relaxing the assumption that resources are heterogeneous, in the performance
-they offer, affects the result of the mapping function $ M $. As a result,
+they offer, affects the result of the mapping function $M$. As a result,
 Eq.~\ref{eq:makespan} holds in calculating the makespan of the campaign.
 
 %Computational campaigns execute to achieve an objective.
@@ -214,61 +221,88 @@ Eq.~\ref{eq:makespan} holds in calculating the makespan of the campaign.
 \section{Planning Algorithms}
 \label{sec:algo}
 
-We investigate three algorithms, Heterogeneous Earlier Finish Time algorithm
-(HEFT)~\cite{topcuoglu2002performance}, a genetic
-algorithm~\cite{page2005algorithm} and a simple heuristic algorithm. As all
-these algorithms produce an execution plan before the actual execution of the
-campaign and require workflow runtime and resource performance as input.
+We investigate three algorithms: (i) the Heterogeneous Earlier Finish Time
+algorithm (HEFT)~\cite{topcuoglu2002performance}; (ii) a genetic
+algorithm~\cite{page2005algorithm}; and (iii) a simple heuristic algorithm. These algorithms produce an execution plan before the actual execution of
+the campaign, and require workflow runtime and resource performance as input.
 Table~\ref{tab:sched_algo} shows a summary of the algorithms characteristics.
 
 \begin{table}[t]
     \centering
     \scriptsize
-    \begin{tabular}{@{}ccccc@{}}
+    \begin{tabular}{@{}lcccc@{}}
         \toprule
-        &\textbf{HEFT}     &\textbf{Genetic Algorithm} &\textbf{L2FF} & \textbf{Random} \\
+                                   &
+        \textbf{HEFT}              &
+        \textbf{Genetic Algorithm} &
+        \textbf{L2FF}              &
+        \textbf{Random}            \\
         \midrule
-        Decision Policy   &Deterministic &Convergence Criteria &Deterministic& Deterministic\\
-        Initial State    &Blank &Semi-random &Blank & Blank\\
+        Decision Policy       &
+        Deterministic         &
+        Convergence Criteria  &
+        Deterministic         &
+        Deterministic         \\
+        %
+        Initial State         &
+        Blank                 &
+        Semi-random           &
+        Blank                 &
+        Blank                 \\
         \midrule
-        \multicolumn{5}{l}{\textbf{Initial Information}}\\\midrule
-        Workflow Operations &Yes & Yes & Yes & No\\
-        Resource Performance &Yes &Yes &Yes & No\\
+        \multicolumn{5}{@{}l}{\textbf{Initial Information}} \\
         \midrule
-        Produced Knowledge& Resource availability& Resource availability&None&None\\
+        Workflow Operations   &
+        Yes                   &
+        Yes                   &
+        Yes                   &
+        No                    \\
+        %
+        Resource Performance  &
+        Yes                   &
+        Yes                   &
+        Yes                   &
+        No                    \\
+        \midrule
+        Produced Knowledge    &
+        Resource availability &
+        Resource availability &
+        None                  &
+        None                  \\
         \bottomrule
     \end{tabular}
-    \caption{Basic characteristics of selected planning algorithms.\label{tab:sched_algo}}
+    \caption{Basic characteristics of selected planning algorithms.}
+    \label{tab:sched_algo}
 \end{table}
 
 % -------------------------------------------------------------------
 \subsection{Heterogeneous Earlier Finish Time (HEFT) algorithm}
 \label{algo:heft}
-List scheduling algorithms represent a general family of heuristic based
-scheduling algorithms to schedule
-workflows~\cite{dong2006scheduling,list_sched_wiki}. These algorithms assign
-priorities to tasks based on a heuristic and then order tasks based on their
-priority. To place tasks on resources, they traverse the list of tasks in
-order and assign a task to a resource that can execute it. HEFT is a list
-scheduling algorithm~\cite{dong2006scheduling} and calculates the makespan of
-a workflow on heterogeneous resources to produce its plan.
+
+List scheduling algorithms represent a family of heuristic-based algorithms to
+schedule workflows~\cite{dong2006scheduling,list_sched_wiki}. These algorithms
+assign priorities to tasks based on a heuristic and then order tasks based on
+their priority. To place tasks on resources, they traverse the ordered list of
+tasks and assign a task to a resource that can execute it. HEFT is a list
+scheduling algorithm~\cite{dong2006scheduling} and calculates the makespan of a
+workflow on heterogeneous resources to produce its plan.
 
 HEFT has been implemented as part of the planning capabilities in
 Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon}
-amongst other algorithms. HEFT has been shown to provide better performance in
-terms of makespan minimization compared to other mapping
-algorithms,~\cite{topcuoglu2002performance,canon2008comparative}, e.\,g.\,,
-genetic algorithms~\cite{fahringer2005askalon}. Furthermore, there has been
-some initial research to extend HEFT to resources that provide CPU and
-GPUs~\cite{shetti2013optimization} and on dynamic
-resources~\cite{dong2007pfas}.
+amongst other algorithms \mtnote{other frameworks or other algorithms?}. HEFT
+has been shown to provide better performance in terms of makespan minimization
+compared to other mapping
+algorithms~\cite{topcuoglu2002performance,canon2008comparative}, e.g., genetic
+algorithms~\cite{fahringer2005askalon}. Furthermore, there has been some initial
+research to extend HEFT to dynamic resources~\cite{dong2007pfas}, and to
+resources that provide CPU and GPUs~\cite{shetti2013optimization}.
 
-HEFT makes two important assumptions when used on workflows:
+HEFT makes two assumptions when used on workflows:
 \begin{inparaenum}[(1)]
     \item any task in a workflow can be executed on all available resources; and
     \item all resources are initially available.
 \end{inparaenum}
-HEFT's complexity is proportional to the number of dependencies between tasks
+HEFT's complexity is proportional to the number of dependencies among tasks
 and the number of resources offered. As we are interested in executing
 computational campaigns, our HEFT extension provides an execution plan based
 on workflows as atomic units instead of tasks. Algorithm~\ref{alg:heft} shows
@@ -295,22 +329,23 @@ HEFT for placing independent workflows on resources.
 \end{algorithm}
 
 HEFT has three main algorithmic characteristics:
-\begin{inparaenum}[1)]
-    \item creates a priority list of workflows,
-    \item produces an expectation of when resources are available and
+\begin{inparaenum}[(1)]
+    \item creates a priority list of workflows;
+    \item produces an expectation of when resources are available; and
     \item uses a deterministic heuristic.
 \end{inparaenum}
-HEFT initially calculates the average execution time of a workflow on all
+Initially, HEFT calculates the average execution time of a workflow on all
 resources and creates a priority list with the longest workflow first. In
-addition, HEFT initializes a vector where each element is when a resource is
-available. Then, HEFT calculates when a workflow will finish at each resource
-and places the workflow on the resource that will finish it earlier. HEFT ends
-when all workflows are placed on a resource.
+addition, HEFT initializes a vector with information about where each workflow
+is when a resource is available. Then, HEFT calculates when a workflow will
+finish at each resource and places that workflow on the resource that will finish
+it earlier. HEFT ends when all workflows are placed on a resource.
 
 
 % -------------------------------------------------------------------
 \subsection{Genetic Algorithm}
 \label{algo:gen}
+
 Genetic algorithms represent another family of algorithms that can be  used to
 calculate the makespan of workflows~\cite{dong2006scheduling}. Genetic
 algorithms start from an initial set of possible solutions, iterate and
