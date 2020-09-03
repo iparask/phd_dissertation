@@ -832,7 +832,7 @@ than GA and L2FF. HEFT places workflows on resources so that all resources are
 used for the least possible amount of time. As a result, a slow down on a
 resource will affect the makespan with HEFT more than that with GA and L2FF,
 which produce plans that overutilize some resources. Further, the sensitivity
-values \mtnote{with HEFT?} are significantly lower than those observed when
+values for all algorithms are significantly lower than those observed when
 homogeneous resources were used, as a potential slowdown on a performant
 resource will not significantly affect the makespan of the campaign. In
 addition, we see that: (1) makespan sensitivity decreases as the number of
@@ -915,8 +915,8 @@ resources.
 We expect sensitivity to workflow runtime estimation uncertainty to decrease as
 the number of workflows increases, and to increase as the number of resources
 decreases. As the number of workflows increases, more workflows are placed on a
-resource. As a result, on one hand it is more probable that an increase
-\mtnote{an increase of what?} due to a longer than expected workflow is hidden
+resource. As a result, on one hand it is more probable that a potential increase of
+the makespan due to a longer than expected workflow is hidden
 by other workflows than are shorter than expected. On the other hand, as the
 number of resources increases, fewer workflows are placed on each resource and a
 potentially larger workflow will have significant impact on the overall
