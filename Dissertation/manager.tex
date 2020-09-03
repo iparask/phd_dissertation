@@ -1,5 +1,5 @@
 % !TEX root = main.tex
-\label{ch:cmanager}
+
 In the previous chapters, we discussed the requirements and support of
 data- and compute-intensive workflows on high performance computing (HPC)
 resources. When considering actual research, scientific projects require to
@@ -247,7 +247,7 @@ systems that execute computational campaigns.
 \subsection{Campaign Manager Components}
 \label{ssec:cm_arch}
 
-We define three components as part of the CM prototype (see 
+We define three components as part of the CM prototype (see
 Figure~\ref{fig:refarch}):
 \begin{inparaenum}[(1)]
     \item a Planner;
@@ -428,7 +428,7 @@ We validated the correctness of our design by executing campaigns of different
 sizes on different number of resources. We provided the prototype with a
 campaign, a set of resources and an execution plan. We then check that the
 workflows of the campaign were executed as expected and in a viable amount of
-time, as shown in Figure~\ref{fig:cm_char}. We observed that the execution time 
+time, as shown in Figure~\ref{fig:cm_char}. We observed that the execution time
 of the simulation increases when more than 64
 resources are utilized concurrently. Both the Enactor and the Bookkeeper have
 monitoring methods that traverse the list of executing workflows. In
