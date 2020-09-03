@@ -1000,55 +1000,54 @@ sensitivity slope is independent of the type of uncertainty.
 
 \section{Conclusions}
 \label{sec:cf_algo_sel}
-In this chapter, we discuss and compare planning algorithms to plan the
-execution of a computational campaign on HPC resources. Specifically, we
-discuss three planning algorithms, HEFT, a genetic algorithm (GA) and L2FF,
-and their algorithmic characteristics. Our experimental methodology allows us
-to compare plans in terms of makespan performance and their sensitivity to
-resource dynamism and workflow runtime uncertainty.
 
-Based on our analysis, we conclude that there are three algorithmic properties
-which affect the performance and sensitivity of planning algorithms. The first
-property is whether the algorithm estimates resource availability. HEFT and
-the genetic algorithm estimate when resources are available and show better
-makespan performance on homogeneous and heterogeneous resources than L2FF and
-random. The second property is whether the algorithm uses a deterministic or
-randomized heuristic to place workflows on resources. GA shows performance
-similar to random plans when all workflows were initially placed randomly to
-resources. In addition, GA shows worse performance than L2Ff when 50~\% of the
-workflows were not placed randomly above 128 resources as it underutilized
-some of the resources. The third property is whether the algorithm creates a
-workflow priority list based on workflow runtime. HEFT and L2FF sort workflows
-based on their runtime and they place first the larger workflows on their
-lists. This priority list allows L2FF to place larger workflows to more
-performant resources and as a result L2Ff outperforms GA for large number of
-resources.
+In this chapter, we discuss and compare algorithms to plan the execution of a
+computational campaign on HPC resources. Specifically, we discuss the
+characteristics of three planning algorithms: HEFT, GA and L2FF. Our
+experimental methodology allows us to compare plans in terms of makespan
+performance, and their sensitivity to resource dynamism and workflow runtime
+uncertainty.
 
-Our analysis on makespan sensitivity to resource dynamism also shows that
-deterministic algorithms are more sensitive to resource dynamism or workflow
-runtime uncertainty than non-deterministic algorithms. HEFT and L2FF provide
-more sensitive plans than GA and random. Further, sensitivity is proportional
-to the number of resources and inverse proportional to the number of workflows.
-Sensitivity to resource dynamism or workflow runtime uncertainty decreases as
-the number of workflows increase when using constant number of resources and
-increases when number of resources increases and campaign size is constant.
-When variation originates from workflow runtime uncertainty, both HEFT and
-L2FF were more sensitive than GA since they prioritize workflows based on
-their runtime estimation.
+Our analysis shows that there are three algorithmic properties which affect the
+performance and sensitivity of planning algorithms. The first property is
+whether the algorithm estimates resource availability. HEFT and GA estimate when
+resources are available and show better makespan performance on homogeneous and
+heterogeneous resources than L2FF and random. The second property is whether the
+algorithm uses a deterministic or randomized heuristic to place workflows on
+resources. GA shows performance similar to random plans when all workflows were
+initially placed randomly to resources. In addition, when using more than 128
+resources, GA-50 shows worse performance than L2Ff as it underutilized some of
+the resources. The third property is whether the algorithm creates a workflow
+priority list based on workflow runtime. HEFT and L2FF sort workflows based on
+their runtime, placing first the longer workflows on their lists. This priority
+list allows L2FF to place longer workflows to more performant resources and, as
+a result, L2Ff outperforms GA with more than \mtnote{add number of resources
+here} resources.
 
-Based on the properties of the campaign and resources users should select
-different planning algorithm to derive an execution plan. When resources are
-homogeneous, a planner like L2FF provides a plan with good makespan, is very
-simple to engineer and is not significantly more sensitive from algorithms
-like HEFT or GA. When resources are heterogeneous and the computational
-objective is to produce the best possible makespan, an algorithm which is
-deterministic, produces information about resource availability and creates a
-priority list, such as HEFT is a good candidate. If the objective of a
-campaign is to use a plan that is not very sensitive to resource dynamism or
-workflow runtime uncertainty, a non-deterministic algorithm, like a genetic
-algorithm, is a good candidate. Although a genetic algorithm may provide plans
-with worse makespan than an algorithm like HEFT, its plans are less sensitive
-to variations.
+Our analysis of the makespan sensitivity shows that deterministic algorithms are
+more sensitive to resource dynamism or workflow runtime uncertainty than
+non-deterministic algorithms. HEFT and L2FF provide more sensitive plans than GA
+and Random. Further, sensitivity is proportional to the number of resources and
+inverse proportional to the number of workflows. Sensitivity to resource
+dynamism or workflow runtime uncertainty: (1) decreases as the number of
+workflows increases and the number of resources is constant ; and (2) increases
+when number of resources increases and the number of workflows is constant. Both
+HEFT and L2FF are more sensitive to workflow runtime uncertainty than GA since
+they prioritize workflows based on their runtime estimation.
+
+We conclude that users should select different planning algorithms to derive an
+execution plan, depending on the properties of the campaign and resources. When
+resources are homogeneous, a planner like L2FF provides a plan with good
+makespan, is very simple to engineer and is not significantly more sensitive
+than algorithms like HEFT or GA. When resources are heterogeneous and the
+computational objective is to produce the best possible makespan, an
+deterministic algorithm like HEFT that derive information about resource
+availability and creates a priority list is a better candidate. If the objective
+of a campaign is to use a plan that is not very sensitive to resource dynamism
+or workflow runtime uncertainty, a non-deterministic algorithm like GA is a
+better candidate than the other two types of algorithms. Although GA may provide
+plans with worse makespan than an algorithm like HEFT, its plans are less
+sensitive to workflow runtime uncertainty.
 
 
 %% --------------------------------- OLD TEXT ----------------------------------
