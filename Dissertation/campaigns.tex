@@ -543,7 +543,7 @@ pseudocode for this algorithm.
     \end{algorithmic}
 \end{algorithm}
 
-The genetic algorithm \mtnote{GA?} has the following algorithmic characteristics:
+L2FF has the following algorithmic characteristics:
 \begin{inparaenum}[(1)]
     \item creates a priority list of workflows; and
     \item uses a deterministic heuristic.
@@ -585,9 +585,9 @@ heterogeneous otherwise. Resources are static when their performance does not
 change over runtime and dynamic when it does. When resources are homogeneous, we
 assume that their performance is equal to 1 petaFLOP. We use four existing HPC
 resources as the basis for generating heterogeneous resources. These resources
-are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera with peak
-performance of 1.3, 2.7, 10.6 and 23.5 petaFLOPS respectively. \mtnote{Do you
-have a reference that document their performance to add here?}
+are PSC Bridges, SDSC Comet, TACC Stampede2 and TACC Frontera with 
+performance of 1.3~\cite{bridges_perf}, 2.7~\cite{comet_perf}, 10.6~\cite{top500}
+and 23.5~\cite{top500} petaFLOPS respectively.
 
 Workflow execution runtime is based on the use case described
 in~\S\ref{ch:designs}. We measured the runtime of the use case by executing the
@@ -595,8 +595,7 @@ actual workflows on PSC Bridges. We adjusted the mean execution time and its
 variance to an resource with performance of 1 petaFLOP and obtained a mean
 runtime of 75000 seconds and a variance of 6000 seconds. For the purpose of our
 experiments, we assume that workflow runtimes of a campaign are drawn by a
-normal distribution with a mean and variance based on this use case. \mtnote{I
-edited this paragraph, please chek it.}
+normal distribution with a mean and variance based on this use case. 
 
 \subsection{Experiment 1: Measuring Makespan on Static Resources}
 
@@ -833,7 +832,7 @@ than GA and L2FF. HEFT places workflows on resources so that all resources are
 used for the least possible amount of time. As a result, a slow down on a
 resource will affect the makespan with HEFT more than that with GA and L2FF,
 which produce plans that overutilize some resources. Further, the sensitivity
-values \mtnote{with HEFT?} are significantly lower than those observed when
+values for all algorithms are significantly lower than those observed when
 homogeneous resources were used, as a potential slowdown on a performant
 resource will not significantly affect the makespan of the campaign. In
 addition, we see that: (1) makespan sensitivity decreases as the number of
@@ -916,8 +915,8 @@ resources.
 We expect sensitivity to workflow runtime estimation uncertainty to decrease as
 the number of workflows increases, and to increase as the number of resources
 decreases. As the number of workflows increases, more workflows are placed on a
-resource. As a result, on one hand it is more probable that an increase
-\mtnote{an increase of what?} due to a longer than expected workflow is hidden
+resource. As a result, on one hand it is more probable that a potential increase of
+the makespan due to a longer than expected workflow is hidden
 by other workflows than are shorter than expected. On the other hand, as the
 number of resources increases, fewer workflows are placed on each resource and a
 potentially larger workflow will have significant impact on the overall
