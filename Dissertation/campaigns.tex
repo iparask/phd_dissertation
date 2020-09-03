@@ -103,6 +103,7 @@ offers the two main contributions:
 
 \section{Related Work}
 \label{sec:camp_rw}
+
 Several methods compare and evaluate algorithms that calculate and optimize the
 makespan of a workflow~\cite{lu2019review}, including queuing
 networks~\cite{yao2019throughput,bao2019performance}, domain specific
@@ -367,9 +368,9 @@ The selected genetic algorithm~\cite{page2005algorithm} was developed to support
 the placement of independent tasks on heterogeneous resources. It assumes that
 all tasks that can be executed on all available resources, are independent and
 indivisible. These assumptions are consistent with the assumptions we made for
-the workflows in a campaign. We extend this algorithm to support scientific
-campaigns. The pseudocode of the selected genetic algorithm is shown in
-Algorithm~\ref{alg:gen_algo}.
+the workflows in a campaign and we therefore extend this algorithm to support
+scientific campaigns. The pseudocode of the selected genetic algorithm is shown
+in Algorithm~\ref{alg:gen_algo}.
 
 \begin{algorithm}[t]
     \caption{Genetic Algorithm}
@@ -388,7 +389,7 @@ Algorithm~\ref{alg:gen_algo}.
 \end{algorithm}
 
 The members of the initial population are constructed either randomly or
-semi-randomly. Specifically for each individual member of the population, 
+semi-randomly. Specifically for each individual member of the population,
 a percentage of the workflows are randomly assigned
 to resources, where the assignment is drawn from a uniform distribution and the
 rest of the workflows are assigned based on an earlier finish time (EFT)
@@ -434,25 +435,22 @@ Our genetic algorithm has the following characteristics:
 
 \subsubsection*{Genetic Algorithm Convergence Rate for Different Configurations}
 
-During the initialization phase of the genetic algorithm, we can select the percentage of 
-workflows that will be assigned through the EFT heuristic. This is true for every
-member of the genetic algorithm population.
-We expect that the percentage of non-random placement affects the plan produced 
-by the genetic algorithm. We execute an experiment to measure the convergence
-rate of the genetic algorithm when planning a campaign with homogeneous workflows
-on homogeneous resources.
-In this case, distributing equally the workflows on resources produces a plan with the
-ideal makespan as defined in Eq.~\ref{eq:ideal_fitness}.
+During the initialization phase of the genetic algorithm, we can select the
+percentage of workflows that will be assigned through the EFT heuristic. This is
+true for every member, i.e., plan, of the genetic algorithm population. We
+expect that the percentage of non-random placement affects the final plan
+selected by the genetic algorithm. We executed an experiment to measure the
+convergence rate of the genetic algorithm when planning a campaign with
+homogeneous workflows on homogeneous resources. In this case, distributing
+equally the workflows on resources produces a plan with the ideal makespan as
+defined in Eq.~\ref{eq:ideal_fitness}.
 
-We use three configurations of our genetic algorithm: GA, GA-25 and GA-50.
-These configurations differ by the percentage of workflows assigned non-randomly
-to resources during the initialization phase of the algorithms.
-GA assigns no workflows non-randomly to resources during the initialization of
-the population.
-GA-25 assigns 25\% of the workflows non-randomly and 75\% randomly to resources
-while initializing the population.
-Finally, GA-50 assigns 50\% of the workflows non-randomly and 50\% randomly to resources
-during the initialization of the population.
+We use three configurations of our genetic algorithm: GA, GA-25 and GA-50. These
+configurations differ by the percentage of workflows non-randomly assigned to
+resources during the initialization of the population. GA makes no random
+workflow assignment to resources while GA-25 assigns 25\% of the workflows
+non-randomly and 75\% randomly, and GA-50 assigns 50\% of the
+workflows non-randomly and 50\% randomly.
 
 %non-randomly assigned for each individual plan of the population \mtnote{That
 %sentence makes no sense: to what 'of the population' refers to? Percentage?}. We
@@ -461,21 +459,20 @@ during the initialization of the population.
 %implementations of our genetic algorithm: GA, GA-..., ..., .... Those
 %implementations differ by the percentange of ... etc.}.
 
-Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic
-algorithm as the number of workflows changes while the number of resources is
-constant. When the population is initialized randomly, GA does not always
-equally distribute workflows to resources, as the convergence rate is always
-less than 1. As a result, GA does not always produce a plan with the ideal
-makespan. On the contrary, GA-25 and GA-50 have a convergence rate of 1. 
-The convergence rate of GA-25 shows a drop for 8 and 16 workflows, but remains
-above 0.97 which allows us to conclude that GA-25 does produce plans with 
-the ideal makespan.
+Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic algorithm as
+the number of workflows changes while the number of resources is constant. When
+the population is initialized randomly, GA does not always equally distribute
+workflows to resources, as the convergence rate is always less than 1. As a
+result, GA does not always produce a plan with the ideal makespan. On the
+contrary, GA-25 and GA-50 have a convergence rate of 1. The convergence rate of
+GA-25 shows a drop for 8 and 16 workflows, but remains above 0.97 which allows
+us to conclude that GA-25 does produce plans with the ideal makespan.
 
-%Apart
-%from a small drop, GA-25 shows 8, 16 and 32 workflows \mtnote{what does 'showing
-%8, 16 and 32 workflows' mean?}. The drop is less than 0.03 \mtnote{what is the
-%unit of measure? 0.03 potatoes? ;)} which is not significant to conclude that
-%GA-25 does not produce plans with the ideal makespan.
+%Apart from a small drop, GA-25 shows 8, 16 and 32 workflows \mtnote{what does
+%'showing 8, 16 and 32 workflows' mean?}. The drop is less than 0.03
+%\mtnote{what is the unit of measure? 0.03 potatoes? ;)} which is not
+%significant to conclude that GA-25 does not produce plans with the ideal
+%makespan.
 
 \begin{figure*}[ht!]
     \centering
@@ -508,34 +505,29 @@ for 256 resources. The drop is due to the random initial placement of workflows
 on resources. As the number of resources increase, the probability for GA to
 place less than $N_{C} \ N_{R}$ workflows on a resource decreases.
 
-Based the convergence rate, we expect that GA will not provide on average a
-plan with the ideal makespan whether the campaign size or the number of
-resources changes. GA-25 will provide plans with the ideal makespan when the
-number of resources is less than 16, regardless the number of workflows.
-Finally, GA-50 will provide plans with ideal makespan up to 64 resources.
-
-\mtnote{Is ideal here synonim of optimal? If so, can we formally back up our
-    statements? Due to the issues with the first paragraph, I am not sure how to
-    interpret 25 and 50. Assuming that that is the percentage of non-random
-    something, does this mean that if we have 250 resoruces, genetic algorithms
-    would be useless? No, it does not mean that. It means that it is not able to 
-    equally distribute workflows on resources. I do not know what is the level of
-    unbalance, but I can try to find out.}
+Based the convergence rate, we expect that GA will not provide on average a plan
+with the ideal makespan whether the campaign size or the number of resources
+changes. GA-25 will provide plans with the ideal makespan when the number of
+resources is less than 16, regardless the number of workflows. Finally, GA-50
+will provide plans with ideal makespan up to 64 resources. Note that less than
+ideal plans may still be desirable compared to those produced by other
+algorithms.
 
 % -------------------------------------------------------------------
 \subsection{Longest to Fastest First Available Resource Algorithm}
 \label{algo:l2ff}
 
 The last algorithm we considered is an heuristics algorithm that places the
-largest workflow on the fastest first available resource
+longest workflow on the fastest first available resource
 (L2FF)~\cite{balasubramanian2019programming}. This algorithm sorts the workflows
 based on the number of operations or workflow runtime estimation, and sorts
 resources based on their performance. Then it places each workflow on the first
-fastest available resource. A resource is considered available when it has less
-or equal number of workflows than any other resource. When workflows and
-resources are sorted, the placement is equivalent to a modulo operation between
-the position of the workflow in the sorted list and the number of resources.
-Algorithm~\ref{alg:l2ff} show the pseudocode for this algorithm.
+fastest available resource, starting from the longest workflow. A resource is
+considered available when it has less or equal number of workflows than any
+other resource. When workflows and resources are sorted, the placement is
+equivalent to a modulo operation between the position of the workflow in the
+sorted list and the number of resources. Algorithm~\ref{alg:l2ff} show the
+pseudocode for this algorithm.
 
 \begin{algorithm}[ht]
     \caption{Longest to Fastest First (L2FF)}
@@ -557,11 +549,11 @@ The genetic algorithm \mtnote{GA?} has the following algorithmic characteristics
     \item uses a deterministic heuristic.
 \end{inparaenum}
 Contrary to HEFT and GA, L2FF does not produce an expectation of when a resource
-is available because it does not require to input an estimate of the runtime of
-each workflow. This reduces considerably the burden on the user and has the
-potential to simplify the design and implementation of the campaign manager.
-Depending on its performance, it may therefore be the preferable option to
-adopt.
+is available because it does not calculate when each resource will be available
+based on the duration on the workflow that is executed on that resource. This
+reduces considerably the burden on the user and has the potential to simplify
+the design and implementation of the campaign manager. Depending on its
+performance, it may therefore be the preferable option to adopt.
 
 % -------------------------------------------------------------------
 \section{Performance Evaluation of Planning Algorithms}
@@ -896,45 +888,44 @@ heterogeneous.
 \subsection{Experiment 3: Sensitivity of Makespan to Workflow Runtime Estimation Uncertainty}
 
 All selected algorithms, HEFT, GA and L2FF, require an estimation about the
-runtime of each workflow of the campaign. Users usually offer this information
-as a range of values drawn by empirical data and as a result providing a
-single value to the algorithms creates a level of uncertainty in the workflow
-runtime estimation. This uncertainty has the potential to affect the makespan
-of the campaign, as the runtime estimation is used to either rank workflows or
-produce information of workflows runtime on resources. Similarly to experiment
-2, we want to understand how different levels of uncertainty affect the
-makespan of the plans produced by HEFT, GA and L2FF
+runtime of each workflow of the campaign. Users usually derive this information
+from empirical data, creating uncertainty in the workflow runtime estimation.
+This uncertainty has the potential to affect the makespan of the campaign, as
+the runtime estimation is used to either derive information about workflows
+runtime on resources (HEFT and GA) or rank workflows (L2FF). Similarly to
+experiment 2, we want to understand how different levels of uncertainty affect
+the makespan of the plans produced by HEFT, GA and L2FF
 
 We introduce workflow runtime estimation uncertainty as the difference between
 the estimated and actual runtime of a workflow on a 1 petaFLOP resource.
-Specifically, we denote as $u$ the level of uncertainty between $[0,1)$, $u'$
-the uncertainty for a workflow drawn randomly from the range $[-u,u]$ and
+Specifically, we denote as $u$ the level of uncertainty between $[0,1]$, $u'$
+the uncertainty for a workflow drawn randomly from the range $[-u,u]$, and
 $Tx_{w}$ the mean estimated runtime of a workflow. Thus, the actual runtime of
-a workflow is $Tx_{w'}$ is $ Tx_{w'} = Tx_{w} \times (1-u')$.
+a workflow is $ Tx_{w'} = Tx_{w} \times (1-u')$.
 
-In this experiment, we measure the sensitivity of makespan, as defined in
+In experiment 3, we measure the sensitivity of makespan, as defined in
 experiment 2, to workflow runtime estimation uncertainty for level of
 uncertainty from 10~\% to 50~\%. As all algorithms produce similar plans on
-homogeneous resources, exposing the plans to the same variation should show
-the same effect, regardless the algorithm used. This is supported by the fact
-that we measure the sensitivity after the execution of a campaign and compare
-it with the expected makespan produced by the plan. As a result, we show only
-the results for heterogeneous workflows executing on heterogeneous resources.
+homogeneous resources, exposing the plans to the same variation should show the
+same effect, regardless of the used algorithm. This is supported by the fact
+that we measure the sensitivity after the execution of a campaign, and compare
+it to the expected makespan produced by the plan. Accordingly, we limit
+experiment 3 onlt to heterogeneous workflows executing on heterogeneous
+resources.
 
-We expect sensitivity to workflow runtime estimation uncertainty to decrease
-as the number of workflows increase and increase as the number of resources
-decrease. As the number of workflows  increase, more workflows are placed on a
-resource. As a result, it is more probable that an increase due to a longer
-than expected workflow is hidden by other workflows than are shorter than
-expected. On the other hand, as the number of resources increase, less
-workflows are placed on each resource and a potentially larger workflow will
-have significant impact on the overall makespan. This is especially true when
-heterogeneous resources are used and a long workflow is placed on a less
-performant resource. Figure~\ref{fig:inaccur_st} shows the results with
-figure~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens} varying the
-number of workflows
-and~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens} varying the
-number of resources.
+We expect sensitivity to workflow runtime estimation uncertainty to decrease as
+the number of workflows increases, and to increase as the number of resources
+decreases. As the number of workflows increases, more workflows are placed on a
+resource. As a result, on one hand it is more probable that an increase
+\mtnote{an increase of what?} due to a longer than expected workflow is hidden
+by other workflows than are shorter than expected. On the other hand, as the
+number of resources increases, fewer workflows are placed on each resource and a
+potentially larger workflow will have significant impact on the overall
+makespan. This is especially true when heterogeneous resources are used and a
+long workflow is placed on a less performant resource.
+Figure~\ref{fig:inaccur_st} shows the results of experiment 3 with varying
+number of workflows (figure~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens}) and
+varying number of resources (\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens}).
 
 \begin{figure}[ht!]
     \centering
@@ -949,8 +940,12 @@ number of resources.
         \caption{}
         \label{fig:InaccurStHeteroResources_StHeteroCampaignsSens}
     \end{subfigure}
-    \caption{~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens} Makespan sensitivity for different levels of uncertainty and different number of workflows on 4 heterogeneous resources;
-    ~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens} Makespan sensitivity for different levels of uncertainty and different number of resources for 1024 workflows static resources.}
+    \caption{~\ref{fig:InaccurStHeteroCampaigns_4StHeteroResourcesSens} Makespan
+    sensitivity for different levels of uncertainty and different number of
+    workflows on 4 heterogeneous resources;
+    \ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens} Makespan
+    sensitivity for different levels of uncertainty and different number of
+    resources for 1024 workflows static resources.}
     \label{fig:inaccur_st}
 \end{figure}
 
@@ -960,50 +955,48 @@ number of workflows increase
 as the number of resources increase
 (Fig.~\ref{fig:InaccurStHeteroResources_StHeteroCampaignsSens}). This result,
 along with experiment 2, let us to conclude that as the average number of
-workflows per resource increase, the sensitivity value will decrease.
+workflows per resource increases, the sensitivity value will decrease.
 
 Sensitivity to makespan runtime uncertainty shows a wide range of values for
-HEFT and L2FF, but significantly smaller range for GA and random.
+HEFT and L2FF, but a significantly smaller range for GA and Random.
 Specifically, the sensitivity of plans using HEFT is between almost 0~\% for
-2048 workflows on 4 resource and 25~\% for 1024 workflows on 256 resources.
-The sensitivity of plans using L2FF show similar range with using HEFT, with
-L2FF reaching 35~\% for 1024 workflows on 256 resources. GA plans show
-increased sensitivity for small number of workflows when the number of
-resources is constant, around 13~\%, and quickly drop close to 0~\%. HEFT
-ranks and L2FF sorts the workflows based on runtime information, while GA and
-Random dot not use runtime information in this fashion. When the runtime
-information is uncertain, any type of ordering will not necessarily be correct
-as the runtime estimation is not the same as the actual runtime. As a result,
-the plans produced by HEFT and L2FF are not the ones they would have produced
-if the information used did not affect the order of the workflows. Since GA
-utilizes such information for half of the workflows, while the other half is
-placed on resources randomly, it is less sensitive to workflow runtime
-uncertainty
+2048 workflows on 4 resource and 25~\% for 1024 workflows on 256 resources. The
+sensitivity of plans using L2FF show a similar range to the one seen when using
+HEFT, with L2FF reaching 35~\% for 1024 workflows on 256 resources. GA plans
+show increased sensitivity for a small number of workflows when the number of
+resources is constant ($\approx$13~\%), and quickly drop close to 0~\%.
 
-HEFT shows higher sensitivity than GA and L2FF above 128 workflows/4 resources
-and when the number of resources change and the campaign size is 1024
-workflows. In addition, we see higher sensitivity for plans that use HEFT and
-L2FF than plans that use GA when the number of resources increase. Both HEFT
-and L2FF create priority lists for the workflows and GA does not. As a result,
-HEFT and L2FF place large workflows on less performant resources. GA does not
-prioritize workflows and places a subset of workflows to resources randomly. As
-a consequence, the random order of the workflows with the random placement
-reduces the effect of the workflow runtime uncertainty.
+HEFT ranks and L2FF sorts all the workflows based on runtime information, while
+GA uses that information only to map 50\% of the workflows of each plan to
+resources, for each generation. When the runtime information is uncertain, any
+type of ordering will not necessarily be correct as the runtime estimation is
+not the same as the actual runtime. Since GA utilizes such information for half
+of the workflows at every generation, while the other half is placed on
+resources randomly, GA is less sensitive to workflow runtime uncertainty than
+HEFT and L2FF.
 
-This experiment studies how sensitive are HEFT-, GA- and L2FF-based plans when
-the workflow runtime estimation is uncertain. Algorithms that prioritize
-workflows, HEFT and L2FF, tend to be more sensitive to workflow runtime
-estimation uncertainty than algorithms that do not create a priority list,
-such as GA and random. Workflow runtime uncertainty affects can make the order
-HEFT and L2FF decided invalid and as a result they may place a potentially
-long workflow to a less performant resource. HEFT and L2FF are more sensitive
-than GA and random when the number of resources increase---25~\% and 35~\%
-compared to less than 10~\% for 1024 workflows and 256 resources. Further, all
-algorithms show similar sensitivity when the number of workflows increase. In
-addition, sensitivity remains proportional to the number of resources and
-inverse proportional to the number of workflows. This in conjunction with
-experiment 2 allows us to conclude that the sensitivity slope is independent
-of the type of uncertainty.
+HEFT shows higher sensitivity than GA and L2FF above 128 workflows and 4
+resources, and when the number of resources changes with 1024 workflows. In
+addition, we see higher sensitivity for plans that use HEFT and L2FF than plans
+that use GA when the number of resources increases. Both HEFT and L2FF create
+priority lists for the workflows and GA does not. As a result, HEFT and L2FF
+place large workflows on less performant resources. GA does not prioritize
+workflows and places a subset of workflows to resources randomly. As a
+consequence, the random order of the workflows with the random placement reduces
+the effect of the workflow runtime uncertainty.
+
+We conclude that algorithms like HEFT and L2FF that prioritize workflows tend to
+be more sensitive to workflow runtime estimation uncertainty than algorithms
+that do not create a priority list, such as GA and Random. Workflow runtime
+uncertainty can make the order decided by HEFT and L2FF invalid and, as a
+result, long workflow may be placed on less performant resource, increasing
+makespan. HEFT and L2FF are more sensitive than GA and random when the number of
+resources increases: 25~\% and 35~\% compared to less than 10~\% for 1024
+workflows and 256 resources. Further, all algorithms show similar sensitivity
+when the number of workflows increases. Sensitivity remains proportional to the
+number of resources and inverse proportional to the number of workflows. This,
+in conjunction to the results of experiment 2, allows us to conclude that the
+sensitivity slope is independent of the type of uncertainty.
 
 \section{Conclusions}
 \label{sec:cf_algo_sel}
