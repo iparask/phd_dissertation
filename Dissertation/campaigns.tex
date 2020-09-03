@@ -388,7 +388,8 @@ Algorithm~\ref{alg:gen_algo}.
 \end{algorithm}
 
 The members of the initial population are constructed either randomly or
-semi-randomly. Specifically, a percentage of the workflows are randomly assigned
+semi-randomly. Specifically for each individual member of the population, 
+a percentage of the workflows are randomly assigned
 to resources, where the assignment is drawn from a uniform distribution and the
 rest of the workflows are assigned based on an earlier finish time (EFT)
 heuristic, similar to the one used by HEFT. The size of the population, i.e.,
@@ -433,25 +434,48 @@ Our genetic algorithm has the following characteristics:
 
 \subsubsection*{Genetic Algorithm Convergence Rate for Different Configurations}
 
-Our genetic algorithm allows us to select the percentage of the workflows
-non-randomly assigned for each individual plan of the population \mtnote{That
-sentence makes no sense: to what 'of the population' refers to? Percentage?}. We
-use 0~\% (GA), 25~\% (GA-25) and 50~\% (GA-50) \mtnote{This makes no sense too:
-percentage of what? And what is a GA? You are missing two sentences: We use four
-implementations of our genetic algorithm: GA, GA-..., ..., .... Those
-implementations differ by the percentange of ... etc.}.
+During the initialization phase of the genetic algorithm, we can select the percentage of 
+workflows that will be assigned through the EFT heuristic. This is true for every
+member of the genetic algorithm population.
+We expect that the percentage of non-random placement affects the plan produced 
+by the genetic algorithm. We execute an experiment to measure the convergence
+rate of the genetic algorithm when planning a campaign with homogeneous workflows
+on homogeneous resources.
+In this case, distributing equally the workflows on resources produces a plan with the
+ideal makespan as defined in Eq.~\ref{eq:ideal_fitness}.
 
-The percentage of non-random placement affects the plan produced by the genetic
-algorithm. Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic
+We use three configurations of our genetic algorithm: GA, GA-25 and GA-50.
+These configurations differ by the percentage of workflows assigned non-randomly
+to resources during the initialization phase of the algorithms.
+GA assigns no workflows non-randomly to resources during the initialization of
+the population.
+GA-25 assigns 25\% of the workflows non-randomly and 75\% randomly to resources
+while initializing the population.
+Finally, GA-50 assigns 50\% of the workflows non-randomly and 50\% randomly to resources
+during the initialization of the population.
+
+%non-randomly assigned for each individual plan of the population \mtnote{That
+%sentence makes no sense: to what 'of the population' refers to? Percentage?}. We
+%use 0~\% (GA), 25~\% (GA-25) and 50~\% (GA-50) \mtnote{This makes no sense too:
+%percentage of what? And what is a GA? You are missing two sentences: We use four
+%implementations of our genetic algorithm: GA, GA-..., ..., .... Those
+%implementations differ by the percentange of ... etc.}.
+
+Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic
 algorithm as the number of workflows changes while the number of resources is
 constant. When the population is initialized randomly, GA does not always
 equally distribute workflows to resources, as the convergence rate is always
 less than 1. As a result, GA does not always produce a plan with the ideal
-makespan. On the contrary, GA-25 and GA-50 have a convergence rate of 1. Apart
-from a small drop, GA-25 shows 8, 16 and 32 workflows \mtnote{what does 'showing
-8, 16 and 32 workflows' mean?}. The drop is less than 0.03 \mtnote{what is the
-unit of measure? 0.03 potatoes? ;)} which is not significant to conclude that
-GA-25 does not produce plans with the ideal makespan.
+makespan. On the contrary, GA-25 and GA-50 have a convergence rate of 1. 
+The convergence rate of GA-25 shows a drop for 8 and 16 workflows, but remains
+above 0.97 which allows us to conclude that GA-25 does produce plans with 
+the ideal makespan.
+
+%Apart
+%from a small drop, GA-25 shows 8, 16 and 32 workflows \mtnote{what does 'showing
+%8, 16 and 32 workflows' mean?}. The drop is less than 0.03 \mtnote{what is the
+%unit of measure? 0.03 potatoes? ;)} which is not significant to conclude that
+%GA-25 does not produce plans with the ideal makespan.
 
 \begin{figure*}[ht!]
     \centering
@@ -478,7 +502,7 @@ Figure~\ref{fig:ga_conv2} shows the convergence rate of the genetic algorithm as
 the number of resources changes while the number of workflows is constant. When
 the population is randomly initialized, the genetic algorithm does not produce a
 plan that has the ideal makespan. The convergence rate of GA-25 is 1 up to 16
-resource and drops to 0 for more than 32 resources. GA-50 convergence rate is 1
+resources and drops to 0 for more than 32 resources. GA-50 convergence rate is 1
 up to 64 resources and drops to less than 0.2 for 128 resources and equal to 0
 for 256 resources. The drop is due to the random initial placement of workflows
 on resources. As the number of resources increase, the probability for GA to
@@ -494,7 +518,9 @@ Finally, GA-50 will provide plans with ideal makespan up to 64 resources.
     statements? Due to the issues with the first paragraph, I am not sure how to
     interpret 25 and 50. Assuming that that is the percentage of non-random
     something, does this mean that if we have 250 resoruces, genetic algorithms
-    would be useless?}
+    would be useless? No, it does not mean that. It means that it is not able to 
+    equally distribute workflows on resources. I do not know what is the level of
+    unbalance, but I can try to find out.}
 
 % -------------------------------------------------------------------
 \subsection{Longest to Fastest First Available Resource Algorithm}
