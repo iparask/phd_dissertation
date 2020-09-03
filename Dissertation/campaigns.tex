@@ -289,7 +289,7 @@ scheduling algorithm~\cite{dong2006scheduling} and calculates the makespan of a
 workflow on heterogeneous resources to produce its plan.
 
 Pegasus~\cite{deelman2015pegasus} and ASKALON~\cite{fahringer2005askalon}
-utilize HEFT to derive workflow execution plans amongst other algoirthms, such 
+utilize HEFT to derive workflow execution plans amongst other algoirthms, such
 as Round Robin, a genetic algorithm and a myopic algorithm. HEFT
 has been shown to provide better performance in terms of makespan minimization
 compared to other mapping
@@ -347,11 +347,11 @@ it earlier. HEFT ends when all workflows are placed on a resource.
 \subsection{Genetic Algorithm}
 \label{algo:gen}
 
-Genetic algorithms represent another family of algorithms that can be  used to
+Genetic algorithms are another family of algorithms that can be  used to
 calculate the makespan of workflows~\cite{dong2006scheduling}. Genetic
-algorithms start from an initial set of possible solutions, iterate and
-improve them at every iteration. In general, genetic algorithms follow the
-following procedure:
+algorithms start from an initial set of possible solutions, and iterate and
+improve them across multiple iteration. In our case, genetic algorithms follow
+the following procedure:
 \begin{inparaenum}[(i)]
     \item create an initial population, where the population is a set of
     possible plans;
@@ -363,13 +363,13 @@ following procedure:
     member are reassigned to resources.
 \end{inparaenum}
 
-The selected genetic algorithm~\cite{page2005algorithm} was developed to
-support the placement of independent tasks on heterogeneous resources. It
-assumes that all tasks can be executed on all available resources, are
-independent and indivisible. These assumptions are in accordance with the
-assumptions made for workflows in a campaign. We extend this algorithm can be
-extended to support scientific campaigns. The pseudocode of the selected
-genetic algorithm is shown in Algorithm~\ref{alg:gen_algo}.
+The selected genetic algorithm~\cite{page2005algorithm} was developed to support
+the placement of independent tasks on heterogeneous resources. It assumes that
+all tasks that can be executed on all available resources, are independent and
+indivisible. These assumptions are consistent with the assumptions we made for
+the workflows in a campaign. We extend this algorithm to support scientific
+campaigns. The pseudocode of the selected genetic algorithm is shown in
+Algorithm~\ref{alg:gen_algo}.
 
 \begin{algorithm}[t]
     \caption{Genetic Algorithm}
@@ -388,61 +388,70 @@ genetic algorithm is shown in Algorithm~\ref{alg:gen_algo}.
 \end{algorithm}
 
 The members of the initial population are constructed either randomly or
-semi-randomly. Specifically, a percentage of the workflows are assigned
-randomly to resources, where the assignment is drawn by uniform distribution
-and the rest of the workflows are assigned based on an earlier finish time
-(EFT) heuristic, similar to the one used by HEFT. The population size is
-relatively small to 20 members, i.e., potential plans, called micro-GA.
-Micro-GA has been shown to reduce the computational load of the genetic
-algorithm and not significantly impact the final
-result~\cite{zomaya2001observations}.
+semi-randomly. Specifically, a percentage of the workflows are randomly assigned
+to resources, where the assignment is drawn from a uniform distribution and the
+rest of the workflows are assigned based on an earlier finish time (EFT)
+heuristic, similar to the one used by HEFT. The size of the population, i.e.,
+potential plans, is set to 20 members. Ref.~\cite{zomaya2001observations} shown
+that a population size of 20 members reduces the computational load of the
+genetic algorithm without significantly impacting the final result.
 
-The genetic algorithm uses a fitness function to calculate the goodness, or
-fitness, of a population member or plan, returning a value between 0 and 1.
-The fitness function calculates the distance of the makespan of a plan from
-the ideal makespan. This distance is defined as:
+Genetic algorithms use a fitness function to calculate the fitness of a
+population member to its environment, returning a value between 0 and 1. In our
+case, the fitness function calculates the distance of the makespan of a plan
+from the ideal makespan. This distance is defined as:
 \begin{equation}
 E = \sqrt{(\sum_{j=1}^{N_{C}}Tx_{w_{j},r_{j}} - IM)^2}
 \label{eq:fitness}
 \end{equation}
 where $N_{C}$ is the number of workflows and $IM$ is the ideal makespan. The
-ideal makespan is equal to
+ideal makespan is equal to:
 \begin{equation}
 IM = \frac{\sum_{i=1}^{N_{C}}Tx_{w_{i}}}{\sum_{j=1}^{N_{R}}r_{j}}
 \label{eq:ideal_fitness}
 \end{equation}
-The fitness of a plan is the equal to $F = 1 /E$ when $E > 0$, otherwise to 1.
+The fitness of a plan is the equal to $F = 1/E$ when $E > 0$, otherwise to $F =
+1$.
 
-The algorithm selects members to reproduce based on their fitness values. Each
-member fitness value defines the probability of that member to be selected.
-When the selection is complete the algorithm uses cyclic
-rotation~\cite{oliver1987study} to generate new population members and
-replaces those with the lowest fitness. After a population member is selected
-randomly and two random workflows swap, completing the mutation step. The
-algorithm stops evolving either when a member has fitness equal to 1 or after
-a specified number of iterations.
+The algorithm selects members to reproduce based on their fitness values. The
+fitness value of each member defines the probability of that member to be
+selected. When the selection is complete, the algorithm uses cyclic
+rotation~\cite{oliver1987study} to generate new population members and replaces
+those with the lowest fitness.
+% After, a population member is randomly selected and two random workflows swap
+% \mtnote{workflows appear out of the blue. }, completing the mutation step.
+The algorithm stops evolving either when a member has fitness equal to 1 or
+after a specified number of iterations.
 
-The genetic algorithm has the following algorithmic characteristics:
-\begin{inparaenum}[1)]
-    \item creates partial plans randomly,
-    \item produces an expectation of when resources are available,
-    \item evolves plans randomly and
+Our genetic algorithm has the following characteristics:
+\begin{inparaenum}[(1)]
+    \item creates partial plans randomly;
+    \item produces an expectation of when resources are available;
+    \item evolves plans randomly; and
     \item terminates based on a convergence criteria
 \end{inparaenum}
 
-\subsubsection*{GA Convergence Rate for Different Configurations}
-The genetic algorithm allows us to select the percentage of the workflows
-assigned non-randomly for each individual plan of the population. We use 0~\%
-(GA), 25~\% (GA-25) and 50~\% (GA-50). The percentage of non-random placement
-affects the plan the genetic algorithm produces. Figure~\ref{fig:ga_conv1}
-shows the convergence rate of the genetic algorithm as the number of workflows
-changes while the number of resources is constant. When the population is
-initialized randomly, GA does not always equally distribute workflows to
-resources, as the convergence rate is always less than 1. As a result, GA does
-not always produce a plan with the ideal makespan. Contrary, GA-25 and GA-50
-have a convergence rate of 1, apart from a small drop GA-25 shows 8, 16 and 32
-workflows. The drop is less than 0.03 which is not significant to conclude
-that GA-25 does not produce plans with the ideal makespan.
+\subsubsection*{Genetic Algorithm Convergence Rate for Different Configurations}
+
+Our genetic algorithm allows us to select the percentage of the workflows
+non-randomly assigned for each individual plan of the population \mtnote{That
+sentence makes no sense: to what 'of the population' refers to? Percentage?}. We
+use 0~\% (GA), 25~\% (GA-25) and 50~\% (GA-50) \mtnote{This makes no sense too:
+percentage of what? And what is a GA? You are missing two sentences: We use four
+implementations of our genetic algorithm: GA, GA-..., ..., .... Those
+implementations differ by the percentange of ... etc.}.
+
+The percentage of non-random placement affects the plan produced by the genetic
+algorithm. Figure~\ref{fig:ga_conv1} shows the convergence rate of the genetic
+algorithm as the number of workflows changes while the number of resources is
+constant. When the population is initialized randomly, GA does not always
+equally distribute workflows to resources, as the convergence rate is always
+less than 1. As a result, GA does not always produce a plan with the ideal
+makespan. On the contrary, GA-25 and GA-50 have a convergence rate of 1. Apart
+from a small drop, GA-25 shows 8, 16 and 32 workflows \mtnote{what does 'showing
+8, 16 and 32 workflows' mean?}. The drop is less than 0.03 \mtnote{what is the
+unit of measure? 0.03 potatoes? ;)} which is not significant to conclude that
+GA-25 does not produce plans with the ideal makespan.
 
 \begin{figure*}[ht!]
     \centering
@@ -457,26 +466,35 @@ that GA-25 does not produce plans with the ideal makespan.
         \caption{}
         \label{fig:ga_conv2}
     \end{subfigure}
-    \caption{Convergence rate of Genetic algorithm for homogeneous campaigns on static homogeneous resources based on random initialization percentage: ~\ref{fig:ga_conv1}) Different campaign sizes on 4 resources;~\ref{fig:ga_conv2}) Campaign with 1024 workflows and different number of resources.}
+    \caption{Convergence rate of Genetic algorithm for homogeneous campaigns on
+    static homogeneous resources based on random initialization
+    percentage. \ref{fig:ga_conv1}) Different campaign sizes on 4
+    resources;~\ref{fig:ga_conv2}) Campaign with 1024 workflows and different
+    number of resources.}
     \label{fig:conv_rate}
 \end{figure*}
 
-Figure~\ref{fig:ga_conv2} shows the convergence rate of the genetic algorithm
-as the number of resources changes while the number of workflows is constant.
-When the population is initialized randomly, the genetic algorithm does not
-produce a plan that has the ideal makespan. The convergence rate of GA-25 is 1
-up to 16 resource and drops to 0 for more than 32 resources. GA-50 convergence
-rate is 1 up to 64 resources and drops to less than 0.2 for 128 resources and
-equal to 0 for 256 resources. The drop is due to the random initial placement
-of workflows on resources. As the number of resources increase, the
-probability for GA to place less than $ N_{C} \ N_{R} $ workflows on a
-resource decreases.
+Figure~\ref{fig:ga_conv2} shows the convergence rate of the genetic algorithm as
+the number of resources changes while the number of workflows is constant. When
+the population is randomly initialized, the genetic algorithm does not produce a
+plan that has the ideal makespan. The convergence rate of GA-25 is 1 up to 16
+resource and drops to 0 for more than 32 resources. GA-50 convergence rate is 1
+up to 64 resources and drops to less than 0.2 for 128 resources and equal to 0
+for 256 resources. The drop is due to the random initial placement of workflows
+on resources. As the number of resources increase, the probability for GA to
+place less than $N_{C} \ N_{R}$ workflows on a resource decreases.
 
 Based the convergence rate, we expect that GA will not provide on average a
 plan with the ideal makespan whether the campaign size or the number of
 resources changes. GA-25 will provide plans with the ideal makespan when the
-number of resources is less than 16 regardless the number of workflows.
+number of resources is less than 16, regardless the number of workflows.
 Finally, GA-50 will provide plans with ideal makespan up to 64 resources.
+
+\mtnote{Is ideal here synonim of optimal? If so, can we formally back up our
+    statements? Due to the issues with the first paragraph, I am not sure how to
+    interpret 25 and 50. Assuming that that is the percentage of non-random
+    something, does this mean that if we have 250 resoruces, genetic algorithms
+    would be useless?}
 
 % -------------------------------------------------------------------
 \subsection{Longest to Fastest First Available Resource Algorithm}
