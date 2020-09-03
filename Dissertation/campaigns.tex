@@ -1013,15 +1013,14 @@ whether the algorithm estimates resource availability. HEFT and GA estimate when
 resources are available and show better makespan performance on homogeneous and
 heterogeneous resources than L2FF and random. The second property is whether the
 algorithm uses a deterministic or randomized heuristic to place workflows on
-resources. GA shows performance similar to random plans when all workflows were
-initially placed randomly to resources. In addition, when using more than 128
-resources, GA-50 shows worse performance than L2Ff as it underutilized some of
-the resources. The third property is whether the algorithm creates a workflow
-priority list based on workflow runtime. HEFT and L2FF sort workflows based on
-their runtime, placing first the longer workflows on their lists. This priority
-list allows L2FF to place longer workflows to more performant resources and, as
-a result, L2Ff outperforms GA with more than \mtnote{add number of resources
-here} resources.
+resources. GA does not produce a plan that equally distributes workflows on resources
+when all workflows were initially placed randomly to resources. In addition, when 
+using more than 128 resources, GA shows worse performance than L2Ff as it 
+underutilized some of the resources. The third property is whether the algorithm creates
+a workflow priority list based on workflow runtime. HEFT and L2FF sort workflows based
+on their runtime, placing first the longer workflows on their lists. This priority list allows
+L2FF to place longer workflows to more performant resources and, as a result, L2Ff
+outperforms GA with more than 128 resources.
 
 Our analysis of the makespan sensitivity shows that deterministic algorithms are
 more sensitive to resource dynamism or workflow runtime uncertainty than
