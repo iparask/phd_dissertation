@@ -7,46 +7,62 @@ needed to efficiently and effectively execute computational campaigns on HPC
 resources. Further, we provide the computational tools, methodologies and
 experimental understanding needed to design a software manager to plan and
 execute computational campaigns on high performance computing (HPC) platforms.
-% This enables scientists to remove themselves from monitoring and executing a
-% campaign and focus more on scientific innovations. This research make the
-% following contributions.
 
 \section{Contributions}
 
 %% Chapter 2
-Data-intensive workflows have different characteristics from compute-based
-workflows which are at the epicenter of scientific computing that utilizes HPC
-resources\mtnote{That sentence is compressed: you want to express at least three
-concepts with it: data- vs compute-intensive workflows; growing role of the
-former on HPC; different requirements of data-intensive workflows on HPC.}. As
-data-intensive workflows and applications are not well supported on HPC, we
+Computational campaigns on HPC resources can execute compute- or data-
+intensive workflows. Compute-intensive workflows are at the epicenter of
+scientific computing that utilizes HPC and are the net producers of an 
+immense amount of data. Compute intensive workflows execute either a 
+single long running executable or an ensemble of compute-intensive 
+tasks~\cite{balasubramanian2018harnessing}. As the need for analyzing
+data on HPC resources increases, the efficient and effective execution of 
+data-intensive workflows on HPC becomes important. Contrary to 
+compute-intensive, data-intensive workflows execute a large number of 
+short-running tasks in multiple stages which can be I/O, memory and
+compute bound.
+
+%\mtnote{That sentence is compressed: you want to express at least three
+%concepts with it: data- vs compute-intensive workflows; growing role of the
+%former on HPC; different requirements of data-intensive workflows on HPC.}. 
+As data-intensive workflows and applications are not well supported on HPC, we
 motivated the use of the Pilot-Abstraction as an integrating concept between HPC
-and data analytics. As a result, we extended RADICAL-Pilot, an implementation of
-the Pilot-Abstraction, to support Hadoop and Spark on HPC resources. Through our
-analysis, we showed that the Pilot-Abstraction increases HPC resources
-utilization in conjunction with emerging data analytics frameworks.
-\mtnote{Please reference explicitly the chapter/section where you made the
-contributions you are listing here.}
+and data analytics in chapter~\ref{ch:pilot-data-hadoop}. As a result, we extended 
+RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop and Spark 
+on HPC resources ( see \S~\ref{sec:integration_mode}). Through our analysis in 
+\S~\ref{ssec:kmeans}, we showed that the RP-YARN reduces the time to completion of a data-intensive workflow. Thus, the Pilot-Abstraction increases HPC resources utilization in conjunction with emerging data analytics frameworks.
 
 %% Chapter 3
 Data analytics frameworks offer different abstractions and capabilities and
 selecting a suitable framework is necessary to increase resource
-utilization.\mtnote{Only resource utilization? Is it more general? Something
-like: "to minimize development effort, adapt the programming model to the
-application requirement and maximize resource utilization"?} We investigated the
+utilization and reduce the development effort.
+%\mtnote{Only resource utilization? Is it more general? Something
+%like: "to minimize development effort, adapt the programming model to the
+%application requirement and maximize resource utilization"?} 
+To this extend in chapter~\ref{ch:task-par}, we investigated the
 use of three task-parallel frameworks---Spark, Dask and RADICAL-Pilot---to
-implement a range of algorithms for MD trajectory analysis. We found that, for
-embarrassingly parallel applications with coarse grained-tasks, the framework
-selection does not affect the performance. For fine-grained data-parallel
-applications, a data-parallel framework is more suitable, with Spark offering
-linear speedups. Based on our analysis, we provide a conceptual framework that
-enables application developers to evaluate task parallel frameworks with respect
-to application requirements.\mtnote{Add references as suggested above but, more
-in general, I would like to see more structure. You have two types of
-contriubtions: performance (quantitative) and a mix of usability/programmability
-(qualitative). I do not remember well, but reading the chapter those
-contribution were clearly separated. I would make this distinction explicit here
-too and organize the paragraph around it.}
+implement a range of algorithms for MD trajectory analysis.
+We found that, for embarrassingly parallel applications with coarse 
+grained-tasks, the framework selection does not affect the performance.
+As shown in \S~\ref{sec:psa}, all three frameworks showed similar
+performance and speedups. For fine-grained data-parallel applications, a 
+data-parallel framework is more suitable. \S~\ref{sec:leaflet} shows our
+investigation of a MapReduce style algorithm. Spark and Dask showed better
+performance than RADICAL-Pilot, with Spark offering linear speedups.
+In addition, we found that, although the data-parallel frameworks offered
+abstractions to implement the use cases, we had to fine tune the applications
+manually to reach the achieved speedups. 
+Based on our analysis, we provide a conceptual framework, in 
+\S~\ref{sec:task_sel_model}, that enables application developers to 
+evaluate and select task parallel frameworks with respect to application 
+requirements. 
+%\mtnote{Add references as suggested above but, more
+%in general, I would like to see more structure. You have two types of
+%contributions: performance (quantitative) and a mix of usability/programmability
+%(qualitative). I do not remember well, but reading the chapter those
+%contribution were clearly separated. I would make this distinction explicit here
+%too and organize the paragraph around it.}
 
 %% Chapter 4
 Some data-analysis workflows and applications are both data- and
