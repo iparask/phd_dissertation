@@ -1,5 +1,4 @@
 % !TEX root = main.tex
-\label{ch:pilot-data-hadoop}
 
 Computational campaigns on High Performance Computing (HPC) resources can
 execute compute- or data- intensive workflows and applications. On one hand,
@@ -196,8 +195,8 @@ cloud environments (e.g., Amazon's Elastic MapReduce) and an emerging class of
 HPC machines with new architectures and usage modes, such as
 Wrangler~\cite{wrangler}, that support Hadoop natively. For example, Wrangler
 supports dedicated Hadoop environments (based on Cloudera Hadoop 5.3) via a
-reservation mechanism. Using these new capabilities, applications can seamlessly 
-connect HPC stages (e.g., simulation stages) with analysis stages, using the 
+reservation mechanism. Using these new capabilities, applications can seamlessly
+connect HPC stages (e.g., simulation stages) with analysis stages, using the
 Pilot-Abstraction to provide unified resource management.
 
 With the introduction of YARN, Hadoop can execute a broader set of applications
@@ -295,7 +294,7 @@ are very difficult to implement via the SAGA API.
 The second approach encapsulates YARN specifics at resource-level, enabling the
 decentralized provision of a YARN cluster. Units are scheduled and submitted to
 the YARN cluster via the Unit-Manager and RP-Agent scheduler. By
-integrating RP and YARN at the RP-Agent level, RP can support both Mode I 
+integrating RP and YARN at the RP-Agent level, RP can support both Mode I
 and II, as outlined in Figure~\ref{fig:figures_hadoop-on-hpc-viceverse}.
 
 As illustrated in Figure~\ref{fig:comp_rp_arch}, RP (steps P.1--P.2)
@@ -320,8 +319,8 @@ downloads Hadoop and creates the necessary configuration files, i.e., the
 \texttt{mapred-site.xml}, \texttt{core-site.xml}, \texttt{hdfs-site.xml},
 \texttt{yarn-site.xml} and the slaves and master file containing the allocated
 nodes. The node that is running the Agent, runs the master daemons of Hadoop:
-the HDFS Namenode and the YARN Resource Manager. 
-As soon as HDFS and YARN area active, the scheduler receives meta-data about 
+the HDFS Namenode and the YARN Resource Manager.
+As soon as HDFS and YARN area active, the scheduler receives meta-data about
 the cluster, i.e., the number of cores and memory. HDFS and YARN remain
 active until all tasks are executed. Before termination of the agent, the
 LRM stops the Hadoop and YARN daemons and removes the associated data files. In
@@ -439,8 +438,8 @@ The inset of Figure~\ref{fig:startup_yarn} shows the time taken to start Compute
 Units via RP to a YARN cluster. For each CU, resources have to be
 requested in two stages: first the application master container is allocated
 and, second, the containers for the actual compute tasks becomes available. For
-short-running jobs, that represents a bottleneck. In summary, while there are 
-overheads associated with executing CUs inside of YARN, we believe 
+short-running jobs, that represents a bottleneck. In summary, while there are
+overheads associated with executing CUs inside of YARN, we believe
 these are acceptable, in particular for long-running CUs.
 %The novel capabilities of executing HPC tasks and YARN tasks
 %within the same application has significant benefits for which the overheads we
@@ -461,7 +460,7 @@ be shuffled. The shuffle traffic depends on the number of clusters and decreases
 with the number of clusters. For the purpose of this benchmark, we run two
 iterations of K-Means.
 
-We utilize up to 3 nodes on Stampede and Wrangler. We use the following 
+We utilize up to 3 nodes on Stampede and Wrangler. We use the following
 configurations for our experiments: 8 tasks on 1 node, 16 tasks on 2 nodes and 32
 tasks on 3 nodes. For RP-YARN, we use Mode II (Hadoop on HPC): the
 YARN Resource Manager is deployed on the node running the RP-Agent.
@@ -479,7 +478,7 @@ allocated resources.
 \end{figure}
 
 Independent of the scenario, runtimes decrease with the number of tasks. In
-particular, for the 8 task scenarios the overhead of YARN on Wrangler is 
+particular, for the 8 task scenarios the overhead of YARN on Wrangler is
 enough to produce higher runtimes for RP-YARN than RP. For larger number of
 tasks, we observed on average 13~\% shorter runtimes for RP-YARN.
 Also, RP-YARN achieves better speedups, e.g., 3.2 for 32 tasks for

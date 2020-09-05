@@ -1,5 +1,4 @@
 % !TEX root = main.tex
-\label{ch:task-par}
 
 Molecular Dynamics campaigns are significant consumer of computing cycles and
 produce immense amounts of data, especially during simulation stages. Simulation
@@ -128,7 +127,7 @@ and Pteros~\cite{yesylevskyy2015pteros} are highly dependent on the low level
 libraries of the resource they use, while HiMach~\cite{tiankai2008scalable} is
 build specifically for the Antons Supercomputer.
 
-In contrast, our analysis focuses on frameworks that offer more general 
+In contrast, our analysis focuses on frameworks that offer more general
 purpose approaches to the parallelizing MD analysis algorithms.
 %Specifically, PMDA utilizes Dask to parallelize MD Trajectory analysis.
 These frameworks provide higher-level abstractions that facilitate the
@@ -185,9 +184,9 @@ metric~\cite{huttenlocher1993comparing}) between members of an ensemble of
 trajectories, and cluster the trajectories based on their distance matrix. Each
 trajectory is represented as a two dimensional array: The first dimension
 corresponds to time frames of the trajectory; the second to the $N$ atom
-positions in a 3-dimensional space. Algorithm~\ref{alg:hausdorff} describes 
-PSA with the Hausdorff metric over multiple trajectories. We apply a 2-dimensional 
-data partitioning over the output matrix to parallelize, shown in 
+positions in a 3-dimensional space. Algorithm~\ref{alg:hausdorff} describes
+PSA with the Hausdorff metric over multiple trajectories. We apply a 2-dimensional
+data partitioning over the output matrix to parallelize, shown in
 algorithm~\ref{alg:partition}.
 
 \begin{algorithm}[t]
@@ -387,7 +386,7 @@ Spark's Scheduler translates the workflow specified via RDD transformations and
 actions to an execution plan. Its distributed execution engine handles the
 low-level details of task execution, which is triggered by actions. Spark can
 read data from different sources, such as HDFS, blob storage, parallel and local
-filesystems. Spark offloads data to disk when there is not enough free memory 
+filesystems. Spark offloads data to disk when there is not enough free memory
 on a node. Persisted RDDs remain in memory,
 unless specified to use the disk either complementary or as a single target. In
 addition, Spark writes data that are used in a shuffle to disk. As a result, Spark
@@ -528,11 +527,11 @@ decides the partition size automatically, in many cases it is necessary to tune
 parallelism by specifying the number of partitions.
 
 Another important aspect is the availability of high-level abstractions.
-High-level abstractions for RP, such as 
-Pipelines~\cite{balasubramanian2018harnessing} and 
-Replicas~\cite{dakka2018concurrent}, support compute-oriented 
+High-level abstractions for RP, such as
+Pipelines~\cite{balasubramanian2018harnessing} and
+Replicas~\cite{dakka2018concurrent}, support compute-oriented
 tasks and workflows. Contrary, Spark and Dask already offer a set of
-high-level data-oriented abstractions, such as Dataframes. 
+high-level data-oriented abstractions, such as Dataframes.
 
 %\mtnote{I am not sure
 %those are a valid comparisons: high-level abstraction Vs. tools; dataframes Vs.
@@ -764,7 +763,7 @@ We developed five approaches to implement the LF algorithm using RP,
 Spark, Dask, and MPI4py (see Fig~\ref{fig:lf_approaches} and
 Table~\ref{tab:app_operators}):
 \begin{enumerate}[1)]
-    \item \textbf{Broadcast and 1-D Partitioning:} Broadcast and partition 
+    \item \textbf{Broadcast and 1-D Partitioning:} Broadcast and partition
     through a data abstraction the physical system. Use of RDD API
     (broadcast), Dask Bag API (scatter), and MPI Bcast to distribute data to all
     nodes. A \texttt{map} function calculates the edge list using \texttt{cdist}
@@ -821,7 +820,7 @@ architectural approach and used framework in detail.
 
 Approach 1 broadcasts data to nodes via the capabilities supported by Spark,
 Dask and MPI. All nodes maintain a complete copy of the dataset and each
-\texttt{map} task computes the pairwise distance on a partition of the dataset. 
+\texttt{map} task computes the pairwise distance on a partition of the dataset.
 %\mtnote{its
 %partition of what? Note: 'its', 'it' and 'they' in English should not be used
 %when it is not clear to what subject or complement they refers, especially at
@@ -865,8 +864,8 @@ slower than our MPI implementation.
 \subsubsection*{Task-API and 2-D Partitioning}
 
 Approach~\ref{en:2} tries to overcome the limitations of approach 1, especially
-broadcasting and 1-D partitioning. A 2-D block partitioning evenly distributes 
-the compute and utilizes  more efficiently the available memory. 
+broadcasting and 1-D partitioning. A 2-D block partitioning evenly distributes
+the compute and utilizes  more efficiently the available memory.
 Spark and Dask do not support well 2-D partitioning. Spark's RDDs
 are optimized for data-parallel applications with 1-D partitioning. While Dask's
 array supports 2-D block partitioning, it was not used for this implementation.
@@ -885,7 +884,7 @@ dataset due to the memory requirements of \texttt{cdist}. For RP, we
 observed significant task management overheads (see also
 section~\ref{sec:framework_eval}). This is a limitation of RP with
 respect to managing large numbers of tasks, particularly visible when running on
-a single node with 32 cores. As more than 64 cores become available, 
+a single node with 32 cores. As more than 64 cores become available,
 RP's performance improves dramatically.
 
 \begin{figure}[t]
@@ -945,8 +944,8 @@ Figure \ref{fig:All4approachesNoRp} illustrates the performance of the
 implementation. For small datasets, i.e., 131k and 262k atoms,
 approach~\ref{en:3} is faster than the tree-based approach, since the number of
 points is too small. For the large datasets, the tree approach is faster. In
-addition, the tree has a smaller memory footprint than \texttt{cdist}. 
-As a result, the tree approach scaled to larger problems, e.g., a 4M atoms 
+addition, the tree has a smaller memory footprint than \texttt{cdist}.
+As a result, the tree approach scaled to larger problems, e.g., a 4M atoms
 and 44.6M edges dataset, without changing the total number of tasks.
 
 Dask shows better scaling performance than Spark for 131k, 262k and 524k atoms. This
@@ -1008,7 +1007,7 @@ than performance alone.
 
 For fine-grained data parallelism, a data-parallel framework, such as Spark and
 Dask, clearly outperforms RP
-(Figures~\ref{fig:All4approachesNoRp},~\ref{fig:rpLF}). If there is coupling 
+(Figures~\ref{fig:All4approachesNoRp},~\ref{fig:rpLF}). If there is coupling
 between tasks, i.e., task communication is required, using Spark becomes
 advantageous (Approaches~\ref{en:3} \& \ref{en:4}). MPI4py outperformed
 Dask and Spark, despite both frameworks scaling for the larger datasets.
