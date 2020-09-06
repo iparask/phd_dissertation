@@ -31,7 +31,9 @@ motivated the use of the Pilot-Abstraction as an integrating concept between HPC
 and data analytics in chapter~\ref{ch:pilot-data-hadoop}. As a result, we extended 
 RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop and Spark 
 on HPC resources ( see \S~\ref{sec:integration_mode}). Through our analysis in 
-\S~\ref{ssec:kmeans}, we showed that the RP-YARN reduces the time to completion of a data-intensive workflow. Thus, the Pilot-Abstraction increases HPC resources utilization in conjunction with emerging data analytics frameworks.
+\S~\ref{ssec:kmeans}, we showed that the RP-YARN reduces the time to completion 
+of a data-intensive workflow. Thus, the Pilot-Abstraction increases HPC resources 
+utilization in conjunction with emerging data analytics frameworks.
 
 %% Chapter 3
 Data analytics frameworks offer different abstractions and capabilities and
@@ -40,7 +42,7 @@ utilization and reduce the development effort.
 %\mtnote{Only resource utilization? Is it more general? Something
 %like: "to minimize development effort, adapt the programming model to the
 %application requirement and maximize resource utilization"?} 
-To this extend in chapter~\ref{ch:task-par}, we investigated the
+To this extent in chapter~\ref{ch:task-par}, we investigated the
 use of three task-parallel frameworks---Spark, Dask and RADICAL-Pilot---to
 implement a range of algorithms for MD trajectory analysis.
 We found that, for embarrassingly parallel applications with coarse 
@@ -50,13 +52,22 @@ performance and speedups. For fine-grained data-parallel applications, a
 data-parallel framework is more suitable. \S~\ref{sec:leaflet} shows our
 investigation of a MapReduce style algorithm. Spark and Dask showed better
 performance than RADICAL-Pilot, with Spark offering linear speedups.
-In addition, we found that, although the data-parallel frameworks offered
-abstractions to implement the use cases, we had to fine tune the applications
-manually to reach the achieved speedups. 
+
+In addition to performance gains, developers should take 
+into account usability and programmability aspects when selecting a 
+task parallel framework. Spark and 
+Dask, as shown in \S~\ref{sec:impl_exp}, required to tune the number of 
+tasks to achieve the desired performance (programmability aspect). The 
+programming language of the selected framework affects its usability as
+it may introduce overheads due to transferring data between different
+languages space, e.g., between Python and Java for PySpark.
 Based on our analysis, we provide a conceptual framework, in 
 \S~\ref{sec:task_sel_model}, that enables application developers to 
 evaluate and select task parallel frameworks with respect to application 
-requirements. 
+requirements. The conceptual model in conjunction with the
+Pilot-Abstraction provide a methodology to application developers to
+maximize resource utilization while reducing the engineering effort
+for developing and executing data analysis workflows on HPC resources.
 %\mtnote{Add references as suggested above but, more
 %in general, I would like to see more structure. You have two types of
 %contributions: performance (quantitative) and a mix of usability/programmability
@@ -67,16 +78,17 @@ requirements.
 %% Chapter 4
 Some data-analysis workflows and applications are both data- and
 compute-intensive and, as such, are not well supported by data-parallel
-frameworks. We investigated three architecturally equivalent designs to execute
-a data- and compute-intensive workflow. We saw that such workflows benefit from
-early binding of data to compute nodes, maximizing data and compute affinity,
-and equally balancing input across nodes. This approach minimizes the overall
-time to completion of this type of workflows, while maximizing resource
-utilization compared to late binding tasks to compute nodes. In presence of
-large amount of data, late binding implies copying, replicating or accessing
-data over network and at runtime. We showed that, in contemporary HPC
-infrastructures, this is too costly both for resource utilization and total time
-to completion.
+frameworks. In chapter~\ref{ch:designs}, we investigated three 
+architecturally equivalent designs to execute a data- and compute-intensive 
+workflow. We saw that such workflows benefit from early binding of data 
+to compute nodes, maximizing data and compute affinity, and equally 
+balancing input across nodes. This approach minimizes the overall time 
+to completion of this type of workflows (\S~\ref{ssec:exp3}), while maximizing resource utilization 
+compared to late binding tasks to compute nodes, as shown in \S\ref{ssec:exp2}. In presence of large amount 
+of data, late binding implies copying, replicating or accessing data over 
+network and at runtime. We showed that, in contemporary HPC infrastructures, 
+this is too costly both for resource utilization and total time to completion.
+
 
 %% Chapter 5
 Having established our understanding on how to effectively and efficiently
