@@ -597,7 +597,7 @@ experiments, we assume that workflow runtimes of a campaign are drawn by a
 normal distribution with a mean and variance based on this use case.
 
 \subsection{Experiment 1: Measuring Makespan on Static Resources}
-
+\label{ssec:makespan_comp}
 In our first experiment, we assume static resources and we use HEFT, GA, L2FF
 and Random to measure the makespan for different campaign and resource sizes. We
 use two configurations: in the first, we increase the size of the campaign from
@@ -741,7 +741,7 @@ makespan performance, in order of importance, are:
 \end{inparaenum}
 
 \subsection{Experiment 2: Sensitivity of Makespan to Resource Dynamism}
-
+\label{ssec:res_dyn}
 High performance computing (HPC) resources show performance variations for
 multiple reasons, including power constrained
 operations~\cite{inadomi2015analyzing}, network and shared filesystem
@@ -884,7 +884,7 @@ observed that a 6~\% performance variation in the resources causes less than
 heterogeneous.
 
 \subsection{Experiment 3: Sensitivity of Makespan to Workflow Runtime Estimation Uncertainty}
-
+\label{ssec:work_uncert}
 All selected algorithms, HEFT, GA and L2FF, require an estimation about the
 runtime of each workflow of the campaign. Users usually derive this information
 from empirical data, creating uncertainty in the workflow runtime estimation.

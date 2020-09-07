@@ -6,7 +6,8 @@ field offer to domain scientists a better understanding of the capabilities
 needed to efficiently and effectively execute computational campaigns on HPC
 resources. Further, we provide the computational tools, methodologies and
 experimental understanding needed to design a software manager to plan and
-execute computational campaigns on high performance computing (HPC) platforms.
+execute computational campaigns on high performance computing (HPC) 
+platforms.
 
 \section{Contributions}
 
@@ -28,46 +29,44 @@ compute bound.
 %former on HPC; different requirements of data-intensive workflows on HPC.}. 
 As data-intensive workflows and applications are not well supported on HPC, we
 motivated the use of the Pilot-Abstraction as an integrating concept between HPC
-and data analytics in chapter~\ref{ch:pilot-data-hadoop}. As a result, we extended 
-RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop and Spark 
-on HPC resources ( see \S~\ref{sec:integration_mode}). Through our analysis in 
-\S~\ref{ssec:kmeans}, we showed that the RP-YARN reduces the time to completion 
-of a data-intensive workflow. Thus, the Pilot-Abstraction increases HPC resources 
-utilization in conjunction with emerging data analytics frameworks.
+and data analytics in chapter~\ref{ch:pilot-data-hadoop}. As a result, we 
+extended RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support 
+Hadoop and Spark on HPC resources ( see \S~\ref{sec:integration_mode}). Through 
+our analysis in \S~\ref{ssec:kmeans}, we showed that the RP-YARN reduces the 
+time to completion of a data-intensive workflow. Thus, the Pilot-Abstraction 
+increases HPC resources utilization in conjunction with emerging data analytics 
+frameworks.
 
 %% Chapter 3
-Data analytics frameworks offer different abstractions and capabilities and
-selecting a suitable framework is necessary to increase resource
-utilization and reduce the development effort.
+Data analytics frameworks offer different abstractions and capabilities and 
+selecting a suitable framework is necessary to increase resource utilization 
+and reduce the development effort.
 %\mtnote{Only resource utilization? Is it more general? Something
 %like: "to minimize development effort, adapt the programming model to the
 %application requirement and maximize resource utilization"?} 
-To this extent in chapter~\ref{ch:task-par}, we investigated the
-use of three task-parallel frameworks---Spark, Dask and RADICAL-Pilot---to
-implement a range of algorithms for MD trajectory analysis.
-We found that, for embarrassingly parallel applications with coarse 
-grained-tasks, the framework selection does not affect the performance.
-As shown in \S~\ref{sec:psa}, all three frameworks showed similar
-performance and speedups. For fine-grained data-parallel applications, a 
-data-parallel framework is more suitable. \S~\ref{sec:leaflet} shows our
-investigation of a MapReduce style algorithm. Spark and Dask showed better
-performance than RADICAL-Pilot, with Spark offering linear speedups.
+To this extent in chapter~\ref{ch:task-par}, we investigated the use of three 
+task-parallel frameworks---Spark, Dask and RADICAL-Pilot---to implement a range 
+of algorithms for MD trajectory analysis. We found that, for embarrassingly 
+parallel applications with coarse  grained-tasks, the framework selection does 
+not affect the performance. As shown in \S~\ref{sec:psa}, all three frameworks 
+showed similar performance and speedups. For fine-grained data-parallel 
+applications, a  data-parallel framework is more suitable. \S~\ref{sec:leaflet} 
+shows our investigation of a MapReduce style algorithm. Spark and Dask showed 
+better performance than RADICAL-Pilot, with Spark offering linear speedups.
 
-In addition to performance gains, developers should take 
-into account usability and programmability aspects when selecting a 
-task parallel framework. Spark and 
-Dask, as shown in \S~\ref{sec:impl_exp}, required to tune the number of 
-tasks to achieve the desired performance (programmability aspect). The 
-programming language of the selected framework affects its usability as
-it may introduce overheads due to transferring data between different
-languages space, e.g., between Python and Java for PySpark.
-Based on our analysis, we provide a conceptual framework, in 
-\S~\ref{sec:task_sel_model}, that enables application developers to 
-evaluate and select task parallel frameworks with respect to application 
-requirements. The conceptual model in conjunction with the
-Pilot-Abstraction provide a methodology to application developers to
-maximize resource utilization while reducing the engineering effort
-for developing and executing data analysis workflows on HPC resources.
+In addition to performance gains, developers should take into account usability 
+and programmability aspects when selecting a task parallel framework. Spark and 
+Dask, as shown in \S~\ref{sec:impl_exp}, required to tune the number of tasks 
+to achieve the desired performance (programmability aspect). The programming 
+language of the selected framework affects its usability as it may introduce 
+overheads due to transferring data between different languages space, e.g., 
+between Python and Java for PySpark. Based on our analysis, we provide a 
+conceptual framework, in \S~\ref{sec:task_sel_model}, that enables application 
+developers to evaluate and select task parallel frameworks with respect to 
+application requirements. The conceptual model in conjunction with 
+the Pilot-Abstraction provide a methodology to application developers to 
+maximize resource utilization while reducing the engineering effort for 
+developing and executing data analysis workflows on HPC resources.
 %\mtnote{Add references as suggested above but, more
 %in general, I would like to see more structure. You have two types of
 %contributions: performance (quantitative) and a mix of usability/programmability
@@ -76,41 +75,63 @@ for developing and executing data analysis workflows on HPC resources.
 %too and organize the paragraph around it.}
 
 %% Chapter 4
-Some data-analysis workflows and applications are both data- and
-compute-intensive and, as such, are not well supported by data-parallel
-frameworks. In chapter~\ref{ch:designs}, we investigated three 
-architecturally equivalent designs to execute a data- and compute-intensive 
-workflow. We saw that such workflows benefit from early binding of data 
-to compute nodes, maximizing data and compute affinity, and equally 
-balancing input across nodes. This approach minimizes the overall time 
-to completion of this type of workflows (\S~\ref{ssec:exp3}), while maximizing resource utilization 
-compared to late binding tasks to compute nodes, as shown in \S\ref{ssec:exp2}. In presence of large amount 
-of data, late binding implies copying, replicating or accessing data over 
-network and at runtime. We showed that, in contemporary HPC infrastructures, 
-this is too costly both for resource utilization and total time to completion.
-
+Some data-analysis workflows and applications are both data- and 
+compute-intensive and, as such, are not well supported by data-parallel 
+frameworks. In chapter~\ref{ch:designs}, we investigated three architecturally 
+equivalent designs to execute a data- and compute-intensive workflow. We 
+characterized the designs by measuring task execution time 
+(\S~\ref{ssec:des1analysis}, \S~\ref{ssec:des2analysis}), resource utilization 
+(\S\ref{ssec:exp2}) and workflow time to completion and design overheads 
+(\S~\ref{ssec:exp3}). Based on our analysis, we found that late binding data to 
+compute nodes, especially in the presence of large amount of data, implies 
+copying, replicating or accessing data over network and at runtime. We showed 
+that, in contemporary HPC infrastructures, this is too costly both for resource 
+utilization and total time to completion. Further, we found that early binding 
+of data to compute and equally balancing input across nodes reduced time to 
+completion and increased resource utilization. This result provides information 
+on the properties a workflow management framework should have to efficiently 
+and effectively execute data-driven compute intensive workflows. As a 
+consequence, application developers should develop their workflows with a 
+framework that allows to early bind data to compute nodes.
 
 %% Chapter 5
 Having established our understanding on how to effectively and efficiently
-execute data- and compute-intensive workflows on HPC, we discussed three
-scientific computational campaigns. Based on their requirements, we designed and
-implemented a campaign manager prototype which is domain agnostic and adheres to
-the building blocks approach. The campaign manager prototype creates an
-execution plan and executes the campaign on HPC resources. We validated the
-design by simulating the execution of computational campaigns.
+support the execution of data- and compute-intensive workflows on HPC, we 
+discussed the design of a campaign manager in chapter~\ref{ch:cmanager}. We 
+discuss three actual computational campaigns to elicit the requirements for the 
+campaign manager. Based on their requirements, we designed and implemented a 
+campaign manager prototype which is domain agnostic and adheres to the building 
+blocks approach. We utilized a discrete event simulator (\S~\ref{sec:cm_impl}) 
+to simulate the execution of a computational campaign on HPC resources. We 
+validated the correctness of design by executing campaigns of different sizes 
+on different number of resources (\S~\ref{sec:cm_impl}).
 
-Finally, we investigated three planning algorithms---HEFT, a genetic algorithm
-(GA) and L2FF---to plan the execution of a campaign and experimentally compared
-their plan performance in terms of makespan. As computational campaigns utilize
-heterogeneous resources, we observed that HEFT provided better makespan than GA
-and L2FF. In addition, we measured how sensitive plans that use HEFT, GA and
-L2FF are to resource performance changes and to uncertain information about
-workflow runtime. Based on our experimental analysis, we derive the algorithmic
-characteristics that affect the plan performance and its sensitivity to resource
-dynamism and workflow runtime estimation uncertainty. We conclude by providing a
-conceptual model where users can select a planning algorithm based on their
-campaign characteristics, the resources they have access and their computational
-objective.
+%% Chapter 6
+As the campaign manager derives an execution plan for a computational campaign 
+and given resources, we investigated three planning algorithms---HEFT, a 
+genetic algorithm (GA) and L2FF---to plan the execution of a campaign in 
+chapter~\ref{ch:campaigns}. We experimentally compared their plan performance 
+in terms of makespan and how sensitive are the plans to resource dynamism and 
+workflow runtime uncertainty (\S~\ref{sec:algo_perf_comp}). As computational 
+campaigns utilize heterogeneous resources, we showed in 
+\S~\ref{ssec:makespan_comp} that HEFT provided at least two times up to an 
+order of magnitude better makespan than GA and L2FF. Further, we found that 
+plans using HEFT are more sensitive on average than plans using GA and L2FF to 
+resource dynamism (\S~\ref{ssec:res_dyn}) and workflow runtime uncertainty 
+(\S~\ref{ssec:work_uncert}). Based on our experimental analysis, we discussed 
+the algorithmic characteristics that affect the plan performance and 
+sensitivity to resource dynamism and workflow runtime estimation uncertainty. 
+We conclude by providing a conceptual model where users can select a planning 
+algorithm based on their campaign characteristics, the resources they have 
+access and their computational objective.
+
+This work will have immediate impact on use cases from earth science domains 
+that analyze very high resolution satellite imagery. These sciences want to 
+analyze imagery from different calendar years and execute multiple 
+workflows for their analysis. In addition, new imagery becomes available in 
+a constant low rate stream. Utilizing the work done to develop a campaign 
+manager, they will be able to continuously and effectively executing workflows 
+that analyze imagery as it becomes available.
 
 \section{Future Work}
 
