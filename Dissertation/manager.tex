@@ -408,14 +408,17 @@ Enactor as resources become available, until there are no more workflows to exec
 Instead of an actual workflow management framework (WMF), the Enactor utilizes a
 modified version of the workload emulator proposed in
 Ref.~\cite{balasubramanian2019programming}. The emulator allows us to define
-heterogeneous resources and emulate the execution of workflows on those
-resources. In addition, we extended the emulator execution capabilities with
-SimPy~\cite{simpy}, a discrete time simulator. Simpy executes discrete
-simulations by producing events as time progresses. These events provide
-information about which workflows are executing or have finished to execute. The
-Enactor polls these events and pushes to the Bookkeeper the state of each
-workflow. As a result, we are able to simulate the execution of a campaign and
-validate the correctness of our design and its implementation.
+heterogeneous resources and emulate the execution of workloads on those
+resources. A workload is a set of independent tasks that can be executed 
+concurrently. We modified the emulator to emulate the execution of a campaign 
+which is a set of independent workflows.  In addition, we extended the emulator 
+execution capabilities with SimPy~\cite{simpy}, a discrete time simulator. 
+SimPy executes discrete simulations by producing events as time progresses. 
+These events provide information about which workflows are executing or have 
+finished to execute. The Enactor polls these events and pushes to the 
+Bookkeeper the state of each workflow. As a result, we are able to simulate the 
+execution of a campaign and validate the correctness of our design and its 
+implementation.
 
 \begin{figure*}[t]
     \centering
@@ -441,6 +444,7 @@ workflows on 128 resources in $\approx$15 minutes, an amount of time we consider
 % of the prototype satisfy the requirements and correctly execute a
 % computational campaign.
 
+
 \mtnote{Validation: do the prototype+emulator do what they are supposed to do?
     E.g., given a campaign and an unfeasable amount of resources, do they deem
     the campaign unplannable? Are workflows marked as failed/cancelled as per
@@ -458,12 +462,9 @@ Based on the selected design, we implemented a software prototype that simulates
 the execution of a campaign on resources. The prototype allows us to understand
 and correctly implement the necessary functionality of the CM.
 
-The CM is not only responsible to execute a campaign based on an
-execution plan that is provided by the user. It offers a class, the Planner,
-that can produce execution plans for executing a computational campaign. The
+The CM produces an execution plan for a computational via the Planner class. The
 Planner is able to support several planning algorithms. Although using any
-planning algorithm would satisfy the requirement of creating an execution plan
-without user intervention, it is necessary to utilize an algorithm that is able
-to achieve the campaigns objective. In the next chapter, we investigate planning
-algorithms and evaluate the plans they produce for executing computational
-campaigns.
+planning algorithm would satisfy the requirement of creating an execution plan, 
+it is necessary to utilize an algorithm that is able to achieve the campaigns 
+objective. In the next chapter, we investigate planning algorithms and evaluate 
+the plans they produce for executing computational campaigns.

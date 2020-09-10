@@ -3,121 +3,122 @@
 Computational sciences such as biomolecular
 sciences~\cite{cheatham2015impact, dakka2018concurrent}, ecological
 sciences~\cite{goncalves2020sealnet, paraskevakos2019workflow} and physics
-depending on large scale experiments~\cite{atlas} are benefiting from
+depending on large scale experiments~\cite{atlas} benefit from
 executing multiple workflows, with or without dependencies amongst them, to
 achieve scientific insight. Users submit multiple workflows for execution and
-monitor their execution while managing data transfers and analysis. This way
+monitor their execution while achieving a computational objective. This way
 of execution is called a computational campaign.
 
-Drug discovery campaigns, for example, screen millions of compounds to identify
-good drug candidates~\cite{dakka2018concurrent}. Usually, each compound
-screening is implemented as a workflow which computes the binding affinity of
-the compound. In addition, such applications benefit from utilizing high
-performance computing (HPC) resources and consume millions of core-hours of
-compute time~\cite{cheatham2015impact} by executing a large number of workflows
-over months. Another example of computational campaigns is
-quantum chemistry campaigns~\cite{smith2020molssi}. These campaigns usually have
-hundreds of workflows, executing for months and on different platforms, such as
-workstations, campus and HPC clusters based on workflow
-requirements~\cite{smith2020molssi}. Moreover, users prioritize some workflows
-over others and remove or add workflows or resources to the campaign during
-runtime.
-
-Ecological sciences that utilize very high resolution satellite
-imagery~\cite{goncalves2020sealnet}, require the repeated analysis of terabytes
-of data from different calendar years to derive time series of ecological
-changes. These sciences define workflows with simple or complex
-pipelines~\cite{paraskevakos2019workflow} to analyze imagery. These campaigns
-analyze imagery from different seasons, calendar years or as new imagery becomes
-available by providers. As a result, users frequently define and execute new
-workflows to achieve their scientific objective.
-
-High Energy physics experiments, such the Large Hadron Collider ATLAS
-experiment~\cite{atlas}, gather and store datasets from detectors or through
-simulations in the order of petabytes~\cite{borodin2015big}. These datasets
-are then analyzed by executing campaigns with hundreds to thousands workflows
-with different timescales and frequencies~\cite{borodin2015big}. For example,
-one of the use cases described in Ref.~\cite{borodin2015big} analyzes
-thousands of different datasets with workflows running for months every yearly
-quarter.
+Quantum chemistry campaigns~\cite{smith2020molssi}, for example, usually 
+execute hundreds of workflows analyzing molecules for months and on different 
+platforms, such as workstations, campus and high performance computing (HPC) 
+resources~\cite{smith2020molssi}, and store the results in a database. 
+Ecological sciences that utilize very high resolution satellite 
+imagery~\cite{goncalves2020sealnet}, analyze terabytes of data from different 
+calendar years to derive time series of ecological changes. These sciences 
+execute workflows on HPC with simple or complex 
+pipelines~\cite{paraskevakos2019workflow} to analyze imagery. High Energy 
+physics experiments, such the Large Hadron Collider ATLAS 
+experiment~\cite{atlas}, gather and store datasets from detectors or through 
+simulations in the order of petabytes~\cite{borodin2015big}. These datasets are 
+then analyzed by executing campaigns with hundreds to thousands workflows with 
+different timescales and frequencies~\cite{borodin2015big}. For example, one of 
+the use cases described in Ref.~\cite{borodin2015big} analyzes thousands of 
+different datasets with workflows running for months every yearly quarter.
 
 All these use cases define and execute a computational campaign to analyze
 data and achieve scientific insight. Although they are different, they share a
 number of characteristics and requirements. Some of the most important common
 characteristics of these campaigns are:
 \begin{inparaenum}[(1)]
-    \item they are comprised of O(100) workflows;
+    \item they are comprised of O(100) data analysis workflows;
     \item workflow requirements are not uniform across a campaign;
-    \item use of multiple computational resources;
+    \item use of multiple HPC computational resources;
     \item finite access time to said resources; and
     \item well defined computational objectives.
 \end{inparaenum}
 
-Based on the above discussion, it becomes important to efficiently and
-effectively support the execution of data-driven computational campaigns as
-the first order of execution. This has the potential to increase overall
-resource utilization across all resources that are available to a campaign.
-Further, increased resource utilization will allow computational scientists to
-execute computational campaigns to larger scales, leading to new scientific
-discoveries and innovations. As a result, we focus our research on supporting
-the efficient execution of data-driven computational campaigns on HPC
-resources. It is important to note that our solutions and results are
-applicable and extensible to other scientific domains.
+Based on the above discussion, it becomes important to efficiently and 
+effectively support the execution of data-driven computational campaigns on HPC 
+resources. This has the potential to increase overall resource utilization 
+across all resources that are available to a campaign. Further, increased 
+resource utilization will allow computational scientists to execute 
+computational campaigns to larger scales, leading to new scientific discoveries 
+and innovations. As a result, we focus our research on supporting the efficient 
+execution of data-driven computational campaigns on HPC resources. It is 
+important to note that our solutions and results are applicable and extensible 
+to other scientific domains.
 
-\section{Challenges}
+The effective and efficient execution of a data-driven computational campaign 
+poses several engineering challenges. The MapReduce~\cite{dean2004mapreduce} 
+abstraction is successfully used to execute data analytics in different 
+domains~\cite{hellerstein2012science}. Utilizing the MapReduce abstraction to 
+scalably analyze data has the potential to increase resource utilization and 
+reduce time of completion of data analytics on HPC. However, MapReduce 
+frameworks, such as Hadoop~\cite{hadoop} and Spark~\cite{zaharia2010spark}, 
+mainly support cloud resources and not HPC. There is therefore a need for 
+computing environments that support MapReduce frameworks on HPC resources while 
+allowing their interoperability with HPC workflows. To the best of our 
+knowledge, there does not exist a solution that provides the integrated 
+capabilities of MapReduce and HPC.
 
-The effective and efficient execution of data-driven computational campaigns
-poses three main computational challenges:
-\begin{inparaenum}[(1)]
-    \item support the efficient execution of data-intensive workflows and
-    applications;
-    \item manage the execution of a computational campaign; and
-    \item create an execution plan for executing the campaign.
-\end{inparaenum}
+Data analytics frameworks exploit task-parallelism to execute data analytics 
+workflows in a scalable and efficient manner. However, task-parallel frameworks 
+offer different abstractions and capabilities. As data analysis applications 
+can have different characteristics (e.g., embarrassingly parallel or 
+MapReduce), alternative abstractions and capabilities may offer varying 
+performance and efficiency. As a result, there is a need to understand which 
+framework is more suitable for performing a specific type of analysis.
 
-Data-intensive workflows and applications are not well supported on HPC
-resources, reducing resource utilization and increasing their execution time.
-Although, there are several frameworks which provide the necessary abstraction
-to execute data analytics at scale, their support and interoperability with HPC
-is limited. In addition, there are data analysis workflows which cannot easily
-classify as compute- or data-intensive. As these workflows do not always conform
-to the HPC or MapReduce style of execution, the capabilities of the workflow
-execution engine can affect the efficiency of their execution. In addition, it
-becomes important to support the execution of computational campaigns as the
-first order of execution \mtnote{not sure what 'first order of execution'
-means}.
+There are, though, data analysis workflows that have data- and 
+compute-intensive characteristics. Frameworks, like Spark, may not be the most 
+suitable choice for execution data-driven compute-intensive workflows, as such 
+frameworks mainly support workflows with short running tasks. Utilizing a 
+task-parallel framework, which supports compute-intensive tasks, may still be 
+beneficial in terms of scalability, workflow execution time and resource 
+utilization. The design of the framework, though, can significantly affect 
+performance and resource utilization. In addition, the space of equivalent 
+architectural designs to support such workflows is large and identifying the 
+design that can efficiently execute data-driven compute-intensive workflows is 
+challenging. As a result, there is a need to understand which design is best 
+suited to execute data-driven compute-intensive workflows.
 
-Supporting the execution of a computational campaign creates a need to design
-and offer a campaign manager that supports a diverse set of computational
-campaigns. Currently, campaign managers make assumptions about the
-resources and the middleware they are utilizing, are monolithic software
-systems, and tend to be domain specific. In contrast, a software system
-designed and engineered following the building blocks
-approach~\cite{turilli2019middleware} is agnostic of the middleware used to
-execute the campaign and domain agnostic. This, in turn, will allow the
-campaign manager to make no assumptions about the resources on which the
-campaign workflows will be mapped and executed.
+Currently, campaign managers make assumptions about the resources and the 
+middleware they are utilizing, are monolithic software systems, and tend to be 
+domain specific. As a consequence, the existing campaign managers cannot 
+support computational campaigns from different scientific domains without 
+significantly changing their implementations. In addition, based on the 
+assumptions about the middleware they cannot support workflows that do not have 
+similar characteristics and are developed using different frameworks. As a 
+result, there is a need for a campaign manager that supports the scalable 
+execution of computational campaigns on HPC resources and is agnostic of the 
+middleware used and scientific domain.
 
-Finally, the effective and efficient execution of a campaign requires an
-execution plan to map workflows on resources. While computational campaigns
-can utilize multiple resources concurrently, the effectiveness of a plan is
-not guaranteed. Actual HPC resources performance is affected by several
-factors and can change significantly during the execution of a campaign. It is
-important, then, this execution plan to efficiently map the workflows of the
-campaign, so as to increase resource utilization and achieve the objective of
-the campaign.
+Finally, achieving a computational objective during the execution of a 
+computational campaign requires an execution plan to map workflows on multiple 
+HPC resources. While computational campaigns can utilize multiple HPC resources 
+concurrently, the effectiveness of a plan is not guaranteed. Actual HPC 
+resources performance is affected by several factors and can change 
+significantly during the execution of a campaign. It is important, then, this 
+execution plan to efficiently map the workflows of the campaign, so as to 
+increase resource utilization and achieve the objective of the campaign. As 
+there is a plethora of algorithms to derive an execution plan for a 
+campaign~\cite{lu2019review}, to the best of our knowledge, there is no 
+methodology to decide which algorithm is best suited given the characteristics 
+of the campaign and resources.
 
-In response to these challenges, we design a campaign manager prototype which
-plans and executes computational campaigns on HPC resources. Further, we
-provide the necessary extensions and understanding to efficiently and
-effectively execute data-driven workflows on HPC resources. Our work is
-designed and engineered to be domain and resource agnostic.
+In response to these challenges, we make contributions providing the necessary 
+abstractions and software systems to efficiently execute data-driven workflows 
+on HPC resources. Further, we design a campaign manager prototype which plans 
+and executes computational campaigns on HPC resources. Our work is designed and 
+engineered to be domain and resource agnostic. The section discusses in more 
+detail the contributions of this dissertation.
 
 \section{Contributions of the Dissertation}
 
 The goal of this research is to advance the state of the art in the execution
-of data-intensive scientific computational campaigns. To that extend this
-dissertation does the following contributions.
+of data-intensive scientific computational campaigns. To that extent, this
+dissertation makes the following contributions.
 
 %% First paper contributions:
 First, we explore the integration between Hadoop, Spark and HPC resources
@@ -185,6 +186,40 @@ plan. The dissertation concludes with Chapter~\ref{ch:conclusions} which
 discusses the conclusions of this work and identifies future work and research.
 
 %%%%%%%%%%%%%Old Text%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%Drug discovery campaigns, for example, screen millions of compounds to identify
+%good drug candidates~\cite{dakka2018concurrent}. Usually, each compound
+%screening is implemented as a workflow which computes the binding affinity of
+%the compound. In addition, such applications benefit from utilizing high
+%performance computing (HPC) resources and consume millions of core-hours of
+%compute time~\cite{cheatham2015impact} by executing a large number of workflows
+%over months. Another example of computational campaigns is
+%quantum chemistry campaigns~\cite{smith2020molssi}. These campaigns usually have
+%hundreds of workflows, executing for months and on different platforms, such as
+%workstations, campus and HPC clusters based on workflow
+%requirements~\cite{smith2020molssi}. Moreover, users prioritize some workflows
+%over others and remove or add workflows or resources to the campaign during
+%runtime.
+%
+%Ecological sciences that utilize very high resolution satellite
+%imagery~\cite{goncalves2020sealnet}, require the repeated analysis of terabytes
+%of data from different calendar years to derive time series of ecological
+%changes. These sciences define workflows with simple or complex
+%pipelines~\cite{paraskevakos2019workflow} to analyze imagery. These campaigns
+%analyze imagery from different seasons, calendar years or as new imagery becomes
+%available by providers. As a result, users frequently define and execute new
+%workflows to achieve their scientific objective.
+%
+%High Energy physics experiments, such the Large Hadron Collider ATLAS
+%experiment~\cite{atlas}, gather and store datasets from detectors or through
+%simulations in the order of petabytes~\cite{borodin2015big}. These datasets
+%are then analyzed by executing campaigns with hundreds to thousands workflows
+%with different timescales and frequencies~\cite{borodin2015big}. For example,
+%one of the use cases described in Ref.~\cite{borodin2015big} analyzes
+%thousands of different datasets with workflows running for months every yearly
+%quarter.
+
 
 %Compute-based workflows are in the epicenter of scientific computing that utilizes HPC resources.
 %These workflows are either defined as a single large application or as an ensemble of compute intensive tasks~\cite{balasubramanian2018harnessing}.
