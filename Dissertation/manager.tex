@@ -427,18 +427,10 @@ implementation.
     \label{fig:cm_char}
 \end{figure*}
 
-We validated the correctness of our design by executing campaigns of different
-sizes on different number of resources. We provided the prototype with a
-campaign, a set of resources and an execution plan. We then check that the
-workflows of the campaign were executed as expected and in a viable amount of
-time, as shown in Figure~\ref{fig:cm_char}. We observed that the execution time
-of the simulation increases when more than 64
-resources are utilized concurrently. Both the Enactor and the Bookkeeper have
-monitoring methods that traverse the list of executing workflows. In
-addition, the Enactor uses callbacks to inform the Bookkeeper about the state of
-the workflows. Above 64 resources, these operations start to dominate the
-execution time of the simulation. The prototype executed 128
-workflows on 128 resources in $\approx$15 minutes, an amount of time we considered acceptable for experimental purposes.
+We validated the correctness of our design by executing: 1) campaigns of different sizes on different number of resources and 2) trying to execute a campaign which objective cannot be verified. In both cases, we provided the prototype with a campaign, a set of resources, an execution plan and an objective. The campaign manager executes the campaign and we validate that the campaign and workflows have reached the expected state. 
+
+
+We then check that the state of the campaign and the workflows of the campaign were executed as expected and in a viable amount of time, as shown in Figure~\ref{fig:cm_char}. We observed that the execution time of the simulation increases when more than 64 resources are utilized concurrently. Both the Enactor and the Bookkeeper have monitoring methods that traverse the list of executing workflows. In addition, the Enactor uses callbacks to inform the Bookkeeper about the state of the workflows. Above 64 resources, these operations start to dominate the execution time of the simulation. The prototype executed 128 workflows on 128 resources in $\approx$15 minutes, an amount of time we considered acceptable for experimental purposes.
 % and thus we conclude that this increase will not affect the execution of an
 % actual campaign. As a result, we conclude that the design and functionalities
 % of the prototype satisfy the requirements and correctly execute a

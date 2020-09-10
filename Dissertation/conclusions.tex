@@ -23,9 +23,6 @@ workflows on HPC becomes important. Contrary to compute-intensive workflows,
 data-intensive workflows execute a large number of short-running tasks in
 multiple stages which can be I/O, memory and compute bound.
 
-%\mtnote{That sentence is compressed: you want to express at least three
-%concepts with it: data- vs compute-intensive workflows; growing role of the
-%former on HPC; different requirements of data-intensive workflows on HPC.}.
 As data-intensive workflows and applications are not well supported on HPC
 infrastructures, we showed how the Pilot-Abstraction can be used as an
 integrating concept between HPC resources and data analytics workflows in
@@ -34,15 +31,13 @@ RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop and
 Spark on HPC resources (see \S~\ref{sec:integration_mode}). Our analysis in
 \S~\ref{ssec:kmeans} showed that RP-YARN reduces the time to completion of a
 data-intensive workflow. We concluded that the Pilot-Abstraction can increase
-HPC resources utilization when executing data analytics frameworks.
+HPC resources utilization when executing data analytics workflows with data 
+analytics frameworks.
 
 %% Chapter 3
-Data analytics frameworks require different programming abstractions and
+Data analytics frameworks provide different programming abstractions and
 resource capabilities. Selecting a suitable framework becomes crucial to
 increase resource utilization and reduce development effort.
-%\mtnote{Only resource utilization? Is it more general? Something
-%like: "to minimize development effort, adapt the programming model to the
-%application requirement and maximize resource utilization"?}
 In chapter~\ref{ch:task-par}, we investigated the use of three task-parallel
 frameworks---Spark, Dask and RADICAL-Pilot---to implement a range of algorithms
 for MD trajectory analysis, typically used in data analysis workflows. We found
@@ -67,19 +62,13 @@ requirements. The conceptual model, in conjunction with the Pilot-Abstraction,
 provide a methodology for application developers to maximize resource utilization
 while reducing the engineering effort needed to develop and execute data analysis
 workflows on HPC resources.
-%\mtnote{Add references as suggested above but, more
-%in general, I would like to see more structure. You have two types of
-%contributions: performance (quantitative) and a mix of usability/programmability
-%(qualitative). I do not remember well, but reading the chapter those
-%contribution were clearly separated. I would make this distinction explicit here
-%too and organize the paragraph around it.}
 
 %% Chapter 4
 Some data-analysis workflows and applications are both data- and
 compute-intensive and, as such, are not well supported by frameworks
 specifically designed for data parallelism. In Chapter~\ref{ch:designs}, we
 investigated three functionally equivalent designs to execute a data- and
-compute-intensive workflows. We characterized the designs by measuring task
+compute-intensive workflow. We characterized the designs by measuring task
 execution time (\S\ref{ssec:des1analysis} and \S\ref{ssec:des2analysis}),
 resource utilization (\S\ref{ssec:exp2}), workflow time to completion and design
 overheads (\S~\ref{ssec:exp3}). Based on our analysis, we found that late
@@ -89,7 +78,7 @@ runtime. We showed that, in HPC infrastructures, this is too costly both for
 resource utilization and total time to completion. Further, we found that early
 binding of data to compute and equally balancing input across nodes reduced time
 to completion and increased resource utilization. This result provides
-information on the design design properties that workflow management frameworks
+information on the design properties that workflow management frameworks
 should have to efficiently and effectively execute data-driven and
 compute-intensive workflows. As a consequence, application developers should
 develop their workflows with a framework that allows to early bind and balance
