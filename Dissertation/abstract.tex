@@ -10,15 +10,17 @@ Our dissertation addresses the problem of effectively and efficiently executing
 a computational campaign on High Performance Computing (HPC) resources.
 Specifically, the dissertation focuses on computational campaigns with
 data-intensive workflows that utilize HPC resources at scale. A data-intensive
-workflow \mtnote{please add a definition of data-intensive workflow here.}
+workflow is a workflow that processes large amounts of data and its execution
+time heavily depends on I/O and data management.
+%\mtnote{please add a definition of data-intensive workflow here.}
 
 Currently, the execution of data-intensive workflows is not well supported on
 HPC resources. MapReduce is one of the most successfully abstraction used to
-execute data-intensive workflows at scale on cloud resources. However, porting
-that abstraction to HPC resources is non-trivial and requires the use of
-additional abstractions. We utilize the Pilot abstraction as an integrating
-concept between HPC and MapReduce, and we extend RADICAL-Pilot--a framework
-implementing the Pilot abstraction---to support Hadoop---a framework
+execute data-intensive workflows at scale on cloud resources. However,
+supporting that abstraction to HPC resources is non-trivial and requires the
+use of additional abstractions. We utilize the Pilot abstraction as an
+integrating concept between HPC and MapReduce, and we extend RADICAL-Pilot--a
+framework implementing the Pilot abstraction---to support Hadoop---a framework
 implementing the MapReduce abstraction---on HPC resources. We experimentally
 characterize the execution time of data-intensive workflows and extension's
 overheads and show that Hadoop indeed reduces the execution time of such
@@ -59,9 +61,19 @@ three scientific computational campaigns. Based on those requirements, we design
 and prototype a campaign manager. Our prototype is domain-agnostic and adheres
 to the building blocks design approach. The campaign manager prototype creates
 an execution plan and simulates the execution of a campaign on HPC resources.
-Further, we investigate three algorithms to derive an execution plan for
+
+As computational campaigns can utilize multiple HPC resources, they require an
+execution plan that efficiently and effectively map workflows on resources. In
+addition, the HPC resources, a computational campaign utilizes, may offer
+different computational capabilities, e.g., number of operations per second,
+and thus are heterogeneous. Further, the performance of actual HPC resources
+changes over time for several reasons, thus dynamic, and users offer, at best,
+a workflow runtime estimation which is uncertain. Selecting a planning
+algorithm to derive an effective execution plan for a campaign on dynamic and
+heterogeneous HPC resources, while workflow runtime is uncertain, can be
+challenging. We investigate three algorithms to derive an execution plan for
 campaigns, characterizing their performance in terms of campaign makespan, and
-plan sensitivity to resource performance changes and workflow runtime estimation
+plan sensitivity to resource dynamism and workflow runtime estimation
 uncertainty. Based on our analysis, we provide a conceptual model for selecting
 a suitable planning algorithm based on characteristics of a computational
 campaign and HPC resources.
@@ -81,6 +93,5 @@ Our dissertation makes the following contributions:
     simulate the execution of computational campaigns on multiple, heterogeneous
     and dynamic HPC resources.
     \item Provide a conceptual model for selecting a planning algorithm to
-    derive an execution plan based on campaign, resources and algorithm
-    characteristics.
+    derive an execution plan based on campaign, resource heterogeneity and dynamism, workflow runtime uncertainty, and algorithm characteristics.
 \end{inparaenum}
