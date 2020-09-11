@@ -9,28 +9,31 @@ This way of execution multiple workflows is called a computational campaign.
 This dissertation addresses the problem of effectively and efficiently executing
 a computational campaign on High Performance Computing (HPC) resources.
 Specifically, the dissertation focuses on computational campaigns with
-data-driven workflows that utilize HPC resources at scale.
+data-intensive workflows that utilize HPC resources at scale.
 
-The MapReduce abstraction is used successfully to execute data-intensive
-workflows and applications on cloud resources. However, MapReduce frameworks
-are not well supported on HPC resources. We propose the extension of the
-Pilot-Abstraction to provide a unifying resource management layer between HPC
-and MapReduce frameworks. MapReduce frameworks utilize task-parallelism to
-execute workflows in a scalable and efficient manner. However, different
-frameworks, though, offer different abstractions and capabilities and not one
-framework can support all types of data-intensive workflows. Thus, we
-experimentally investigate the suitability of task-parallel frameworks for the
-execution of data-intensive analytics on HPC. This experimental analysis
-provides the information to produce a conceptual model as to which framework is
-more suitable based on the characteristics of the data analysis application.
+Data-intensive workflows are not well supported on HPC resources. Contrary, the
+MapReduce abstraction is used successfully to execute data-intensive workflows
+on cloud resources. We utilize the Pilot-Abstraction as an integrating concept
+between HPC and MapReduce frameworks (e.g., Hadoop). We extend RADICAL-Pilot, a
+Pilot-Abstraction framework, to support Hadoop on HPC resources and
+experimentally characterize the execution time of data-intensive workflows and
+extension's overheads.
+
+MapReduce frameworks utilize task-parallelism to execute workflows in a
+scalable and efficient manner, offer different abstractions and capabilities.
+We experimentally investigate the suitability of three task-parallel
+frameworks for the execution of data-intensive workflows on HPC resources.
+Based on our experimental analysis, we develop a conceptual model as to which
+framework is more suitable based on the characteristics of the data-intensive
+workflows.
 
 In addition to MapReduce style workflows, there are data analysis workflows
-that do not necessarily conform to MapReduce. These workflows are data-driven
-and compute-intensive requiring efficient data management and utilization of
-heterogeneous resources. From the middleware perspective, there are
-architecturally equivalent task-parallel designs to support such workflows. We
-experimentally characterize such designs and show which design approach is best
-suited for scientific workflows with similar characteristics.
+that do not necessarily conform to MapReduce. These workflows are data-
+and compute-intensive requiring efficient utilization of heterogeneous 
+resources. From the middleware perspective, there are architecturally 
+equivalent task-parallel designs to support such workflows. We implement and  
+experimentally characterize three equivalent designs and show which design 
+approach is best suited for scientific workflows with similar characteristics.
 
 Having established the methodology to effectively and efficiently execute
 data-driven workflows on HPC, we design and implement a campaign manager
