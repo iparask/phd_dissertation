@@ -45,7 +45,7 @@ towards the scientific domain of the computational campaigns.
 Computational campaigns can execute compute- and data- intensive workflows. 
 While compute-intensive workflows are at the epicenter of high performance 
 scientific computing, data-intensive workflows are not well supported on HPC 
-resources. Compute intensive workflows execute either a single, very large and 
+resources. Compute-intensive workflows execute either a single, very large and 
 long-running executable or an ensemble of smaller compute-intensive 
 tasks~\cite{balasubramanian2018harnessing}. Data intensive workflows execute a 
 large number of short-running tasks in multiple stages which can be I/O, memory 
@@ -62,20 +62,19 @@ execution of data analysis workflows.
 
 The MapReduce~\cite{dean2004mapreduce} abstraction has been successfully used to
 execute data analytics in different domains~\cite{hellerstein2012science}.
-Utilizing the MapReduce abstraction to scalably analyze data has the potential
-to increase resource utilization and reduce the time of completion of data
-analytics on HPC platforms. However, data analytics frameworks that implement 
-the MapReduce abstraction (e.g.,Hadoop~\cite{hadoop}, 
-Spark~\cite{zaharia2010spark}) mainly support cloud and not HPC platforms. 
-Current solutions allow the use of frameworks such as Hadoop and Spark on HPC 
-resources separately from the HPC environment. There is therefore a need for 
-computing environments that support frameworks like Hadoop and Spark on HPC 
-resources as well as compute-intensive workflows and applications. Such a 
-computational environment can provide a single solution for executing 
-computational campaigns independent of the type of workflows. To the best of 
-our knowledge, there is no solution that provides the integrated capabilities 
-of data analysis frameworks while preserving the ability to execute 
-compute-intensive applications.
+Utilizing the MapReduce abstraction to analyze data on HPC platforms has the 
+potential to increase resource utilization and reduce the time of completion of 
+data analytics. However, data analytics frameworks that implement the MapReduce 
+abstraction (e.g.,Hadoop~\cite{hadoop}, Spark~\cite{zaharia2010spark}) mainly 
+support cloud and not HPC platforms. Current solutions allow the use of such 
+frameworks on HPC resources in isolation from the HPC environment. There is 
+therefore a need for computing environments that support frameworks like Hadoop 
+and Spark on HPC resources as well as compute-intensive workflows and 
+applications. Such a computational environment can provide a solution for 
+executing computational campaigns independent of the compute- or data-intensive 
+workflows. To the best of our knowledge, there is no solution that provides the 
+integrated capabilities of data analysis frameworks while preserving the 
+ability to execute compute-intensive applications.
 
 Data analysis frameworks exploit task-parallelism to execute data analytics
 workflows in a scalable and efficient manner. However, task-parallel frameworks
@@ -84,56 +83,58 @@ can have different characteristics (e.g., embarrassingly parallel or
 MapReduce), alternative abstractions and capabilities may offer better
 performance and efficiency. In addition to performance gains, the 
 implementation of abstractions and capabilities by a framework has the 
-potential to increase the development efforts to develop data analysis 
+potential to increase the development efforts of data analysis 
 workflows. As a result, there is a need to understand which framework is more 
 suitable for performing a specific type of analysis while reducing the time 
 developers invest to define the analysis workflow.
 
 Some data-analysis workflows and applications are both data- and 
-compute-intensive and do not necessarily conform to the MapReduce abstraction. 
+compute-intensive and do not necessarily conform to data-parallel abstractions. 
 The tasks of such workflows can be heterogeneous, implementing a diverse set of 
-functionalities that are compute-intensive. As such, frameworks (e.g., Spark) 
+functionalities and compute-intensive. As such, frameworks (e.g., Spark) 
 specifically designed for data parallelism may not support them well. Utilizing 
-a task-parallel framework, which supports compute-intensive tasks, may still be 
-beneficial in terms of scalability, workflow execution time and resource 
-utilization. The design of the framework, though, can significantly affect 
-performance and resource utilization. The design defines task execution, data 
-transfers and dependency realizations. As a consequence, a specific design may 
-not be well suited to execute data analysis workflows that are 
-compute-intensive. In addition, the space of equivalent architectural designs 
-to support such workflows is large and identifying the design that can 
-efficiently execute data-driven compute-intensive workflows becomes important. 
-As a result, there is a need to understand which design is best suited to 
-execute data-driven compute-intensive workflows. Such an understanding will 
-allow application developers to develop their workflows with a framework whose 
-design is more suited for their application.
+a task-parallel framework, though, may still be beneficial in terms of 
+scalability, workflow execution time and resource utilization. However, the 
+design of the framework can significantly affect performance and resource 
+utilization. As a consequence, a specific design may not be well suited to 
+execute data analysis workflows that are compute-intensive. In addition, the 
+space of equivalent architectural designs to support such workflows is large 
+and identifying the design that can efficiently execute data-driven 
+compute-intensive workflows becomes important. As a result, there is a need to 
+understand which design is best suited to execute data-driven compute-intensive 
+workflows. Such an understanding will allow application developers to develop 
+their workflows with a framework whose design is more suited for their 
+application.
 
 After establishing our understanding on how to effectively and efficiently 
 support the execution of data- and compute-intensive workflows on HPC 
 resources, we focus on supporting the execution of a computational campaign.
 Currently, software systems that execute computational campaigns, campaign 
-managers, make assumptions about the resources and the middleware they are 
+managers, make assumptions about resources and the middleware they are 
 utilizing, are monolithic software systems, and tend to be domain specific. As 
 a consequence, these campaign managers cannot support computational campaigns 
 from different scientific domains without significantly changing their 
 implementations. In addition, based on the assumptions about the middleware 
 they cannot support workflows that do not have similar characteristics and are 
-developed using different workflow execution frameworks. As a result, there is 
-a need for a campaign manager that supports the scalable execution of 
-computational campaigns on HPC resources and is agnostic of the middleware used 
-and scientific domain. 
+developed using different workflow execution frameworks. As a result, a 
+campaign manager that supports the scalable execution of computational 
+campaigns on HPC resources and is agnostic of the middleware used and 
+scientific domain becomes necessary.
 
-Finally, achieving a computational objective during the execution of a
-computational campaign requires an execution plan to map workflows on multiple
-HPC resources. While a computational campaign can utilize multiple HPC resources
-concurrently, the effectiveness of a plan is not guaranteed. Actual HPC
-resources performance is affected by several factors and can change
-significantly during the execution of a campaign. It is important, then, the
-execution plan to efficiently map the workflows of the campaign, so as to
-increase resource utilization and achieve the objective of the campaign. As
-there is a plethora of algorithms to derive an execution plan for a
-campaign~\cite{lu2019review}, to the best of our knowledge, there is no
-methodology to decide which algorithm is best suited given the characteristics
+Finally, achieving a computational objective during the execution of a 
+computational campaign requires an execution plan to map workflows on multiple 
+HPC resources. However, actual HPC resources performance is affected by several 
+factors and can change significantly during the execution of a campaign. In 
+addition, users offer an estimation of each workflow runtime in the form of a 
+range of possible values. As a result, the effectiveness of a plan is not 
+guaranteed. It is important, then, the execution plan to efficiently map the 
+workflows of the campaign, so as to increase resource utilization and achieve 
+the objective of the campaign despite any effect from HPC resource performance 
+changes and runtime estimations. There is, thus, a need to understand how to 
+derive such an execution plan and utilize a well suited planning algorithm. As 
+there is a plethora of algorithms to derive an execution plan for a 
+campaign~\cite{lu2019review}, to the best of our knowledge, there is no 
+methodology to decide which algorithm is best suited given the characteristics 
 of the campaign and resources.
 
 In response to these challenges, we make contributions providing the necessary
@@ -143,7 +144,7 @@ and executes computational campaigns on HPC resources. Our work is designed and
 engineered to be domain and resource agnostic. The section discusses in more
 detail the contributions of this dissertation.
 
-\section{Contributions of the Dissertation}
+\section{Contributions and Organization of the Dissertation}
 
 The goal of this research is to advance the state of the art in the execution
 of data-intensive scientific computational campaigns. To that extent, this
@@ -174,19 +175,19 @@ provide a conceptual basis for comparing the abstractions, capabilities and
 performance of these frameworks.
 
 %% Third paper contributions:
-In chapter~\ref{ch:designs}, we focus on the design of computing frameworks that support the
-execution of data-driven compute intensive workflows on HPC resources. We
-provide specific design guidelines for supporting data-driven, compute-intense
-workflows on high-performance computing resources with a task-based computing
-framework. We develop an experiment-based methodology to compare design
-performance of alternative designs that does not depend on the considered use
-case and computing framework.
+In chapter~\ref{ch:designs}, we focus on the design of computing frameworks 
+that support the execution of data-driven compute intensive workflows on HPC 
+resources. We provide specific design guidelines for supporting data-driven, 
+compute-intense workflows on high-performance computing resources with a 
+task-based computing framework. We develop an experiment-based methodology to 
+compare design performance of alternative designs that does not depend on the 
+considered use case and computing framework.
 
-In chapter~\ref{ch:cmanager}, we design and implement a campaign manager prototype to plan and
-execute computational campaigns. We elicit three data analysis use cases to
-derive the functional requirements of the campaign manager. We provide a
-design and architecture based on the buildings
-blocks~\cite{turilli2019middleware} so that the manager is domain and
+In chapter~\ref{ch:cmanager}, we design and implement a campaign manager 
+prototype to plan and execute computational campaigns. We elicit three data 
+analysis use cases to derive the functional requirements of the campaign 
+manager. We provide a design and architecture based on the buildings 
+blocks~\cite{turilli2019middleware} so that the manager is domain and 
 underlying middleware agnostic.
 
 %%Final Contributions
@@ -199,6 +200,9 @@ does not depend on the considered use case, computing framework and resources
 used. In addition, we provide a conceptual framework for selecting planning
 algorithms based on the algorithm, campaign and resources characteristics.
 
+Chapter~\ref{ch:conclusions} concludes the dissertation with a summary of our 
+contributions and results. In addition, it identifies topics for further .
+research and development.
 %%%%%%%%%%%%%Old Text%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %\section{Dissertation Organization}
