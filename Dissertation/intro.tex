@@ -23,7 +23,7 @@ and achieve scientific insight. Although they serve different scientific
 purposes, computational campaigns share a number of characteristics and
 requirements:
 \begin{inparaenum}[(1)]
-    \item they are comprised of O(100) data analysis workflows;
+    \item they are comprised of O(100) workflows to analyze data;
     \item workflow requirements are not uniform across a campaign;
     \item use multiple HPC platforms;
     \item have finite allocations on said resources; and
@@ -32,13 +32,13 @@ requirements:
 
 % Why this is important
 Based on the above discussion, it becomes important to effectively and
-efficiently support the execution of data analysis computational campaigns on
+efficiently support the execution of computational campaigns on
 HPC resources. This has the potential to increase overall resource utilization
 across all resources that are available to a campaign. Further, increased
 resource utilization will allow computational scientists to execute
 computational campaigns to larger scales, leading to new scientific discoveries
 and innovations. As a result, we focus our research on supporting the effective
-and efficient execution of data analysis computational campaigns on HPC
+and efficient execution of computational campaigns used to analyze data on HPC
 resources. It is important to note that our solutions and results are agnostic
 towards the scientific domain of the computational campaigns.
 
@@ -50,10 +50,7 @@ executable or an ensemble of smaller compute-intensive
 tasks~\cite{balasubramanian2018harnessing}. Data-intensive workflows execute a
 large number of short-running tasks in multiple stages which can be I/O, memory
 and compute bound. As a result, a diverse set of abstractions (e.g., MapReduce
-and RDDs)\mtnote{what is RDDs? Expand any acronym the first time you use it.}
-and frameworks (e.g., Hadoop~\cite{hadoop} and Spark~\cite{zaharia2010spark})
-have emerged to support the scalable execution of data analysis
-workflows\mtnote{what is a data analysis workflow?}.
+and Resilient Distributed Datasets) and frameworks (e.g., Hadoop~\cite{hadoop} and Spark~\cite{zaharia2010spark}) have emerged to support the scalable execution of data-intensive workflows.
 
 %\mtnote{We go from data-driven computation campaigns to MapReduce abstraction
 %    without  connecting the two. We are missing a couple of paragraphs here.
@@ -70,53 +67,49 @@ workflows\mtnote{what is a data analysis workflow?}.
     You need to tighten/clean this up}
 
 The MapReduce~\cite{dean2004mapreduce} abstraction has been successfully used to
-execute data analytics in different domains~\cite{hellerstein2012science}.
-Utilizing the MapReduce abstraction to analyze data on HPC platforms has the
-potential to increase resource utilization and reduce the time of completion of
-data analytics. However, data analytics frameworks that implement the MapReduce
-abstraction (e.g., Hadoop and Spark) mainly support cloud and not HPC platforms.
-At best, current solutions allow the use of such frameworks on HPC resources in
-isolation from the HPC environment. There is therefore a need for computing
-environments \mtnote{what is a computing environment and how does it differ from
-an HPC environment, and how does it `support' a framework?} that support
-frameworks like Hadoop and Spark on HPC resources as well as compute-intensive
-workflows and applications \mtnote{why do you introduce applications here? Are
-workflows not enough?}. Such a computational environment can provide a solution
-for executing computational campaigns, independent of the compute- or
-data-intensive workflows. To the best of our knowledge, there is no solution
-that provides the integrated capabilities of data analysis frameworks while
-preserving the ability to execute compute-intensive applications \mtnote{from
-workflows to applications?}.
+execute workflows to analyze data in different
+domains~\cite{hellerstein2012science}. Utilizing the MapReduce abstraction to
+analyze data on HPC platforms has the potential to increase resource
+utilization and reduce the time of completion of data analysis. However, data
+analysis frameworks that implement the MapReduce abstraction (e.g., Hadoop and
+Spark) mainly support cloud and not HPC platforms. At best, current solutions
+allow the use of such frameworks on HPC resources in isolation from the HPC
+environment. There is therefore a need for abstractions \mtnote{what is a
+computing environment and how does it differ from an HPC environment, and how
+does it `support' a framework?} that support frameworks like Hadoop and Spark
+on HPC resources as well as compute-intensive workflows. Such an abstraction
+can provide a solution for executing computational campaigns, independent of
+the compute- or data-intensive workflows. To the best of our knowledge, there
+is no solution that provides the integrated capabilities of data analysis
+frameworks while preserving the ability to execute compute-intensive workflows.
 
-Data analysis frameworks exploit task-parallelism to execute data analytics
-workflows in a scalable and efficient manner. However, task-parallel frameworks
-offer different abstractions and capabilities. As data analysis applications
-can have different characteristics (e.g., embarrassingly parallel or
-MapReduce), alternative abstractions and capabilities may offer better
-performance and efficiency. In addition to performance gains, the
-implementation of abstractions and capabilities by a framework has the
-potential to increase the development efforts of data analysis
-workflows. As a result, there is a need to understand which framework is more
-suitable for performing a specific type of analysis while reducing the time
-developers invest to define the analysis workflow.
+Data analysis frameworks exploit task-parallelism to analyze data in a scalable
+and efficient manner. However, task-parallel frameworks offer different
+abstractions and capabilities. As workflows that analyze data can have
+different characteristics (e.g., embarrassingly parallel or MapReduce),
+alternative abstractions and capabilities may offer better performance and
+efficiency. In addition to performance gains, the implementation of
+abstractions and capabilities by a framework has the potential to increase the
+development efforts of a workflow. As a result, there is a need to understand
+which framework is more suitable for performing a specific type of analysis
+while reducing the time developers invest to define the analysis workflow.
 
-Some data-analysis workflows and applications are both data- and
-compute-intensive and do not necessarily conform to data-parallel abstractions.
-The tasks of such workflows can be heterogeneous, implementing a diverse set of
-functionalities and compute-intensive. As such, frameworks (e.g., Spark)
-specifically designed for data parallelism may not support them well. Utilizing
-a task-parallel framework, though, may still be beneficial in terms of
-scalability, workflow execution time and resource utilization. However, the
-design of the framework can significantly affect performance and resource
-utilization. As a consequence, a specific design may not be well suited to
-execute data analysis workflows that are compute-intensive. In addition, the
-space of equivalent architectural designs to support such workflows is large
-and identifying the design that can efficiently execute data-driven
-compute-intensive workflows becomes important. As a result, there is a need to
-understand which design is best suited to execute data-driven compute-intensive
-workflows. Such an understanding will allow application developers to develop
-their workflows with a framework whose design is more suited for their
-application.
+Some workflows, developed to analyze data, are both data- and compute-intensive
+and do not necessarily conform to data-parallel abstractions. The tasks of such
+workflows can be heterogeneous, implementing a diverse set of functionalities
+and compute-intensive. As such, frameworks (e.g., Spark) specifically designed
+for data parallelism may not support them well. Utilizing a task-parallel
+framework, though, may still be beneficial in terms of scalability, workflow
+execution time and resource utilization. However, the design of the framework
+can significantly affect performance and resource utilization. As a
+consequence, a specific design may not be well suited to execute workflows that
+are both data- and compute-intensive. In addition, the space of equivalent
+architectural designs to support such workflows is large and identifying the
+design that can efficiently execute data- and compute-intensive workflows
+becomes important. As a result, there is a need to understand which design is
+best suited to execute such workflows. Such an understanding will allow
+application developers to develop their workflows with a framework whose design
+is more suited for their application.
 
 After establishing our understanding on how to effectively and efficiently
 support the execution of data- and compute-intensive workflows on HPC
@@ -166,11 +159,11 @@ dissertation makes the following contributions.
 In chapter~\ref{ch:pilot-data-hadoop}, we explore the integration between
 Hadoop, Spark and HPC resources utilizing the
 Pilot-Abstraction~\cite{luckow2012pstar} allowing applications to manage HPC
-(e.g., simulations) and data-intensive application stages in a uniform way. We
+(e.g., simulations) and data-intensive workflow stages in a uniform way. We
 evaluate the integration by measuring and characterizing the startup times of
 the Pilot and tasks. In addition, we measure the performance of a well-known
 algorithm to investigate the runtime trade-offs of a typical data-intensive
-application.
+workflow.
 
 %% Second paper contributions:
 In chapter~\ref{ch:task-par}, we investigate three task-parallel frameworks,
@@ -189,11 +182,11 @@ performance of these frameworks.
 %% Third paper contributions:
 In chapter~\ref{ch:designs}, we focus on the design of computing frameworks
 that support the execution of data-driven compute intensive workflows on HPC
-resources. We provide specific design guidelines for supporting data-driven,
-compute-intense workflows on high-performance computing resources with a
-task-based computing framework. We develop an experiment-based methodology to
-compare design performance of alternative designs that does not depend on the
-considered use case and computing framework.
+resources. We provide specific design guidelines for supporting data- and
+compute-intense workflows on HPC resources with a task-based computing
+framework. We develop an experiment-based methodology to compare design
+performance of alternative designs that does not depend on the considered use
+case and computing framework.
 
 In chapter~\ref{ch:cmanager}, we design and implement a campaign manager
 prototype to plan and execute computational campaigns. We elicit three data
