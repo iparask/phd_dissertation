@@ -11,53 +11,68 @@ a computational campaign on High Performance Computing (HPC) resources.
 Specifically, the dissertation focuses on computational campaigns with
 data-intensive workflows that utilize HPC resources at scale.
 
-Data-intensive workflows are not well supported on HPC resources. Contrary, the
-MapReduce abstraction is used successfully to execute data-intensive workflows
-on cloud resources. We utilize the Pilot-Abstraction as an integrating concept
-between HPC and MapReduce frameworks (e.g., Hadoop). We extend RADICAL-Pilot, a
-Pilot-Abstraction framework, to support Hadoop on HPC resources and
+Data-intensive workflows are not well supported on HPC resources. However, the
+MapReduce abstraction is used successfully to execute at scale data-intensive
+workflows on cloud resources. Utilizing the MapReduce abstraction on HPC
+resources has the potential to efficiently execute data-intensive workflows on
+HPC resources. Thus, we utilize the Pilot-Abstraction as an integrating concept
+between HPC and MapReduce frameworks (e.g., Hadoop) by extending RADICAL-Pilot,
+a Pilot-Abstraction framework, to support Hadoop on HPC resources. We then
 experimentally characterize the execution time of data-intensive workflows and
-extension's overheads.
+extension's overheads and show that Hadoop indeed reduces the execution time of
+such workflows on HPC resources.
 
+However, MapReduce frameworks offer different abstraction and capabilities and
+no single framework suits any type of data-intensive workflow, as they have
+different characteristics (e.g., MapReduce or embarrassingly parallel). As
 MapReduce frameworks utilize task-parallelism to execute workflows in a
-scalable and efficient manner, offer different abstractions and capabilities.
-We experimentally investigate the suitability of three task-parallel
-frameworks for the execution of data-intensive workflows on HPC resources.
-Based on our experimental analysis, we develop a conceptual model as to which
-framework is more suitable based on the characteristics of the data-intensive
-workflows.
+scalable and efficient manner, we experimentally investigate the suitability of
+three task-parallel frameworks for the execution of data-intensive workflows on
+HPC resources. Based on our experimental analysis, we provide a conceptual
+model as to which framework is more suitable based on the characteristics of
+the data-intensive workflows. The conceptual model along with the extension of
+the Pilot-Abstraction provide a methodology for application developers to
+maximize resource utilization while reducing the engineering effort needed to
+develop and execute data analysis workflows on HPC resources.
 
-In addition to MapReduce style workflows, there are data analysis workflows
+In addition to MapReduce style workflows, there are data-intensive workflows
 that do not necessarily conform to MapReduce. These workflows are data-
 and compute-intensive requiring efficient utilization of heterogeneous 
-resources. From the middleware perspective, there are architecturally 
-equivalent task-parallel designs to support such workflows. We implement and  
-experimentally characterize three equivalent designs and show which design 
-approach is best suited for scientific workflows with similar characteristics.
+resources. Further, there are architecturally equivalent task-parallel designs
+to support such workflows. Selecting a suitable design can significantly
+increase resource utilization and reduce any overhead imposed by the design. To
+that extent, we implement and experimentally characterize three equivalent
+designs and show which design approach is best suited for scientific workflows
+with similar characteristics.
 
-Having established the methodology to effectively and efficiently execute
-data-driven workflows on HPC, we design and implement a campaign manager
-prototype. The campaign manager prototype creates an execution plan and
-executes the campaign. Further, we investigate three algorithms to derive an
-execution plan and characterize their performance in terms of makespan and
-plan sensitivity to resource performance changes and workflow runtime
-estimation uncertainty. Based on our analysis, we provide a conceptual model
-for selecting a suitable planning algorithm based on characteristics of a
-computational campaign and resources.
+After establishing the methodology to effectively and efficiently execute
+data-intensive workflows on HPC, we investigate the support of computational
+campaigns. We elicit the requirements for a campaign manager from three
+scientific computational campaigns. Based on those requirements, we design and
+implement a campaign manager prototype. The prototype is domain-agnostic and
+adheres to the building blocks design approach. The campaign manager prototype
+creates an execution plan and simulates the execution of a campaign on HPC
+resources. Further, we investigate three algorithms to derive an execution plan
+and characterize their performance in terms of makespan and plan sensitivity to
+resource performance changes and workflow runtime estimation uncertainty. Based
+on our analysis, we provide a conceptual model for selecting a suitable
+planning algorithm based on characteristics of a computational campaign and
+resources.
 
 The research of this dissertation makes the following contributions:
 \begin{inparaenum}
     \item Integrate MapReduce frameworks and HPC to offer unified environment
-    for compute and data intensive applications
+    for compute- and data-intensive workflows.
     \item Provide a conceptual model for selecting a task-parallel framework
-    based on the application requirements and framework abstractions and
+    based on the workflow requirements and framework abstractions and
     performance
-    \item Provide design guidelines for supporting data-based compute-intensive
+    \item Provide design guidelines for supporting data- and compute-intensive
     workflows on HPC and an experimental methodology to compare equivalent
     designs
     \item Design and implement a campaign manager prototype to plan and execute
     computational campaigns
-    \item Provide a conceptual model for selecting a planning algorithm based
-    on campaign, resources and algorithm characteristics
+    \item Provide a conceptual model for selecting a planning algorithm to 
+    derive an execution plan based on campaign, resources and algorithm
+    characteristics
 
 \end{inparaenum}
