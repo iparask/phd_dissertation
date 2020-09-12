@@ -1,29 +1,28 @@
 % !TEX root = main.tex
 
-Computational sciences such as biomolecular sciences~\cite{cheatham2015impact,
+Executing multiple workflows to achieve scientific insight is needed in
+computational sciences such as biomolecular sciences~\cite{cheatham2015impact,
 dakka2018concurrent}, ecological sciences~\cite{goncalves2020sealnet,
-paraskevakos2019workflow} and particle physics~\cite{atlas} execute multiple
-workflows to achieve scientific insight. Users submit multiple workflows for
-execution and monitor their execution while achieving a computational objective.
-This way of executing multiple workflows is called ``computational campaign''.
+paraskevakos2019workflow} and particle physics~\cite{atlas}. The aggregated
+set of workflows that must be executed to achieve a computational objective is
+defined as a computational campaign.
 
 For example, quantum chemistry campaigns~\cite{smith2020molssi} execute hundreds
 of workflows for months and on different platforms, such as workstations, campus
 and high performance computing (HPC) resources~\cite{smith2020molssi}.
 Ecological sciences analyze terabytes of very high resolution satellite
 imagery~\cite{goncalves2020sealnet} to derive time series of ecological
-changes~\cite{paraskevakos2019workflow}. High Energy physics experiments, such
+changes~\cite{paraskevakos2019workflow}. High Energy Physics experiments, such
 as the Large Hadron Collider ATLAS experiment~\cite{atlas}, analyze petabytes of
 detector or simulation data~\cite{borodin2015big} by executing campaigns with
 hundreds to thousands workflows, at different timescales and
 frequencies~\cite{borodin2015big}.
 
-All those use cases define and execute a computational campaign to analyze data
-and achieve scientific insight. Although they serve different scientific
-purposes, computational campaigns share a number of characteristics and
-requirements:
+These use cases define and execute a computational campaign to achieve
+scientific insight. Although they serve different scientific purposes,
+computational campaigns share a number of characteristics and requirements:
 \begin{inparaenum}[(1)]
-    \item they are comprised of O(100) workflows to analyze data;
+    \item they are comprised of O(100) workflows;
     \item workflow requirements are heterogeneous across a campaign;
     \item use multiple HPC platforms with heterogeneous and dynamic resources;
     \item have finite allocations on said resources; and
@@ -75,7 +74,7 @@ The MapReduce~\cite{dean2004mapreduce} abstraction has been successfully used to
 execute workflows to analyze data in different
 domains~\cite{hellerstein2012science}. Utilizing the MapReduce abstraction on
 HPC platforms has the potential to increase resource utilization and reduce the
-time of completion of data analysis. However, data analysis frameworks that
+time to completion of data analysis. However, data analysis frameworks that
 implement the MapReduce abstraction (e.g., Hadoop and Spark) mainly support
 data-intensive workflows on cloud platforms. At best, current solutions allow
 the use of such frameworks on HPC resources in isolation from the HPC
