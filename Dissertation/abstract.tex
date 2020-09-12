@@ -50,7 +50,7 @@ In addition to data-intensive, workflows can also be compute-intensive,
 requiring different capabilities to effectively and efficiently utilize
 heterogeneous resources. Such capabilities can be implemented by multiple
 designs with different architectural and performance characteristics. Selecting
-a suitable design can significantly increase resource utilization and reduce the
+a suitable design can significantly increase concurrency, resource utilization and reduce the
 overhead imposed by each design implementation. Nonetheless, choosing the right
 design can be challenging, especially in absence of an established methodology
 for characterizing and comparing alternative but functionally equivalent
@@ -68,11 +68,11 @@ an execution plan and simulates the execution of a campaign on HPC resources.
 
 As computational campaigns can utilize multiple HPC resources, they require an
 execution plan that efficiently and effectively map workflows on resources. In
-addition, the HPC resources, a computational campaign utilizes, may offer
+addition, computational campaigns may utilize HPC resources that may offer
 different computational capabilities, e.g., number of operations per second,
-and thus are heterogeneous. Further, the performance of actual HPC resources
-changes over time for several reasons, thus dynamic, and users offer, at best,
-a workflow runtime estimation which is uncertain.
+and thus are heterogeneous. Further, HPC resources are dynamic as their
+performance changes over time for several reasons, and users offer a workflow
+runtime estimation which is uncertain at best.
 
 Selecting a planning algorithm to derive an effective execution plan for a
 campaign on dynamic and heterogeneous HPC resources, while workflow runtime is
