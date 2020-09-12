@@ -1,12 +1,13 @@
 % !TEX root = main.tex
-Computational sciences such as biomolecular sciences~\cite{cheatham2015impact,
+Executing multiple workflows to achieve scientific insight is needed in
+computational sciences such as biomolecular sciences~\cite{cheatham2015impact,
 dakka2018concurrent}, ecological sciences~\cite{goncalves2020sealnet,
-paraskevakos2019workflow} and particle physics~\cite{atlas} execute multiple
-workflows to achieve scientific insight. Users submit multiple workflows for
-execution and monitor their execution while achieving a computational objective.
-This way of executing multiple workflows is called a computational campaign.
+paraskevakos2019workflow} and particle physics~\cite{atlas}. The aggregated
+set of workflows that must be executed to achieve a computational objective is
+defined as a computational campaign.
 
-Our dissertation addresses the problem of effectively and efficiently executing
+
+This dissertation addresses the problem of effectively and efficiently executing
 a computational campaign on High Performance Computing (HPC) resources.
 Specifically, the dissertation focuses on computational campaigns with data- and
 compute-intensive workflows that utilize HPC resources at scale. Data-intensive
@@ -19,14 +20,15 @@ management.
 Currently, the execution of data-intensive workflows is not well supported on
 HPC resources. MapReduce is one of the most successfully abstraction used to
 execute data-intensive workflows at scale on cloud resources. However,
-supporting that abstraction to HPC resources is non-trivial and requires the
-use of additional abstractions. We utilize the Pilot abstraction as an
-integrating concept between HPC and MapReduce, and we extend RADICAL-Pilot--a
-framework implementing the Pilot abstraction---to support Hadoop---a framework
-implementing the MapReduce abstraction---on HPC resources. We experimentally
-characterize the execution time of data-intensive workflows and extension's
-overheads and show that Hadoop indeed reduces the execution time of such
-workflows on HPC resources.
+implementing MapReduce on HPC resources is non-trivial and requires the use of
+additional abstractions. We utilize the Pilot abstraction as an integrating
+concept between HPC and MapReduce. We extend RADICAL-Pilot \textendash{} a
+framework implementing the Pilot abstraction \textendash{} to support Hadoop
+\textendash{} a framework implementing the MapReduce
+abstraction \textendash{} on HPC resources. We experimentally characterize the
+execution time of data-intensive workflows and extension's overheads and show
+that Hadoop indeed reduces the execution time of such workflows on HPC
+resources.
 
 % MapReduce frameworks offer different capabilities and no single framework suits
 % every type of data-intensive workflow, as they have different characteristics
@@ -38,7 +40,7 @@ data-intensive workflows and several frameworks have emerged to support
 general-purpose task-parallelism. We experimentally investigate the suitability
 of three task-parallel frameworks for the execution of data-intensive workflows
 on HPC resources. Based on our experimental analysis, we provide a conceptual
-model as to which framework is more suitable based on the characteristics of the
+model to determine which framework is more suitable based on the characteristics of the
 selected data-intensive workflow. That conceptual model and the Pilot
 abstraction provide a methodology that application developers can use to
 maximize resource utilization while reducing the engineering effort needed to
