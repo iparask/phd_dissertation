@@ -5,12 +5,12 @@ data- and compute-intensive workflows on high performance computing (HPC)
 resources. When considering actual research, scientific projects require to
 execute multiple workflows at scale and potentially for long period of time.
 Usually, workflows are first developed, tested and executed for small scale
-problems which can be verified theoretically. When ready, multiple workflows
-are executed, potentially concurrently, at production scale for long periods
-of time on the target HPC machine(s) while trying to achieve an objective.
-This poses unprecedented computing challenges, shifting the problem from
-enabling the effective and efficient execution of a single workflow at scale,
-to managing the execution of a computational campaign.
+problems which can be verified theoretically. When ready, tens to thousands 
+workflows are executed, potentially concurrently, at production scale for long 
+periods of time---up to several months---on the target HPC machine(s) while 
+trying to achieve an objective. This poses unprecedented computing challenges, 
+shifting the problem from enabling the effective and efficient execution of a 
+single workflow at scale, to managing the execution of a computational campaign.
 
 The challenges users face when executing a computational campaign include, but
 are not limited to, deciding an execution plan, submitting, executing and
@@ -54,13 +54,12 @@ and makes no assumptions about the workflow management framework used to manage
 the execution of individual workflows, as well as the type of resources used.
 
 The chapter is organized as follows: \S~\ref{sec:cm_rw} discusses the current
-solutions in executing computational campaigns. In \S~\ref{sec:cm_req}, we discuss the
-supported use cases and the CM requirements.
-\S~\ref{sec:cm_des} describes the building blocks approach and the design
-of the CM. In \S~\ref{sec:cm_impl} we describe the
-implementation of the CM prototype and we characterize its
-baseline performance. We close the chapter with our conclusions in
-Section~\ref{sec:cm_concl}.
+solutions in executing computational campaigns. In \S~\ref{sec:cm_req}, we 
+discuss the supported use cases and the CM requirements. 
+\S~\ref{sec:cm_des} describes the building blocks approach and the design of 
+the CM. In \S~\ref{sec:cm_impl} we describe the implementation of the CM 
+prototype and we characterize its baseline performance. We close the chapter 
+with our conclusions in Section~\ref{sec:cm_concl}.
 
 \section{Related Work}
 
@@ -106,10 +105,10 @@ defined objective.
 
 The space of data analysis of computational campaigns can be vast with different
 scientific objectives, types and number of workflows and resources. We use three
-real use cases with data analysis workflows to derive the requirements of the
-CM prototype. The first use case supports quantum chemistry
-campaigns (UC1), the second earth science (UC2) and the third data analysis
-campaigns which analyze the data produced for the ATLAS experiment (UC3).
+real exemplar use cases with data analysis workflows to derive the requirements 
+of the CM prototype. The first use case supports quantum chemistry 
+campaigns (UC1), the second earth science (UC2) and the third data analysis 
++++campaigns which analyze the data produced for the ATLAS experiment (UC3).
 
 Quantum chemistry defines campaigns which execute workflows that perform
 chemical computations on molecules to calculate their properties, e.g., energy.
@@ -254,10 +253,13 @@ Figure~\ref{fig:refarch}):
     \item an Enactor; and
     \item a Bookkeeper.
 \end{inparaenum}
-Workflow execution will be managed by an existing workflow management framework
-(WMF) on HPC resources. Each of these components supports a basic functionality
-of the CM, such as executing individual workflows and monitoring
-the campaign.
+Each of these components supports a basic functionality of the CM, such as 
+executing individual workflows and monitoring the campaign. In accordance to 
+the building blocks approach, the CM functionality is limited in executing 
+computational campaigns. As such, the CM does not provide any functionality to 
+execute individual workflows or acquire resources. Workflow execution is 
+managed by an existing workflow management framework (WMF) on HPC resources. In 
+addition, resource acquisition and management is done by the WMF runtime system.
 
 \begin{figure*}[t]
     \centering
@@ -293,7 +295,7 @@ The Enactor component executes the campaign's workflows by interfacing with a
 workflow management system (WMF). The Enactor receives a set of workflows from
 the Bookkeeper, along with the resources on which the workflows will execute at
 a given point in time. Based on this information, the Enactor submits the
-workflows to the WMF for execution.
+workflows to the WMF for execution. The WMF, then acquires resources and executes the workflows.
 
 Initially, the Bookkeeper receives the description of a campaign
 (Figure~\ref{fig:refarch} step 1) and passes information about resources and
@@ -449,7 +451,7 @@ traverse the list of executing workflows. In addition, the Enactor uses
 callbacks to inform the Bookkeeper about the state of the workflows. Above 64
 resources, these operations start to dominate the execution time of the
 simulation. The prototype executed 128 workflows on 128 resources in
-$\approx$15 minutes, an amount of time we considered acceptable for
+$\approx$7 minutes, an amount of time we considered acceptable for
 experimental purposes.
 
 

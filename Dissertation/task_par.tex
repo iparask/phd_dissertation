@@ -845,7 +845,7 @@ smaller than Spark and Dask. MPI's broadcast times increase linearly as the
 number of processes increases, while Spark's and Dask's remain relatively
 constant for each dataset, due to more elaborate broadcast algorithms compared
 to MPI. Broadcast times are between 3\% and 15\% of the edge discovery time
-for Spark, from 40\% to 65\% for Dask, and from <1\% to 10\% for MPI4py.
+for Spark, from 40\% to 65\% for Dask, and from < 1\% to 10\% for MPI4py.
 Thus, Spark offers a more efficient communication subsystem compared to Dask. In
 addition, Dask broadcast partitions the dataset to a list where each element
 represents a value from the initial dataset. This did not allow broadcasting the

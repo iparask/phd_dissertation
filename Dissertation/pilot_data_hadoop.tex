@@ -11,12 +11,8 @@ compute-intensive applications, the MapReduce~\cite{dean2004mapreduce}
 abstraction is commonly used for data-intensive
 applications~\cite{hellerstein2012science}.
 
-%However, HPC resources are designed to support mainly compute-intensive long-running MPI applications, as they offer
-%Not surprisingly, HPC resource architectures offer large number of computing resources, e.g., CPUs and GPUs, connected by high-end networks (e.g., Infiniband) and filesystems, such as Lustre and PVFS.
-%They have however limitations in supporting data-intensive and I/O bound workflows.
-
 Hadoop~\cite{hadoop} popularized the use of MapReduce~\cite{dean2004mapreduce}
-for data-intensive applications. Hadoop's distirbuted filesystem (HDFS)
+for data-intensive applications. Hadoop's distributed filesystem (HDFS)
 automatically partitions data and distributes them to different nodes of a
 cluster machine. In addition, Hadoop's engine takes advantage of data-locality
 and transfers computations to nodes, allowing to process data in parallel while

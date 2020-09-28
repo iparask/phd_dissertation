@@ -1,13 +1,12 @@
 % !TEX root = main.tex
 
 This dissertation investigated the execution of computational campaigns with
-data- and compute-intensive workflows on HPC resources. Our contributions to the
-field offer to domain scientists a better understanding of the capabilities
-needed to efficiently and effectively execute computational campaigns on HPC
-resources. Further, we provide the computational tools, methodologies and
-experimental understanding needed to design a software manager to plan and
-execute computational campaigns on high performance computing (HPC)
-platforms.
+data- and compute-intensive workflows on HPC resources. Our contributions to 
+the field offer to domain scientists a better understanding of the capabilities 
+needed to efficiently and effectively execute computational campaigns on HPC 
+resources. Further, we provide the computational tools, methodologies and 
+experimental understanding needed to design a software manager to plan and 
+execute computational campaigns on high performance computing (HPC) platforms.
 
 \section{Contributions}
 
@@ -25,18 +24,19 @@ multiple stages which can be I/O, memory and compute bound.
 
 As data-intensive workflows and applications are not well supported on HPC
 infrastructures, we showed how the Pilot-Abstraction can be used as an
-integrating concept between HPC resources and data analytics workflows in
-chapter~\ref{ch:pilot-data-hadoop}. We developed RP-YARN, extending
-RADICAL-Pilot, an implementation of the Pilot-Abstraction, to support Hadoop and
-Spark on HPC resources (see \S~\ref{sec:integration_mode}). Our analysis in
-\S~\ref{ssec:kmeans} showed that RP-YARN reduces the time to completion of a
-data-intensive workflow. We concluded that the Pilot-Abstraction can increase
-HPC resources utilization when executing data analytics workflows with data 
-analytics frameworks.
+integrating concept between HPC resources and existing data analytics workflows 
+management frameworks in chapter~\ref{ch:pilot-data-hadoop}. We developed 
+RP-YARN, extending RADICAL-Pilot, an implementation of the Pilot-Abstraction, 
+to support Hadoop and Spark on HPC resources
+(see \S~\ref{sec:integration_mode}). Our analysis in \S~\ref{ssec:kmeans} 
+showed that RP-YARN reduces the time to completion of a data-intensive 
+workflow. We concluded that the Pilot-Abstraction can increase HPC resources 
+utilization when executing data analytics workflows with data analytics 
+frameworks.
 
 %% Chapter 3
-Data analytics frameworks provide different programming abstractions and
-resource capabilities. Selecting a suitable framework becomes crucial to
+Existing Data analytics frameworks provide different programming abstractions 
+and resource capabilities. Selecting a suitable framework becomes crucial to
 increase resource utilization and reduce development effort.
 In chapter~\ref{ch:task-par}, we investigated the use of three task-parallel
 frameworks---Spark, Dask and RADICAL-Pilot---to implement a range of algorithms
@@ -59,9 +59,9 @@ between Python and Java as required by PySpark. In~\S~\ref{sec:task_sel_model},
 we provide a conceptual framework that enables application developers to
 evaluate and select task parallel frameworks with respect to application
 requirements. The conceptual model, in conjunction with the Pilot-Abstraction,
-provide a methodology for application developers to maximize resource utilization
-while reducing the engineering effort needed to develop and execute data analysis
-workflows on HPC resources.
+provide a methodology for application developers to maximize resource 
+utilization while reducing the engineering effort needed to develop and execute 
+data analysis workflows on HPC resources.
 
 %% Chapter 4
 Some data-analysis workflows and applications are both data- and
@@ -94,7 +94,7 @@ campaign manager prototype which is domain-agnostic and adheres to the building
 blocks design approach. We utilized a discrete event simulator
 (\S\ref{sec:cm_impl}) to simulate the execution of a computational campaign on
 HPC resources. We validated the correctness of our design by executing campaigns
-of different sizes on different number of resources (\S\ref{sec:cm_impl}).
+of different sizes on different number of resources (\S\ref{sec:cm_impl}). 
 
 %% Chapter 6
 As the campaign manager derives an execution plan for a computational campaign
@@ -128,7 +128,7 @@ workflows that analyze imagery as it becomes available.
 
 The work of this dissertation is invariant of the scientific domain and HPC
 resources that a campaign can utilize. As we move forward to support actual
-computational campaigns on HPC resources, we plan to pursue three lines of
+computational campaigns on HPC resources, we plan to pursue several lines of
 research and software development.
 
 First, our campaign manager prototype and specifically its planner, assumes that
@@ -148,9 +148,32 @@ HEFT on heterogeneous resources. As a result, we plan to characterize the
 performance of diverse late binding algorithms and compare them to HEFT's
 performance.
 
-Finally, our campaign manager prototype does not support the actual execution of
+Third, the amount of resources a workflow utilizes to minimize time to 
+completion may not necessarily be known before runtime. In addition, there is 
+initial research that utilizes machine learning (ML) algorithms and workflow 
+time to completion historic data for workflow performance 
+predictions~\cite{singh20211modular}. We plan to investigate such ML approaches 
+to provide the resource requirements of each workflow in a computational 
+campaign which will then be used to plan the execution of a campaign.
+This approach has the potential to reduce the individual workflow 
+time to completion and as a consequence increase the overall resource 
+utilization across all the resources a campaign utilizes.
+
+Fourth, our campaign manager prototype does not support the actual execution of
 campaigns but only their simulation. As we have an understanding of the
 requirements to support the execution of a campaign, we want to investigate 
 the requirements to utilize an actual workflow management framework.
 RADICAL-EnTK will be our first choice, as it fits the requirements of the target
-use cases, and utilizes a pilot framework as runtime system.
+use cases, and utilizes a pilot framework as runtime system. Further, we want 
+to investigate the API or user interface requirements so at the definition of a 
+computational campaign is independent of the workflow management framework used.
+
+Finally, our campaign manager prototype supports the execution of a single 
+campaign per user. As we move forward supporting actual computational 
+campaigns, the campaign manager may be used in an multi-tenant environment. 
+Currently, the campaign manager prototype can support multiple users where its 
+user execute their campaign from their user space. It does not support, though, 
+the case where multiple users have access to the same campaign. As a result, we 
+want to investigate the requirements of supporting multiple users through a 
+single campaign manager executable independent of the number of campaigns 
+executing at any given point in time.
