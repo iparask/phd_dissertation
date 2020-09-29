@@ -340,7 +340,6 @@ is achieved, the campaign transitions to the \textit{done} state. If the
 objective cannot be achieved or there is a failure during the execution, the
 state of the campaign changes to \textit{failed}. Lastly, the campaign state
 goes to \textit{canceled} when the user cancels the execution of the campaign.
-The code of the prototype is publicly available on Github~\cite{cm_git}.
 
 \begin{figure*}[t]
     \centering
@@ -454,7 +453,17 @@ simulation. The prototype executed 128 workflows on 128 resources in
 $\approx$7 minutes, an amount of time we considered acceptable for
 experimental purposes.
 
-
+Currently, the CM prototype is implemented in Python as an installable module. 
+The source code is open and available on Github~\cite{cm_git}. The CM currently 
+offers a simple API for users who want to simulate the execution of a campaign. 
+The Bookkeeper and Resources modules can be imported (seen under the example 
+in~\cite{cm_git}). The campaign currently is represented as a list of workflows 
+where each workflow is a dictionary with the workflow description, a unique 
+identifier per workflow and the runtime of the workflow on an 1 PetaFLOP 
+resource. Resources are a list of dictionaries with a unique identifier, the 
+performance and a label for each resource. In order to simulate the execution 
+of the campaign, users pass the campaign and resources to the Bookkeeper and 
+call the \textit{run} method. 
 
 % and thus we conclude that this increase will not affect the execution of an
 % actual campaign. As a result, we conclude that the design and functionalities
